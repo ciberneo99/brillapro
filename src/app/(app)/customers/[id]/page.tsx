@@ -15,6 +15,8 @@ import { formatMoney, quoteNumber } from "@/lib/money";
 import { getQuoteSettings, listQuotes } from "@/modules/quotes/queries";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { listJobs } from "@/modules/jobs/queries";
+import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
+import { getInvoiceSettings, listInvoices } from "@/modules/invoices/queries";
 
 export default async function CustomerProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,6 +27,9 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
   const canQuotes = can(ctx.role, "quotes:read");
   const customerQuotes = canQuotes ? (await listQuotes({ customerId: id })).rows : [];
   const customerJobs = can(ctx.role, "jobs:read") ? (await listJobs({ customerId: id })).rows : [];
+  const canInvoices = can(ctx.role, "invoices:read");
+  const customerInvoices = canInvoices ? (await listInvoices({ customerId: id })).rows : [];
+  const invoicePrefix = canInvoices ? (await getInvoiceSettings(ctx.tenant.id)).invoice_prefix : "INV-";
   const quotePrefix = canQuotes ? (await getQuoteSettings(ctx.tenant.id)).quote_prefix : "Q-";
 
   const [t, format, events, duplicate] = await Promise.all([
@@ -174,14 +179,27 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
         </Card>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {([["invoices", 5], ["payments", 5]] as const).map(([key, phase]) => (
-          <Card key={key}>
-            <h2 className="text-sm font-semibold">{t(`profile.related.${key}`)}</h2>
-            <p className="mt-1 text-xs text-muted">{t("profile.related.availableIn", { phase })}</p>
-          </Card>
-        ))}
-      </div>
+      {canInvoices && (
+        <Card accent="green" className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold">{t("profile.related.invoices")}</h2>
+            {can(ctx.role, "invoices:write") && <Link href={`/invoices/new?customer=${id}`} className="text-sm text-primary hover:underline">{t("profile.newInvoice")}</Link>}
+          </div>
+          {customerInvoices.length === 0 ? (
+            <p className="text-xs text-muted">{t("profile.noInvoices")}</p>
+          ) : (
+            <ul className="divide-y divide-line text-sm">
+              {customerInvoices.map((i) => (
+                <li key={i.id} className="flex items-center justify-between gap-3 py-2">
+                  <Link href={`/invoices/${i.id}`} className="font-medium text-primary hover:underline">{quoteNumber(invoicePrefix, i.number)}</Link>
+                  <InvoiceStatusBadge status={i.display_status} />
+                  <span>{formatMoney(i.total_cents ?? 0, ctx.settings.currency)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
     </div>
   );
 }
