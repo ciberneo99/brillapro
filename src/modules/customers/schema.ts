@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
 import { isValidEmail } from "@/lib/email";
+import { normalizeAddress, normalizeName, normalizeState } from "@/lib/text";
 
 export const STATUSES = ["prospect", "active", "inactive", "archived"] as const;
 export type CustomerStatus = (typeof STATUSES)[number];
@@ -12,6 +13,10 @@ const text = (max: number) =>
   z.string().trim().max(max).transform((v) => (v === "" ? null : v));
 /** Phone numbers are stored as xxx-xxx-xxxx when they are complete US numbers. */
 const phone = z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v)));
+/** Names / addresses: first letters raised, spaces tidied. */
+const personName = (max: number) => z.string().trim().max(max).transform(normalizeName);
+const address = (max: number) => z.string().trim().max(max).transform((v) => (v === "" ? null : normalizeAddress(v)));
+const stateField = z.string().trim().max(60).transform((v) => (v === "" ? null : normalizeState(v)));
 const textOrEmpty = (max: number) => z.string().trim().max(max);
 const intOrNull = (min: number, max: number) =>
   z.string().trim().transform((v, ctx) => {
@@ -64,16 +69,16 @@ const date = z.string().trim().transform((v, ctx) => {
 
 const fields = z
   .object({
-    first_name: textOrEmpty(100),
-    last_name: textOrEmpty(100),
+    first_name: personName(100),
+    last_name: personName(100),
     company_name: textOrEmpty(150),
     email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
     phone,
     secondary_phone: phone,
-    service_address: text(300),
-    billing_address: text(300),
-    city: text(100),
-    state: text(60),
+    service_address: address(300),
+    billing_address: address(300),
+    city: address(100),
+    state: stateField,
     zip_code: text(20),
     property_type: oneOfOrNull(PROPERTY_TYPES),
     square_footage: intOrNull(1, 1_000_000),

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { publicEnv } from "@/lib/env";
 import { isValidEmail } from "@/lib/email";
+import { normalizeName } from "@/lib/text";
 import { resolveLocale } from "@/i18n/request";
 import { LOCALE_COOKIE, THEME_COOKIE } from "@/i18n/config";
 
@@ -39,7 +40,7 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
 
 export async function signup(_: FormState, formData: FormData): Promise<FormState> {
   const parsed = z
-    .object({ full_name: z.string().trim().min(2).max(120), email, password })
+    .object({ full_name: z.string().trim().min(2).max(120).transform(normalizeName), email, password })
     .safeParse({
       full_name: formData.get("full_name"),
       email: formData.get("email"),

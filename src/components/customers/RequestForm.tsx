@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select, Card } from "@/components/ui";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
+import { SmartTextInput } from "@/components/ui/SmartTextInput";
+import type { TextMode } from "@/lib/text";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 import type { RequestState } from "@/app/request/[slug]/actions";
 
@@ -38,9 +40,9 @@ export function RequestForm({
     );
   }
 
-  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal" } = {}) => (
+  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal"; smart?: TextMode } = {}) => (
     <Field label={label} htmlFor={name}>
-      {type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
+      {extra.smart ? <SmartTextInput id={name} name={name} mode={extra.smart} autoComplete={extra.autoComplete} /> : type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
     </Field>
   );
 
@@ -55,8 +57,8 @@ export function RequestForm({
       <Card className="space-y-4">
         <h2 className="text-base font-semibold">{t("contact")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {f("first_name", tf("form.firstName"), "text", { autoComplete: "given-name" })}
-          {f("last_name", tf("form.lastName"), "text", { autoComplete: "family-name" })}
+          {f("first_name", tf("form.firstName"), "text", { autoComplete: "given-name", smart: "name" })}
+          {f("last_name", tf("form.lastName"), "text", { autoComplete: "family-name", smart: "name" })}
           <div className="sm:col-span-2">{f("company_name", tf("form.companyName"), "text", { autoComplete: "organization" })}</div>
           {f("email", tf("form.email"), "email", { autoComplete: "email" })}
           {f("phone", tf("form.phone"), "tel", { autoComplete: "tel" })}
@@ -66,9 +68,9 @@ export function RequestForm({
       <Card className="space-y-4">
         <h2 className="text-base font-semibold">{t("property")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">{f("service_address", tf("form.serviceAddress"), "text", { autoComplete: "street-address" })}</div>
-          {f("city", tf("form.city"))}
-          {f("state", tf("form.state"))}
+          <div className="sm:col-span-2">{f("service_address", tf("form.serviceAddress"), "text", { autoComplete: "street-address", smart: "address" })}</div>
+          {f("city", tf("form.city"), "text", { smart: "address" })}
+          {f("state", tf("form.state"), "text", { smart: "state" })}
           {f("zip_code", tf("form.zipCode"), "text", { inputMode: "numeric", autoComplete: "postal-code" })}
           <Field label={tf("form.propertyType")} htmlFor="property_type">
             <Select id="property_type" name="property_type" defaultValue="">

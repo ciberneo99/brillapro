@@ -3,17 +3,20 @@
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
 import { isValidEmail } from "@/lib/email";
+import { normalizeAddress, normalizeName, normalizeState } from "@/lib/text";
 import { createClient } from "@/lib/supabase/server";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
 export type RequestState = { error?: "invalid" | "contactNeeded" | "unavailable" | "tooMany" | "tooFast" | "failed"; done?: boolean } | undefined;
 
 const t = (max: number) => z.string().trim().max(max).optional().default("");
+const nm = (max: number) => z.string().trim().max(max).optional().default("").transform(normalizeName);
+const ad = (max: number) => z.string().trim().max(max).optional().default("").transform(normalizeAddress);
 
 const schema = z.object({
-  first_name: t(100), last_name: t(100), company_name: t(150),
+  first_name: nm(100), last_name: nm(100), company_name: t(150),
   email: z.string().trim().toLowerCase().max(254).optional().default(""),
-  phone: z.string().trim().max(40).optional().default("").transform(normalizePhone), service_address: t(300), city: t(100), state: t(60), zip_code: t(20),
+  phone: z.string().trim().max(40).optional().default("").transform(normalizePhone), service_address: ad(300), city: ad(100), state: z.string().trim().max(60).optional().default("").transform(normalizeState), zip_code: t(20),
   property_type: z.enum(PROPERTY_TYPES).or(z.literal("")).optional().default(""),
   square_footage: z.string().trim().regex(/^\d{0,7}$/).optional().default(""),
   bedrooms: z.string().trim().regex(/^\d{0,2}$/).optional().default(""),

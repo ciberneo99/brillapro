@@ -62,3 +62,17 @@ describe("customer form schema", () => {
     expect(restoredStatus({ converted_at: "2026-01-01" })).toBe("active");
   });
 });
+
+describe("customer schema: names and addresses are auto-capitalized on the server too", () => {
+  it("raises first letters, tidies spaces, uppercases 2-letter states", () => {
+    const r = parse({ first_name: "  neopolo ", last_name: "ruiz   santiago", service_address: "123 main st. apt 4b", city: "austin", state: "tx", company_name: "ABC cleaning llc" });
+    expect(r.success && r.data).toMatchObject({
+      first_name: "Neopolo", last_name: "Ruiz Santiago", service_address: "123 Main St. Apt 4b", city: "Austin", state: "TX",
+      company_name: "ABC cleaning llc", // company names are left exactly as typed
+    });
+  });
+  it("full state names are capitalized; empty values stay null", () => {
+    const r = parse({ state: "texas", service_address: "", city: " " });
+    expect(r.success && r.data).toMatchObject({ state: "Texas", service_address: null, city: null });
+  });
+});
