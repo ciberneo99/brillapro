@@ -1,4 +1,6 @@
-# BrillaPro — Modelo de datos inicial (propuesta; sin tablas creadas)
+# BrillaPro — Modelo de datos
+
+Implementado hasta la Fase 3 (migraciones `db/migrations/0001`–`0008`). Lo de fases posteriores es propuesta.
 
 ## Tablas por fase
 - F1: tenants, profiles, memberships, audit_log, tenant_settings, plans, subscriptions (trial por defecto)
@@ -9,6 +11,12 @@
 - F6: inventory_items, inventory_movements
 - F7: import_batches, bank_transactions, accounts, journal_entries, journal_lines, accounting_periods
 - F8: integrations
+
+## Fase 3 (implementado)
+- service_types (7 por defecto por empresa, sin borrado: se desactivan), checklist_templates (una activa por tipo de servicio), checklist_template_items.
+- quotes (numeración por empresa vía tenant_counters), quote_options (Good/Better/Best), quote_lines (conceptos extra sobre toda opción).
+- Totales en SQL: función `quote_totals` y vista `quotes_overview`; estados vía `set_quote_status`, copia vía `duplicate_quote`. Solo los borradores se editan.
+- tenant_settings: quote_prefix, quote_valid_days, default_tax_rate, quote_terms.
 
 ## Convenciones
 UUID, `created_at`, `updated_at`, `archived_at`; `tenant_id NOT NULL` con FK; dinero en centavos enteros;
