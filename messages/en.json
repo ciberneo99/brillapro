@@ -504,7 +504,9 @@
     "unassign": "Remove",
     "you": "You",
     "noEmployees": "No employees yet.",
-    "addEmployees": "Add employees"
+    "addEmployees": "Add employees",
+    "calendar": "Calendar",
+    "recurring": "Recurring jobs"
   },
   "employees": {
     "title": "Employees",
@@ -522,5 +524,49 @@
     "deactivate": "Deactivate",
     "add": "Add employee",
     "addButton": "Add"
+  },
+  "calendar": {
+    "prev": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "employee": "Employee",
+    "everyone": "Everyone",
+    "filter": "Filter",
+    "recurring": "Recurring jobs",
+    "employeeNote": "You see the jobs assigned to you.",
+    "addJob": "Add a job on this day",
+    "more": "+{count} more"
+  },
+  "recurring": {
+    "title": "Recurring jobs",
+    "intro": "Set up a repeating cleaning once. Jobs are created for the next 12 weeks, with the team and checklist already in place.",
+    "empty": "No recurring jobs yet.",
+    "invalid": "Check the fields and try again.",
+    "createdJobs": "{count, plural, =0 {No new jobs were needed.} one {# job created.} other {# jobs created.}}",
+    "ended": "{count, plural, =0 {Schedule ended.} one {Schedule ended and # future job cancelled.} other {Schedule ended and # future jobs cancelled.}}",
+    "frequency": {
+      "weekly": "Every week",
+      "biweekly": "Every 2 weeks",
+      "every_four_weeks": "Every 4 weeks",
+      "monthly": "Every month"
+    },
+    "from": "from",
+    "until": "until",
+    "noTeam": "No team assigned",
+    "generatedUntil": "jobs created through {date}",
+    "active": "Active",
+    "ended_label": "Ended",
+    "extend": "Create the next 12 weeks",
+    "end": "End schedule",
+    "endCancel": "End and cancel future jobs",
+    "new": "New recurring job",
+    "repeats": "Repeats",
+    "startDate": "First date",
+    "untilOptional": "Stop after (optional)",
+    "team": "Team",
+    "createHelp": "To change the pattern later, end this schedule and create a new one. You can edit or cancel any single job from its page.",
+    "create": "Create recurring job"
   }
 }

@@ -504,7 +504,9 @@
     "unassign": "Quitar",
     "you": "Tú",
     "noEmployees": "Aún no hay empleados.",
-    "addEmployees": "Agregar empleados"
+    "addEmployees": "Agregar empleados",
+    "calendar": "Calendario",
+    "recurring": "Trabajos recurrentes"
   },
   "employees": {
     "title": "Empleados",
@@ -522,5 +524,49 @@
     "deactivate": "Desactivar",
     "add": "Agregar empleado",
     "addButton": "Agregar"
+  },
+  "calendar": {
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "today": "Hoy",
+    "month": "Mes",
+    "week": "Semana",
+    "employee": "Empleado",
+    "everyone": "Todos",
+    "filter": "Filtrar",
+    "recurring": "Trabajos recurrentes",
+    "employeeNote": "Ves los trabajos que te asignaron.",
+    "addJob": "Agregar un trabajo este día",
+    "more": "+{count} más"
+  },
+  "recurring": {
+    "title": "Trabajos recurrentes",
+    "intro": "Configura una limpieza que se repite una sola vez. Se crean los trabajos de las próximas 12 semanas, con el equipo y la lista ya listos.",
+    "empty": "Aún no hay trabajos recurrentes.",
+    "invalid": "Revisa los campos e inténtalo de nuevo.",
+    "createdJobs": "{count, plural, =0 {No hizo falta crear trabajos nuevos.} one {Se creó # trabajo.} other {Se crearon # trabajos.}}",
+    "ended": "{count, plural, =0 {Programación terminada.} one {Programación terminada y # trabajo futuro cancelado.} other {Programación terminada y # trabajos futuros cancelados.}}",
+    "frequency": {
+      "weekly": "Cada semana",
+      "biweekly": "Cada 2 semanas",
+      "every_four_weeks": "Cada 4 semanas",
+      "monthly": "Cada mes"
+    },
+    "from": "desde",
+    "until": "hasta",
+    "noTeam": "Sin equipo asignado",
+    "generatedUntil": "trabajos creados hasta {date}",
+    "active": "Activa",
+    "ended_label": "Terminada",
+    "extend": "Crear las próximas 12 semanas",
+    "end": "Terminar programación",
+    "endCancel": "Terminar y cancelar trabajos futuros",
+    "new": "Nuevo trabajo recurrente",
+    "repeats": "Se repite",
+    "startDate": "Primera fecha",
+    "untilOptional": "Terminar después de (opcional)",
+    "team": "Equipo",
+    "createHelp": "Para cambiar el patrón después, termina esta programación y crea una nueva. Puedes editar o cancelar cualquier trabajo desde su página.",
+    "create": "Crear trabajo recurrente"
   }
 }

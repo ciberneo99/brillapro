@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Alert, Button, Card, Field, Select } from "@/components/ui";
 import { JobFields } from "@/components/jobs/JobFields";
+import { isIsoDate } from "@/lib/calendar";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +13,7 @@ import { listServiceTypes } from "@/modules/services/queries";
 
 export const metadata = { title: "New job" };
 
-export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string; error?: string }> }) {
+export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string; error?: string; date?: string }> }) {
   const ctx = await requireContext();
   if (!can(ctx.role, "jobs:write")) redirect("/jobs");
   const sp = await searchParams;
@@ -45,7 +46,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
               </Select>
             </Field>
             <p className="text-xs text-muted">{t("addressHelp")}</p>
-            <JobFields v={{}} services={services} labels={labels} dateFormat={ctx.settings.date_format} currency={ctx.settings.currency} />
+            <JobFields v={{ scheduled_date: isIsoDate(sp.date) ? sp.date : undefined }} services={services} labels={labels} dateFormat={ctx.settings.date_format} currency={ctx.settings.currency} />
             <Button type="submit">{t("create")}</Button>
           </form>
         </Card>

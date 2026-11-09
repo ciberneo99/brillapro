@@ -57,3 +57,23 @@ export async function jobForQuote(quoteId: string): Promise<string | null> {
   const { data } = await supabase.from("jobs").select("id").eq("quote_id", quoteId).neq("status", "cancelled").limit(1);
   return data?.[0]?.id ?? null;
 }
+
+export type CalendarJob = Pick<JobRow, "id" | "title" | "status" | "scheduled_date" | "start_time" | "end_time" | "customer_name">;
+
+/** Jobs between two dates (inclusive) for the calendar; optional employee filter (staff only in practice). */
+export async function jobsInRange(from: string, to: string, employeeId?: string): Promise<CalendarJob[]> {
+  const supabase = await createClient();
+  let ids: string[] | null = null;
+  if (employeeId) {
+    const { data } = await supabase.from("job_assignments").select("job_id").eq("employee_id", employeeId);
+    ids = (data ?? []).map((r) => r.job_id as string);
+    if (ids.length === 0) return [];
+  }
+  let q = supabase
+    .from("jobs").select("id,title,status,scheduled_date,start_time,end_time,customer_name")
+    .gte("scheduled_date", from).lte("scheduled_date", to)
+    .order("scheduled_date").order("start_time", { nullsFirst: false }).limit(2000);
+  if (ids) q = q.in("id", ids);
+  const { data } = await q;
+  return (data ?? []) as CalendarJob[];
+}

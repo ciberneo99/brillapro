@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
+import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -20,7 +21,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   const t = await getTranslations("jobs");
   const staff = can(ctx.role, "jobs:write");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIso(ctx.settings.timezone);
   const upcoming = sp.when === "upcoming";
   const { rows, total, page } = await listJobs({
     status: sp.status, page: Number(sp.page) || 1,
@@ -42,7 +43,11 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <div className="flex gap-2">
+        <Link href="/calendar" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("calendar")}</Link>
+        {staff && <Link href="/jobs/recurring" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("recurring")}</Link>}
         {staff && <Link href="/jobs/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
+        </div>
       </div>
       {!staff && <p className="text-sm text-muted">{t("employeeNote")}</p>}
 

@@ -12,8 +12,8 @@ type Labels = Record<"title" | "service" | "noService" | "date" | "start" | "end
 
 /** Shared fields of the new-job and edit-job forms (server component; all inputs submit by name). */
 export function JobFields({
-  v, services, labels, dateFormat, currency,
-}: { v: JobValues; services: { id: string; name: string }[]; labels: Labels; dateFormat: string; currency: string }) {
+  v, services, labels, dateFormat, currency, dateName = "scheduled_date",
+}: { v: JobValues; services: { id: string; name: string }[]; labels: Labels; dateFormat: string; currency: string; dateName?: string }) {
   const ta = "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm";
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -24,7 +24,7 @@ export function JobFields({
           {services.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </Select>
       </Field>
-      <Field label={labels.date} htmlFor="scheduled_date"><DatePicker id="scheduled_date" name="scheduled_date" defaultValue={v.scheduled_date ?? ""} dateFormat={dateFormat} /></Field>
+      <Field label={labels.date} htmlFor={dateName}><DatePicker id={dateName} name={dateName} defaultValue={v.scheduled_date ?? ""} dateFormat={dateFormat} /></Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label={labels.start} htmlFor="start_time"><Input id="start_time" name="start_time" type="time" defaultValue={v.start_time?.slice(0, 5) ?? ""} /></Field>
         <Field label={labels.end} htmlFor="end_time"><Input id="end_time" name="end_time" type="time" defaultValue={v.end_time?.slice(0, 5) ?? ""} /></Field>
