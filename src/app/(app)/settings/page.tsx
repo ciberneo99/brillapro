@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Card } from "@/components/ui";
+import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
+import { publicEnv } from "@/lib/env";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
@@ -25,6 +27,12 @@ export default async function SettingsPage() {
         <PreferenceControls theme={theme} />
         <p className="text-xs text-muted">{t("preferences.languageHelp")} {t("preferences.themeHelp")}</p>
       </Card>
+
+      <RequestLinkCard
+        url={`${publicEnv().NEXT_PUBLIC_APP_URL}/request/${ctx.tenant.public_slug}`}
+        enabled={ctx.tenant.accepts_requests}
+        canEdit={can(ctx.role, "settings:write")}
+      />
 
       <Card>
         <BusinessSettingsForm

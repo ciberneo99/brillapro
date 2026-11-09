@@ -3,6 +3,7 @@ import { Card } from "@/components/ui";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { countActiveCustomers } from "@/modules/customers/queries";
 
 const CARDS = [
   "revenueMonth", "revenueYtd", "outstanding", "collected", "customers",
@@ -17,6 +18,8 @@ export default async function DashboardPage() {
   const t = await getTranslations("dashboard");
 
   const daysLeft = ctx.trialDaysLeft;
+  // Only figures backed by real data are shown; the rest stay empty until their module exists.
+  const activeCustomers = can(ctx.role, "customers:read") ? await countActiveCustomers() : null;
 
   return (
     <div className="space-y-6">
@@ -35,7 +38,11 @@ export default async function DashboardPage() {
         {CARDS.map((key) => (
           <Card key={key}>
             <p className="text-sm text-muted">{t(`cards.${key}`)}</p>
-            <p className="mt-2 text-2xl font-semibold text-muted" aria-label="—">—</p>
+            {key === "customers" && activeCustomers !== null ? (
+              <p className="mt-2 text-2xl font-semibold">{activeCustomers}</p>
+            ) : (
+              <p className="mt-2 text-2xl font-semibold text-muted" aria-label="—">—</p>
+            )}
           </Card>
         ))}
       </section>

@@ -8,7 +8,7 @@ export type AppContext = {
   userId: string;
   email: string;
   profile: { full_name: string; locale: "en" | "es"; theme: "light" | "dark" | "system" };
-  tenant: { id: string; name: string };
+  tenant: { id: string; name: string; public_slug: string; accepts_requests: boolean };
   role: Role;
   settings: {
     currency: string; timezone: string; date_format: string; doc_locale: "en" | "es";
@@ -28,7 +28,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
 
   const { data: membership } = await supabase
     .from("memberships")
-    .select("role, tenant:tenants(id, name)")
+    .select("role, tenant:tenants(id, name, public_slug, accepts_requests)")
     .eq("user_id", user.id)
     .eq("status", "active")
     .order("created_at", { ascending: true })
@@ -49,7 +49,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     userId: user.id,
     email: user.email ?? "",
     profile: profile as AppContext["profile"],
-    tenant: { id: tenant.id, name: tenant.name },
+    tenant: { id: tenant.id, name: tenant.name, public_slug: tenant.public_slug, accepts_requests: tenant.accepts_requests },
     role: membership.role,
     settings: settings as AppContext["settings"],
     trialDaysLeft:
