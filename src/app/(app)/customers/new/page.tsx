@@ -14,7 +14,7 @@ export default async function NewCustomerPage() {
   return (
     <div className="max-w-3xl space-y-5">
       <h1 className="text-2xl font-semibold tracking-tight">{t("newTitle")}</h1>
-      <CustomerForm dateFormat={ctx.settings.date_format} action={createCustomer} cancelHref="/customers" submitLabel={t("form.create")} />
+      <CustomerForm currency={ctx.settings.currency} dateFormat={ctx.settings.date_format} action={createCustomer} cancelHref="/customers" submitLabel={t("form.create")} />
     </div>
   );
 }

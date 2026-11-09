@@ -1,25 +1,34 @@
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
 import { isValidEmail } from "@/lib/email";
-import { normalizeAddress, normalizeName, normalizeState } from "@/lib/text";
+import { normalizeAddress, normalizeName, normalizeSentences, normalizeState } from "@/lib/text";
+import { normalizeZip } from "@/lib/zip";
 
 export const STATUSES = ["prospect", "active", "inactive", "archived"] as const;
 export type CustomerStatus = (typeof STATUSES)[number];
 export const PROPERTY_TYPES = ["house", "apartment", "condo", "townhouse", "office", "commercial", "other"] as const;
 export const FREQUENCIES = ["one_time", "weekly", "biweekly", "monthly", "every_four_weeks", "custom"] as const;
 
-/** "" → null so empty inputs clear the column instead of storing blank strings. */
-const text = (max: number) =>
-  z.string().trim().max(max).transform((v) => (v === "" ? null : v));
 /** Phone numbers are stored as xxx-xxx-xxxx when they are complete US numbers. */
 const phone = z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v)));
 /** Names / addresses: first letters raised, spaces tidied. */
 const personName = (max: number) => z.string().trim().max(max).transform(normalizeName);
 const address = (max: number) => z.string().trim().max(max).transform((v) => (v === "" ? null : normalizeAddress(v)));
 const stateField = z.string().trim().max(60).transform((v) => (v === "" ? null : normalizeState(v)));
+/** Free text: first letter of each sentence raised. */
+const sentence = (max: number) => z.string().trim().max(max).transform((v) => (v === "" ? null : normalizeSentences(v)));
+const zip = z.string().trim().max(20).transform((v, ctx) => {
+  const z5 = normalizeZip(v);
+  if (z5 === "invalid") {
+    ctx.addIssue({ code: "custom", message: "invalid" });
+    return z.NEVER;
+  }
+  return z5;
+});
 const textOrEmpty = (max: number) => z.string().trim().max(max);
 const intOrNull = (min: number, max: number) =>
-  z.string().trim().transform((v, ctx) => {
+  z.string().trim().transform((raw, ctx) => {
+    const v = raw.replace(/,/g, ""); // grouped display (1,800) → 1800
     if (v === "") return null;
     const n = Number(v);
     if (!Number.isInteger(n) || n < min || n > max) {
@@ -79,18 +88,18 @@ const fields = z
     billing_address: address(300),
     city: address(100),
     state: stateField,
-    zip_code: text(20),
+    zip_code: zip,
     property_type: oneOfOrNull(PROPERTY_TYPES),
     square_footage: intOrNull(1, 1_000_000),
     bedrooms: intOrNull(0, 50),
     bathrooms,
     cleaning_frequency: oneOfOrNull(FREQUENCIES),
-    preferred_service: text(100),
+    preferred_service: sentence(100),
     estimated_price: priceToCents, // typed in dollars, stored as cents (see transform below)
-    access_instructions: text(2000),
-    pets: text(300),
-    special_instructions: text(2000),
-    notes: text(5000),
+    access_instructions: sentence(2000),
+    pets: sentence(300),
+    special_instructions: sentence(2000),
+    notes: sentence(5000),
     customer_since: date,
   })
   .refine((v) => `${v.first_name}${v.last_name}${v.company_name}`.trim() !== "", { message: "identityRequired", path: ["first_name"] })

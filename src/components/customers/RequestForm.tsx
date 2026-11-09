@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Field, Input, Select, Card } from "@/components/ui";
+import { Alert, Button, Field, Input, Select, Card, SectionTitle } from "@/components/ui";
+import { GroupedNumberInput, SmartTextarea, ZipInput } from "@/components/ui/fields";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
@@ -40,9 +41,9 @@ export function RequestForm({
     );
   }
 
-  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal"; smart?: TextMode } = {}) => (
+  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal"; smart?: TextMode; kind?: "zip" | "grouped" } = {}) => (
     <Field label={label} htmlFor={name}>
-      {extra.smart ? <SmartTextInput id={name} name={name} mode={extra.smart} autoComplete={extra.autoComplete} /> : type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
+      {extra.kind === "zip" ? <ZipInput id={name} name={name} /> : extra.kind === "grouped" ? <GroupedNumberInput id={name} name={name} /> : extra.smart ? <SmartTextInput id={name} name={name} mode={extra.smart} autoComplete={extra.autoComplete} /> : type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
     </Field>
   );
 
@@ -54,8 +55,8 @@ export function RequestForm({
         <label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label>
       </div>
 
-      <Card className="space-y-4">
-        <h2 className="text-base font-semibold">{t("contact")}</h2>
+      <Card accent="blue" className="space-y-4">
+        <SectionTitle accent="blue">{t("contact")}</SectionTitle>
         <div className="grid gap-4 sm:grid-cols-2">
           {f("first_name", tf("form.firstName"), "text", { autoComplete: "given-name", smart: "name" })}
           {f("last_name", tf("form.lastName"), "text", { autoComplete: "family-name", smart: "name" })}
@@ -65,20 +66,20 @@ export function RequestForm({
         </div>
       </Card>
 
-      <Card className="space-y-4">
-        <h2 className="text-base font-semibold">{t("property")}</h2>
+      <Card accent="green" className="space-y-4">
+        <SectionTitle accent="green">{t("property")}</SectionTitle>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">{f("service_address", tf("form.serviceAddress"), "text", { autoComplete: "street-address", smart: "address" })}</div>
           {f("city", tf("form.city"), "text", { smart: "address" })}
           {f("state", tf("form.state"), "text", { smart: "state" })}
-          {f("zip_code", tf("form.zipCode"), "text", { inputMode: "numeric", autoComplete: "postal-code" })}
+          {f("zip_code", tf("form.zipCode"), "text", { kind: "zip" })}
           <Field label={tf("form.propertyType")} htmlFor="property_type">
             <Select id="property_type" name="property_type" defaultValue="">
               <option value="">{tf("form.choose")}</option>
               {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{tf(`propertyType.${p}`)}</option>)}
             </Select>
           </Field>
-          {f("square_footage", tf("form.squareFootage"), "text", { inputMode: "numeric" })}
+          {f("square_footage", tf("form.squareFootage"), "text", { kind: "grouped" })}
           {f("bedrooms", tf("form.bedrooms"), "text", { inputMode: "numeric" })}
           {f("bathrooms", tf("form.bathrooms"), "text", { inputMode: "decimal" })}
           <Field label={tf("form.frequency")} htmlFor="cleaning_frequency">
@@ -87,13 +88,13 @@ export function RequestForm({
               {FREQUENCIES.map((x) => <option key={x} value={x}>{tf(`frequency.${x}`)}</option>)}
             </Select>
           </Field>
-          {f("preferred_service", tf("form.preferredService"))}
+          {f("preferred_service", tf("form.preferredService"), "text", { smart: "sentence" })}
         </div>
       </Card>
 
-      <Card className="space-y-2">
+      <Card accent="amber" className="space-y-2">
         <label htmlFor="message" className="block text-base font-semibold">{t("message")}</label>
-        <textarea id="message" name="message" rows={4} maxLength={2000} className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg" />
+        <SmartTextarea id="message" name="message" rows={4} maxLength={2000} />
       </Card>
 
       <Button type="submit" disabled={pending} className="w-full sm:w-auto">{pending ? tc("loading") : t("submit")}</Button>

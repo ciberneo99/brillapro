@@ -44,8 +44,27 @@ export function Field({ label, hint, htmlFor, children }: { label: string; hint?
   );
 }
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-xl border border-line bg-surface p-5 shadow-card", className)}>{children}</div>;
+export type Accent = "blue" | "green" | "violet" | "amber" | "rose" | "teal";
+
+/** `accent` adds a tinted outline and a colored top bar (colors come from theme tokens). */
+export function Card({ className, children, accent }: { className?: string; children: ReactNode; accent?: Accent }) {
+  return (
+    <div
+      className={cn("rounded-xl border border-line bg-surface p-5 shadow-card", accent && "accent-card", className)}
+      style={accent ? ({ "--accent": `var(--c-${accent})` } as React.CSSProperties) : undefined}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function SectionTitle({ accent, children }: { accent: Accent; children: ReactNode }) {
+  return (
+    <h2 className="flex items-center gap-2 text-base font-semibold">
+      <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: `var(--c-${accent})` }} />
+      {children}
+    </h2>
+  );
 }
 
 export function Alert({ tone = "danger", children }: { tone?: "danger" | "success"; children: ReactNode }) {

@@ -24,6 +24,16 @@ export function normalizeState(input: string): string {
   return /^\p{L}{2}$/u.test(v) ? v.toUpperCase() : capitalizeWords(v);
 }
 
-export type TextMode = "name" | "address" | "state";
-export const liveFormat = (_mode: TextMode, v: string) => capitalizeWords(v);
-export const finalFormat = (mode: TextMode, v: string) => (mode === "state" ? normalizeState(v) : normalizeName(v));
+/** Free text (notes, instructions): raise the first letter of each sentence; never lower anything. */
+export function capitalizeSentences(input: string): string {
+  return input.replace(/(^|[.!?]\s+|\n\s*)(\p{Ll})/gu, (_, lead: string, ch: string) => lead + ch.toUpperCase());
+}
+/** Final form: trimmed, line breaks kept, sentence starts raised. */
+export function normalizeSentences(input: string): string {
+  return capitalizeSentences(input.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim());
+}
+
+export type TextMode = "name" | "address" | "state" | "sentence";
+export const liveFormat = (mode: TextMode, v: string) => (mode === "sentence" ? capitalizeSentences(v) : capitalizeWords(v));
+export const finalFormat = (mode: TextMode, v: string) =>
+  mode === "state" ? normalizeState(v) : mode === "sentence" ? normalizeSentences(v) : normalizeName(v);

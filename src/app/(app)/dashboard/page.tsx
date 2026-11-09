@@ -5,6 +5,14 @@ import { requireContext } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { countActiveCustomers } from "@/modules/customers/queries";
 
+import type { Accent } from "@/components/ui";
+
+/** Color carries meaning: green = money in, amber = waiting, rose = money out, blue = people, violet = work, teal = result. */
+const ACCENT: Record<string, Accent> = {
+  revenueMonth: "green", revenueYtd: "teal", outstanding: "amber", collected: "green", customers: "blue",
+  activeJobs: "violet", upcoming: "violet", expenses: "rose", profit: "teal",
+};
+
 const CARDS = [
   "revenueMonth", "revenueYtd", "outstanding", "collected", "customers",
   "activeJobs", "upcoming", "expenses", "profit",
@@ -36,7 +44,7 @@ export default async function DashboardPage() {
       {/* Phase 1: no business data exists yet, so every figure is an honest empty state, not sample data. */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {CARDS.map((key) => (
-          <Card key={key}>
+          <Card key={key} accent={ACCENT[key]}>
             <p className="text-sm text-muted">{t(`cards.${key}`)}</p>
             {key === "customers" && activeCustomers !== null ? (
               <p className="mt-2 text-2xl font-semibold">{activeCustomers}</p>

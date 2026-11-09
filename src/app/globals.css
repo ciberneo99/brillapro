@@ -25,6 +25,7 @@
   --danger-soft: #fde4e1;
   --ring: #0b7a75;
   --shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.08);
+  --c-blue: #2563eb; --c-green: #16a34a; --c-violet: #7c3aed; --c-amber: #d97706; --c-rose: #e11d48; --c-teal: #0d9488;
 }
 
 [data-theme="dark"] {
@@ -47,6 +48,7 @@
   --danger-soft: #3d1717;
   --ring: #2dd4bf;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
 }
 
 /* System default: follow the device with no JavaScript, so there is no flash. */
@@ -71,6 +73,7 @@
     --danger-soft: #3d1717;
     --ring: #2dd4bf;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
   }
 }
 [data-theme="system"] { color-scheme: light dark; }
@@ -132,3 +135,9 @@ body {
 .bp-datepicker .rdp-dropdown_root select,
 .bp-datepicker select { background: var(--surface); color: var(--fg); }
 .bp-datepicker .rdp-dropdown_root { border-radius: 0.5rem; }
+
+/* ───────── Accent cards: tinted outline + colored top bar. Color is decoration; text keeps normal contrast. ───────── */
+.accent-card {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-top: 4px solid var(--accent);
+}
