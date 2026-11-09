@@ -10,7 +10,7 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 | 2 | Clientes, prospectos, formulario público, conversión — **completada** (`v0.2-fase2`), con 2 pendientes | 1 |
 | 3 | Servicios, checklists, cotizaciones, PDF, Good/Better/Best — **completada** (`v0.3-fase3`); convertir cotización → trabajo pasa al inicio de la Fase 4 | 2 |
 | 4 | Trabajos, empleados, calendario, recurrencia, horas, notas, tareas — **completada** (`v0.4-fase4`) | 3 |
-| 5 | Facturas, pagos, gastos, PDF, envío manual | 4 |
+| 5 | Facturas, pagos, gastos con recibos, PDF, envío manual — **completada** (`v0.5-fase5`, pendiente de aprobación) | 4 |
 | 6 | Inventario y reportes operativos | 5 |
 | 7 | Venmo, importación bancaria, contabilidad de doble entrada | 5-6 |
 | 8 | Integraciones | 4-5 |
