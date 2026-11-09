@@ -5,9 +5,9 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 
 | Fase | Contenido | Depende de |
 |---|---|---|
-| 0 | Arquitectura y planificación (completada) | — |
-| 1 | Fundación: auth, tenants, roles, RLS, i18n, temas, sidebar, dashboard base | 0 |
-| 2 | Clientes, prospectos, formulario público, conversión | 1 |
+| 0 | Arquitectura y planificación — **completada** (v0.0) | — |
+| 1 | Fundación: auth, tenants, roles, RLS, i18n, temas, sidebar, dashboard base — **completada** (`v0.1-fase1`) | 0 |
+| 2 | Clientes, prospectos, formulario público, conversión — **completada** (`v0.2-fase2`), con 2 pendientes | 1 |
 | 3 | Servicios, checklists, cotizaciones, PDF, Good/Better/Best | 2 |
 | 4 | Trabajos, empleados, calendario, recurrencia, horas, notas, tareas | 3 |
 | 5 | Facturas, pagos, gastos, PDF, envío manual | 4 |
@@ -19,3 +19,13 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 Regla: no se avanza de fase sin aprobación explícita.
 
 Riesgos: RLS mal diseñada; calendario + recurrencia (F4); contabilidad formal (validar con contador); alcance (Parte 24 excluida).
+
+## Pendientes arrastrados
+- **Documentos del cliente** (subida de archivos con Supabase Storage y políticas por empresa): se hará cuando haya otro módulo que también suba archivos (recibos de gastos, Fase 5), para diseñar el almacenamiento una sola vez.
+- **Pruebas E2E con Playwright** (registro, login, cliente, solicitud pública): pendientes; se incorporan antes de la Fase 9 y como puerta de CI.
+- **Captcha (Turnstile)** en el formulario público: Fase 9.
+
+## Decisiones de producto registradas
+- Fechas en formato de la empresa (por defecto MM/DD/YYYY); semana del calendario empieza en domingo.
+- Teléfonos xxx-xxx-xxxx, correo estricto, nombres/direcciones con primera letra en mayúscula (el nombre de empresa no se modifica), códigos postales de 5 o 9 dígitos, dinero en centavos.
+- Estado (state) del cliente es texto libre.
