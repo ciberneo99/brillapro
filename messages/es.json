@@ -1,0 +1,55 @@
+{
+  "brand": { "name": "BrillaPro", "tagline": "Administra tu negocio de limpieza desde un solo lugar." },
+  "common": {
+    "save": "Guardar cambios", "saved": "Cambios guardados", "cancel": "Cancelar", "loading": "Cargando…",
+    "email": "Correo electrónico", "password": "Contraseña", "fullName": "Nombre completo", "language": "Idioma",
+    "theme": "Tema", "light": "Claro", "dark": "Oscuro", "system": "Predeterminado del sistema",
+    "english": "English", "spanish": "Español", "signOut": "Cerrar sesión", "settings": "Configuración",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.", "notAllowed": "No tienes permiso para hacer eso.",
+    "comingSoon": "Próximamente", "comingSoonBody": "Este módulo estará disponible en una fase posterior de BrillaPro.",
+    "openMenu": "Abrir menú", "closeMenu": "Cerrar menú"
+  },
+  "nav": {
+    "dashboard": "Panel", "customers": "Clientes", "jobs": "Trabajos", "quotes": "Cotizaciones",
+    "invoices": "Facturas", "expenses": "Gastos", "calendar": "Calendario", "inventory": "Inventario",
+    "notebook": "Mi Cuaderno", "reports": "Reportes", "venmo": "Generador de reportes Venmo", "settings": "Configuración"
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de nuevo", "loginSubtitle": "Inicia sesión en tu espacio de BrillaPro.",
+    "loginButton": "Iniciar sesión", "noAccount": "¿Nuevo en BrillaPro?", "createAccount": "Crear una cuenta",
+    "signupTitle": "Crea tu cuenta", "signupSubtitle": "Comienza tu prueba gratuita. Sin tarjeta.",
+    "signupButton": "Crear cuenta", "haveAccount": "¿Ya tienes una cuenta?",
+    "forgot": "¿Olvidaste tu contraseña?", "forgotTitle": "Restablece tu contraseña",
+    "forgotSubtitle": "Te enviaremos un enlace para elegir una nueva contraseña.", "forgotButton": "Enviar enlace",
+    "forgotSent": "Si ese correo tiene una cuenta, el enlace está en camino.",
+    "resetTitle": "Elige una nueva contraseña", "resetButton": "Actualizar contraseña", "backToLogin": "Volver a iniciar sesión",
+    "checkEmailTitle": "Revisa tu correo", "checkEmailBody": "Enviamos un enlace de confirmación. Ábrelo para terminar de crear tu cuenta.",
+    "invalidCredentials": "Correo o contraseña incorrectos.", "emailTaken": "No se pudo crear la cuenta con esos datos.",
+    "passwordHint": "Al menos 8 caracteres.", "invalidEmail": "Ingresa un correo válido.",
+    "passwordShort": "La contraseña debe tener al menos 8 caracteres.", "nameRequired": "Ingresa tu nombre.",
+    "callbackError": "El enlace no es válido o ya venció. Solicita uno nuevo."
+  },
+  "onboarding": {
+    "title": "Configura tu empresa", "subtitle": "Esto crea tu espacio privado. Serás el propietario.",
+    "companyName": "Nombre de la empresa", "companyPlaceholder": "p. ej. Sunshine Cleaning LLC", "button": "Crear espacio de trabajo",
+    "nameInvalid": "El nombre debe tener entre 2 y 120 caracteres."
+  },
+  "dashboard": {
+    "title": "Panel", "welcome": "Bienvenido, {name}",
+    "trial": "Prueba gratuita · {days, plural, =0 {termina hoy} one {queda # día} other {quedan # días}}",
+    "emptyTitle": "Aún no hay datos",
+    "emptyBody": "Tus cifras aparecerán aquí cuando agregues clientes, trabajos y facturas. Nada en esta página son datos de ejemplo.",
+    "cards": {
+      "revenueMonth": "Ingresos del mes", "revenueYtd": "Ingresos del año", "outstanding": "Facturas pendientes",
+      "collected": "Pagos cobrados", "customers": "Clientes activos", "activeJobs": "Trabajos activos",
+      "upcoming": "Próximos trabajos", "expenses": "Gastos del mes", "profit": "Utilidad estimada"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "business": { "title": "Perfil del negocio", "name": "Nombre de la empresa", "phone": "Teléfono", "email": "Correo del negocio", "address": "Dirección", "taxId": "ID fiscal", "readOnly": "Solo el propietario o un administrador puede editar estos datos." },
+    "regional": { "title": "Moneda y región", "currency": "Moneda", "timezone": "Zona horaria", "dateFormat": "Formato de fecha", "docLocale": "Idioma de documentos", "docLocaleHelp": "Idioma de cotizaciones, facturas y correos." },
+    "preferences": { "title": "Mis preferencias", "languageHelp": "Idioma de la interfaz para tu cuenta.", "themeHelp": "Se aplica al instante y se recuerda en todos tus dispositivos." }
+  },
+  "errors": { "title": "Algo salió mal", "retry": "Reintentar", "notFound": "Página no encontrada", "home": "Ir al panel" }
+}
