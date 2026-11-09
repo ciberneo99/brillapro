@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
@@ -15,6 +16,7 @@ export default async function SettingsPage() {
   const ctx = await requireContext();
   if (!can(ctx.role, "settings:read")) redirect("/dashboard");
   const t = await getTranslations("settings");
+  const ts = await getTranslations("services");
   const theme = await getTheme();
   const s = ctx.settings;
 
@@ -33,6 +35,15 @@ export default async function SettingsPage() {
         enabled={ctx.tenant.accepts_requests}
         canEdit={can(ctx.role, "settings:write")}
       />
+
+      {can(ctx.role, "services:read") && (
+        <Link href="/settings/services" className="block">
+          <Card accent="teal" className="transition-shadow hover:shadow-md">
+            <h2 className="text-base font-semibold">{ts("title")}</h2>
+            <p className="mt-1 text-sm text-muted">{ts("intro")}</p>
+          </Card>
+        </Link>
+      )}
 
       <Card>
         <BusinessSettingsForm

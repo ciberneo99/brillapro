@@ -37,3 +37,18 @@ describe("permissions", () => {
     expect(isRole("owner")).toBe(true);
   });
 });
+
+describe("services and checklists permissions", () => {
+  it("everyone who works jobs can read; managers edit checklists; only owner/admin edit services", () => {
+    for (const r of ["owner", "admin", "manager", "office_staff", "employee"] as const) {
+      expect(can(r, "services:read")).toBe(true);
+      expect(can(r, "checklists:read")).toBe(true);
+    }
+    expect(can("manager", "checklists:write")).toBe(true);
+    expect(can("office_staff", "checklists:write")).toBe(false);
+    expect(can("employee", "checklists:write")).toBe(false);
+    expect(can("manager", "services:write")).toBe(false);
+    expect(can("accountant", "services:read")).toBe(false);
+    expect(can("accountant", "checklists:read")).toBe(false);
+  });
+});
