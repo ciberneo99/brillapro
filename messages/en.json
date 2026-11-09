@@ -1,0 +1,55 @@
+{
+  "brand": { "name": "BrillaPro", "tagline": "Run your cleaning business from one place." },
+  "common": {
+    "save": "Save changes", "saved": "Changes saved", "cancel": "Cancel", "loading": "Loading…",
+    "email": "Email", "password": "Password", "fullName": "Full name", "language": "Language",
+    "theme": "Theme", "light": "Light", "dark": "Dark", "system": "System default",
+    "english": "English", "spanish": "Español", "signOut": "Sign out", "settings": "Settings",
+    "genericError": "Something went wrong. Please try again.", "notAllowed": "You do not have permission to do that.",
+    "comingSoon": "Coming soon", "comingSoonBody": "This module will be available in a later phase of BrillaPro.",
+    "openMenu": "Open menu", "closeMenu": "Close menu"
+  },
+  "nav": {
+    "dashboard": "Dashboard", "customers": "Customers", "jobs": "Jobs", "quotes": "Quotes",
+    "invoices": "Invoices", "expenses": "Expenses", "calendar": "Calendar", "inventory": "Inventory",
+    "notebook": "My Notebook", "reports": "Reports", "venmo": "Venmo Report Generator", "settings": "Settings"
+  },
+  "auth": {
+    "loginTitle": "Welcome back", "loginSubtitle": "Sign in to your BrillaPro workspace.",
+    "loginButton": "Sign in", "noAccount": "New to BrillaPro?", "createAccount": "Create an account",
+    "signupTitle": "Create your account", "signupSubtitle": "Start your free trial. No card required.",
+    "signupButton": "Create account", "haveAccount": "Already have an account?",
+    "forgot": "Forgot your password?", "forgotTitle": "Reset your password",
+    "forgotSubtitle": "We will email you a link to choose a new password.", "forgotButton": "Send reset link",
+    "forgotSent": "If that email has an account, a reset link is on its way.",
+    "resetTitle": "Choose a new password", "resetButton": "Update password", "backToLogin": "Back to sign in",
+    "checkEmailTitle": "Check your email", "checkEmailBody": "We sent a confirmation link. Open it to finish creating your account.",
+    "invalidCredentials": "Incorrect email or password.", "emailTaken": "Could not create the account with those details.",
+    "passwordHint": "At least 8 characters.", "invalidEmail": "Enter a valid email address.",
+    "passwordShort": "Password must be at least 8 characters.", "nameRequired": "Enter your name.",
+    "callbackError": "That link is invalid or has expired. Request a new one."
+  },
+  "onboarding": {
+    "title": "Set up your company", "subtitle": "This creates your private workspace. You will be the owner.",
+    "companyName": "Company name", "companyPlaceholder": "e.g. Sunshine Cleaning LLC", "button": "Create workspace",
+    "nameInvalid": "Company name must be 2–120 characters."
+  },
+  "dashboard": {
+    "title": "Dashboard", "welcome": "Welcome, {name}",
+    "trial": "Free trial · {days, plural, =0 {ends today} one {# day left} other {# days left}}",
+    "emptyTitle": "No data yet",
+    "emptyBody": "Your numbers will appear here as you add customers, jobs and invoices. Nothing on this page is sample data.",
+    "cards": {
+      "revenueMonth": "Revenue this month", "revenueYtd": "Revenue year to date", "outstanding": "Outstanding invoices",
+      "collected": "Payments collected", "customers": "Active customers", "activeJobs": "Active jobs",
+      "upcoming": "Upcoming jobs", "expenses": "Monthly expenses", "profit": "Estimated profit"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "business": { "title": "Business profile", "name": "Company name", "phone": "Phone", "email": "Business email", "address": "Address", "taxId": "Tax ID", "readOnly": "Only the owner or an admin can edit these details." },
+    "regional": { "title": "Currency & regional", "currency": "Currency", "timezone": "Time zone", "dateFormat": "Date format", "docLocale": "Document language", "docLocaleHelp": "Language used for quotes, invoices and emails." },
+    "preferences": { "title": "My preferences", "languageHelp": "Interface language for your account.", "themeHelp": "Applies instantly and is remembered on every device." }
+  },
+  "errors": { "title": "Something went wrong", "retry": "Try again", "notFound": "Page not found", "home": "Go to dashboard" }
+}
