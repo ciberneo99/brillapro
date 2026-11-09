@@ -120,7 +120,13 @@ body {
 }
 .bp-datepicker .rdp-weekday { color: var(--fg-muted); font-weight: 500; }
 .bp-datepicker .rdp-chevron { fill: var(--fg-muted); }
-.bp-datepicker .rdp-day_button:hover { background: var(--surface-2); }
+/* clear hover so you can see which day you are about to pick */
+.bp-datepicker .rdp-day:not(.rdp-selected):not(.rdp-disabled) .rdp-day_button:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
 .bp-datepicker .rdp-today:not(.rdp-selected) { color: var(--primary); font-weight: 700; }
 .bp-datepicker .rdp-selected .rdp-day_button { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
 .bp-datepicker .rdp-dropdown_root select,

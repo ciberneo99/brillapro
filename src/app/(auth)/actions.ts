@@ -5,13 +5,14 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { publicEnv } from "@/lib/env";
+import { isValidEmail } from "@/lib/email";
 import { resolveLocale } from "@/i18n/request";
 import { LOCALE_COOKIE, THEME_COOKIE } from "@/i18n/config";
 
 /** `error` is a key under the "auth" / "onboarding" message namespaces; `done` shows a success state. */
 export type FormState = { error?: string; done?: boolean } | undefined;
 
-const email = z.string().trim().toLowerCase().pipe(z.email());
+const email = z.string().trim().toLowerCase().refine(isValidEmail);
 const password = z.string().min(8).max(72);
 
 export async function login(_: FormState, formData: FormData): Promise<FormState> {

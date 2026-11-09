@@ -29,7 +29,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
   return (
     <div className="max-w-3xl space-y-5">
       <h1 className="text-2xl font-semibold tracking-tight">{t("editTitle")}</h1>
-      <CustomerForm action={updateCustomer.bind(null, id)} values={values} cancelHref={`/customers/${id}`} submitLabel={(await getTranslations("common"))("save")} />
+      <CustomerForm dateFormat={ctx.settings.date_format} action={updateCustomer.bind(null, id)} values={values} cancelHref={`/customers/${id}`} submitLabel={(await getTranslations("common"))("save")} />
     </div>
   );
 }

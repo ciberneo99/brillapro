@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select, Card } from "@/components/ui";
 import { PhoneInput } from "@/components/ui/PhoneInput";
+import { EmailInput } from "@/components/ui/EmailInput";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 import type { RequestState } from "@/app/request/[slug]/actions";
 
@@ -39,7 +40,7 @@ export function RequestForm({
 
   const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal" } = {}) => (
     <Field label={label} htmlFor={name}>
-      {type === "tel" ? <PhoneInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
+      {type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
     </Field>
   );
 

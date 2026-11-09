@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
+import { isValidEmail } from "@/lib/email";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
@@ -15,7 +16,7 @@ const optional = (max: number) =>
 const schema = z.object({
   name: z.string().trim().min(2).max(120),
   phone: z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v))),
-  email: z.union([z.literal(""), z.email()]).transform((v) => (v === "" ? null : v)),
+  email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
   address: optional(300),
   tax_id: optional(60),
   currency: z.string().trim().toUpperCase().length(3),

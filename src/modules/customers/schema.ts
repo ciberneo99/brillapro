@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
+import { isValidEmail } from "@/lib/email";
 
 export const STATUSES = ["prospect", "active", "inactive", "archived"] as const;
 export type CustomerStatus = (typeof STATUSES)[number];
@@ -66,7 +67,7 @@ const fields = z
     first_name: textOrEmpty(100),
     last_name: textOrEmpty(100),
     company_name: textOrEmpty(150),
-    email: z.union([z.literal(""), z.string().trim().toLowerCase().pipe(z.email().max(254))]).transform((v) => (v === "" ? null : v)),
+    email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
     phone,
     secondary_phone: phone,
     service_address: text(300),

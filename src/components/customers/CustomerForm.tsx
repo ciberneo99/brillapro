@@ -6,14 +6,16 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select, Card } from "@/components/ui";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { EmailInput } from "@/components/ui/EmailInput";
 import type { CustomerFormState } from "@/modules/customers/actions";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
 export type CustomerFormValues = Record<string, string>;
 
 export function CustomerForm({
-  action, values = {}, cancelHref, submitLabel,
+  action, values = {}, cancelHref, submitLabel, dateFormat,
 }: {
+  dateFormat?: string;
   action: (state: CustomerFormState, formData: FormData) => Promise<CustomerFormState>;
   values?: CustomerFormValues;
   cancelHref: string;
@@ -29,8 +31,10 @@ export function CustomerForm({
     <Field label={label} hint={opts.hint} htmlFor={name}>
       {opts.type === "tel" ? (
         <PhoneInput id={name} name={name} defaultValue={v(name)} invalid={bad(name)} />
+      ) : opts.type === "email" ? (
+        <EmailInput id={name} name={name} defaultValue={v(name)} invalid={bad(name)} />
       ) : opts.type === "date" ? (
-        <DatePicker id={name} name={name} defaultValue={v(name)} />
+        <DatePicker id={name} name={name} defaultValue={v(name)} dateFormat={dateFormat} />
       ) : (
         <Input
           id={name} name={name} type={opts.type ?? "text"} defaultValue={v(name)} autoComplete={opts.autoComplete} inputMode={opts.inputMode}

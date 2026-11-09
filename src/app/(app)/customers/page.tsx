@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Plus } from "lucide-react";
 import { Button, Card, Input, Select, cn } from "@/components/ui";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { can } from "@/lib/permissions";
+import { formatTimestamp } from "@/lib/dates";
 import { requireContext } from "@/lib/session";
 import { listCustomers, SORTS } from "@/modules/customers/queries";
 import { displayName, STATUSES } from "@/modules/customers/schema";
@@ -18,7 +19,6 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   if (!can(ctx.role, "customers:read")) redirect("/dashboard");
   const sp = await searchParams;
   const t = await getTranslations("customers");
-  const format = await getFormatter();
   const { rows, total, page, pages, sort, status, q } = await listCustomers({ ...sp, page: Number(sp.page) || 1 });
 
   const href = (over: Partial<SP>) => {
@@ -99,7 +99,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                     <p className="text-xs">{c.phone ?? ""}</p>
                   </td>
                   <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
-                  <td className="hidden px-4 py-3 text-muted sm:table-cell">{format.dateTime(new Date(c.created_at), { dateStyle: "medium" })}</td>
+                  <td className="hidden px-4 py-3 text-muted sm:table-cell">{formatTimestamp(c.created_at, ctx.settings.date_format, ctx.settings.timezone)}</td>
                 </tr>
               ))}
             </tbody>

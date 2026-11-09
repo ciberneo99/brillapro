@@ -6,6 +6,7 @@ import { enUS, es } from "react-day-picker/locale";
 import { CalendarDays, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/components/ui";
+import { formatLocalDate } from "@/lib/dates";
 
 const toDate = (iso: string): Date | undefined => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
@@ -14,8 +15,8 @@ const toDate = (iso: string): Date | undefined => {
 const toIso = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-/** Larger, themed calendar picker. Weeks start on Monday. Submits an ISO date (yyyy-mm-dd) under `name`. */
-export function DatePicker({ id, name, defaultValue = "" }: { id: string; name: string; defaultValue?: string }) {
+/** Larger, themed calendar picker. Weeks start on Sunday (US). Submits an ISO date (yyyy-mm-dd) under `name`. */
+export function DatePicker({ id, name, defaultValue = "", dateFormat }: { id: string; name: string; defaultValue?: string; dateFormat?: string }) {
   const locale = useLocale();
   const t = useTranslations("common");
   const [selected, setSelected] = useState<Date | undefined>(() => toDate(defaultValue));
@@ -42,7 +43,7 @@ export function DatePicker({ id, name, defaultValue = "" }: { id: string; name: 
     };
   }, [open]);
 
-  const label = selected ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(selected) : t("pickDate");
+  const label = selected ? formatLocalDate(selected, dateFormat) : dateFormat ?? t("pickDate");
 
   return (
     <div ref={root} className="relative">
@@ -76,7 +77,7 @@ export function DatePicker({ id, name, defaultValue = "" }: { id: string; name: 
               trigger.current?.focus();
             }}
             defaultMonth={selected}
-            weekStartsOn={1}
+            weekStartsOn={0}
             locale={locale === "es" ? es : enUS}
             captionLayout="dropdown"
             startMonth={new Date(1990, 0)}

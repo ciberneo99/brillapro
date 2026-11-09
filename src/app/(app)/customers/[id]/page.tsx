@@ -5,6 +5,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { Alert, Button, Card } from "@/components/ui";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { can } from "@/lib/permissions";
+import { formatDateOnly, formatTimestamp } from "@/lib/dates";
 import { requireContext } from "@/lib/session";
 import { changeCustomerStatus, convertCustomer } from "@/modules/customers/actions";
 import { getCustomer, getCustomerEvents, hasDuplicateEmail } from "@/modules/customers/queries";
@@ -24,7 +25,7 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
     hasDuplicateEmail(id, c.email),
   ]);
   const canWrite = can(ctx.role, "customers:write");
-  const date = (d: string) => format.dateTime(new Date(d), { dateStyle: "medium" });
+  const date = (d: string) => formatTimestamp(d, ctx.settings.date_format, ctx.settings.timezone);
   const dash = t("profile.none");
 
   const rows: [string, string | null][] = [
@@ -61,7 +62,7 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
           {c.company_name && displayName(c) !== c.company_name && <p className="mt-1 text-sm text-muted">{c.company_name}</p>}
           <p className="mt-1 text-xs text-muted">
             {t("profile.source." + c.source)} · {t("profile.addedOn", { date: date(c.created_at) })}
-            {c.customer_since && ` · ${t("profile.since", { date: date(c.customer_since) })}`}
+            {c.customer_since && ` · ${t("profile.since", { date: formatDateOnly(c.customer_since, ctx.settings.date_format) })}`}
           </p>
         </div>
 

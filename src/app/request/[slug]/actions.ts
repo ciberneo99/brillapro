@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
+import { isValidEmail } from "@/lib/email";
 import { createClient } from "@/lib/supabase/server";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
@@ -35,7 +36,7 @@ export async function submitQuoteRequest(slug: string, _: RequestState, formData
   if (!parsed.success) return { error: "invalid" };
   const d = parsed.data;
   if (!d.email && !d.phone) return { error: "contactNeeded" };
-  if (d.email && !z.email().safeParse(d.email).success) return { error: "invalid" };
+  if (d.email && !isValidEmail(d.email)) return { error: "invalid" };
   if (`${d.first_name}${d.last_name}${d.company_name}`.trim() === "") return { error: "invalid" };
 
   const supabase = await createClient(); // no session: runs as the anonymous role
