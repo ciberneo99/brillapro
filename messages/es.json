@@ -537,7 +537,13 @@
     "recurring": "Trabajos recurrentes",
     "employeeNote": "Ves los trabajos que te asignaron.",
     "addJob": "Agregar un trabajo este día",
-    "more": "+{count} más"
+    "more": "+{count} más",
+    "day": "Día",
+    "agenda": "Agenda",
+    "allDay": "Todo el día",
+    "jobsCount": "{count, plural, =0 {Sin trabajos} one {# trabajo} other {# trabajos}}",
+    "noJobsDay": "No hay trabajos este día.",
+    "noJobsAgenda": "No hay trabajos en los próximos {days} días."
   },
   "recurring": {
     "title": "Trabajos recurrentes",

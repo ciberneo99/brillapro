@@ -537,7 +537,13 @@
     "recurring": "Recurring jobs",
     "employeeNote": "You see the jobs assigned to you.",
     "addJob": "Add a job on this day",
-    "more": "+{count} more"
+    "more": "+{count} more",
+    "day": "Day",
+    "agenda": "Agenda",
+    "allDay": "All day",
+    "jobsCount": "{count, plural, =0 {No jobs} one {# job} other {# jobs}}",
+    "noJobsDay": "No jobs on this day.",
+    "noJobsAgenda": "No jobs in the next {days} days."
   },
   "recurring": {
     "title": "Recurring jobs",
