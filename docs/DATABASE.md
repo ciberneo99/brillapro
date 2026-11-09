@@ -1,6 +1,6 @@
 # BrillaPro — Modelo de datos
 
-Implementado hasta la Fase 3 (migraciones `db/migrations/0001`–`0008`). Lo de fases posteriores es propuesta.
+Implementado hasta la Fase 4 (migraciones `db/migrations/0001`–`0011`). Lo de fases posteriores es propuesta.
 
 ## Tablas por fase
 - F1: tenants, profiles, memberships, audit_log, tenant_settings, plans, subscriptions (trial por defecto)
@@ -17,6 +17,12 @@ Implementado hasta la Fase 3 (migraciones `db/migrations/0001`–`0008`). Lo de 
 - quotes (numeración por empresa vía tenant_counters), quote_options (Good/Better/Best), quote_lines (conceptos extra sobre toda opción).
 - Totales en SQL: función `quote_totals` y vista `quotes_overview`; estados vía `set_quote_status`, copia vía `duplicate_quote`. Solo los borradores se editan.
 - tenant_settings: quote_prefix, quote_valid_days, default_tax_rate, quote_terms.
+
+## Fase 4 (implementado)
+- employees (con `user_id` opcional para vincular una cuenta), jobs (con snapshot de cliente/dirección y `quote_id` único por cotización), job_assignments, job_checklist_items (copia de la plantilla activa al crear el trabajo).
+- Los empleados con cuenta solo ven los trabajos que tienen asignados (`is_assigned`); cambian estado y marcan tareas mediante funciones (`set_job_status`, `set_job_item_done`).
+- recurring_schedules + recurring_schedule_employees; `generate_recurring_jobs` crea trabajos de forma idempotente (índice único por programación y fecha) y solo bajo demanda; `end_recurring`.
+- time_entries (una entrada abierta por empleado; `clock_in`/`clock_out`/`add_time_entry`), user_notes (privadas del autor), tasks (`set_task_done`).
 
 ## Convenciones
 UUID, `created_at`, `updated_at`, `archived_at`; `tenant_id NOT NULL` con FK; dinero en centavos enteros;

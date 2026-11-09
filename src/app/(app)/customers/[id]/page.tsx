@@ -13,6 +13,8 @@ import { centsToInput, displayName } from "@/modules/customers/schema";
 import { QuoteStatusBadge } from "@/components/quotes/QuoteStatusBadge";
 import { formatMoney, quoteNumber } from "@/lib/money";
 import { getQuoteSettings, listQuotes } from "@/modules/quotes/queries";
+import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
+import { listJobs } from "@/modules/jobs/queries";
 
 export default async function CustomerProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,6 +24,7 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
   if (!c) notFound();
   const canQuotes = can(ctx.role, "quotes:read");
   const customerQuotes = canQuotes ? (await listQuotes({ customerId: id })).rows : [];
+  const customerJobs = can(ctx.role, "jobs:read") ? (await listJobs({ customerId: id })).rows : [];
   const quotePrefix = canQuotes ? (await getQuoteSettings(ctx.tenant.id)).quote_prefix : "Q-";
 
   const [t, format, events, duplicate] = await Promise.all([
@@ -149,8 +152,30 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
         </Card>
       )}
 
+      {can(ctx.role, "jobs:read") && (
+        <Card accent="blue" className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold">{t("profile.related.jobs")}</h2>
+            {can(ctx.role, "jobs:write") && <Link href={`/jobs/new?customer=${id}`} className="text-sm text-primary hover:underline">{t("profile.newJob")}</Link>}
+          </div>
+          {customerJobs.length === 0 ? (
+            <p className="text-xs text-muted">{t("profile.noJobs")}</p>
+          ) : (
+            <ul className="divide-y divide-line text-sm">
+              {customerJobs.map((j) => (
+                <li key={j.id} className="flex items-center justify-between gap-3 py-2">
+                  <Link href={`/jobs/${j.id}`} className="font-medium text-primary hover:underline">{j.title}</Link>
+                  <span className="text-muted">{formatDateOnly(j.scheduled_date, ctx.settings.date_format)}</span>
+                  <JobStatusBadge status={j.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {([["jobs", 4], ["invoices", 5], ["payments", 5]] as const).map(([key, phase]) => (
+        {([["invoices", 5], ["payments", 5]] as const).map(([key, phase]) => (
           <Card key={key}>
             <h2 className="text-sm font-semibold">{t(`profile.related.${key}`)}</h2>
             <p className="mt-1 text-xs text-muted">{t("profile.related.availableIn", { phase })}</p>
