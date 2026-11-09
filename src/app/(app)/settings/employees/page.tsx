@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Alert, Button, Card, Field, Input } from "@/components/ui";
+import { Alert, Button, Card, Field, Input, Select } from "@/components/ui";
 import { EmailInput } from "@/components/ui/EmailInput";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
@@ -9,6 +9,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { addEmployee, setEmployeeActive, updateEmployee } from "@/modules/employees/actions";
 import { listEmployees } from "@/modules/employees/module";
+import { listMembers } from "@/modules/notebook/queries";
 
 export const metadata = { title: "Employees" };
 
@@ -18,7 +19,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
   const sp = await searchParams;
   const t = await getTranslations("employees");
   const canEdit = can(ctx.role, "employees:write");
-  const list = await listEmployees();
+  const [list, members] = await Promise.all([listEmployees(), listMembers(ctx.tenant.id)]);
 
   return (
     <div className="space-y-6">
@@ -37,6 +38,14 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
             <Field label={t("name")} htmlFor={`n-${e.id}`}><SmartTextInput id={`n-${e.id}`} name="full_name" mode="name" defaultValue={e.full_name} required maxLength={120} /></Field>
             <Field label={t("phone")} htmlFor={`p-${e.id}`}><PhoneInput id={`p-${e.id}`} name="phone" defaultValue={e.phone ?? ""} /></Field>
             <Field label={t("email")} htmlFor={`e-${e.id}`}><EmailInput id={`e-${e.id}`} name="email" defaultValue={e.email ?? ""} /></Field>
+            <div className="sm:col-span-3">
+              <Field label={t("login")} htmlFor={`u-${e.id}`} hint={t("loginHelp")}>
+                <Select id={`u-${e.id}`} name="user_id" defaultValue={e.user_id ?? ""} disabled={!canEdit}>
+                  <option value="">{t("noLogin")}</option>
+                  {members.map((m) => <option key={m.user_id} value={m.user_id}>{m.label}</option>)}
+                </Select>
+              </Field>
+            </div>
             <div className="sm:col-span-3"><Input name="notes" defaultValue={e.notes ?? ""} maxLength={1000} placeholder={t("notes")} aria-label={t("notes")} disabled={!canEdit} /></div>
             {canEdit && <div className="sm:col-span-3"><Button type="submit" variant="secondary">{t("save")}</Button></div>}
           </form>

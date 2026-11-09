@@ -11,7 +11,11 @@ export default async function NotebookPage() {
   const ctx = await requireContext();
   if (!can(ctx.role, "notebook:read")) redirect("/dashboard");
   const t = await getTranslations("notebook");
-  const later = [t("timeTracking"), t("notes"), t("tasks")];
+  const tools = [
+    { href: "/notebook/time", title: t("timeTracking"), body: t("timeBody"), accent: "blue" as const },
+    { href: "/notebook/notes", title: t("notes"), body: t("notesBody"), accent: "amber" as const },
+    { href: "/notebook/tasks", title: t("tasks"), body: t("tasksBody"), accent: "violet" as const },
+  ];
 
   return (
     <div className="space-y-6">
@@ -28,11 +32,13 @@ export default async function NotebookPage() {
             </Card>
           </Link>
         )}
-        {later.map((name) => (
-          <Card key={name} className="opacity-70">
-            <h2 className="font-semibold">{name}</h2>
-            <p className="mt-1 text-sm text-muted">{t("availableIn", { phase: 4 })}</p>
-          </Card>
+        {tools.map((x) => (
+          <Link key={x.href} href={x.href} className="block">
+            <Card accent={x.accent} className="h-full transition-shadow hover:shadow-md">
+              <h2 className="font-semibold">{x.title}</h2>
+              <p className="mt-1 text-sm text-muted">{x.body}</p>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>
