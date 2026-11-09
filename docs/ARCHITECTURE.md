@@ -7,7 +7,7 @@
 | UI | Tailwind CSS + tokens CSS + componentes propios sobre Radix |
 | BD | PostgreSQL en Supabase, con RLS |
 | Auth | Supabase Auth (JWT integrado con RLS) |
-| ORM / migraciones | Drizzle ORM, migraciones SQL versionadas |
+| Acceso a datos / migraciones | `supabase-js` bajo el JWT del usuario (RLS), migraciones SQL escritas a mano en `db/migrations` aplicadas con `npm run db:migrate` (Drizzle se descartó en la Fase 1) |
 | Archivos | Supabase Storage, rutas `tenant_id/...` con políticas |
 | PDF | @react-pdf/renderer (servidor) |
 | Email | Resend (Fase 8) |
@@ -20,7 +20,7 @@
 Nota: antes de la Fase 1 se lee la documentación de la versión instalada de Next.js y se fijan versiones exactas.
 
 ## Capas
-UI (RSC) → Server Actions / Route Handlers (sesión, permisos, Zod) → Servicios de dominio → Repositorios (Drizzle + RLS).
+UI (RSC) → Server Actions / Route Handlers (sesión, permisos, Zod) → Servicios de dominio → Consultas (supabase-js + RLS, funciones SQL SECURITY DEFINER para operaciones atómicas).
 Un módulo solo usa el `service` de otro, nunca sus tablas.
 
 ## Áreas

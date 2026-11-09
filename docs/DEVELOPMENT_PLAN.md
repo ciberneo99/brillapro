@@ -1,6 +1,6 @@
 # BrillaPro — Plan de desarrollo
 
-Decisiones aprobadas en Fase 0: stack Next.js + Supabase + Drizzle; web pública con `/en` y `/es`;
+Decisiones aprobadas en Fase 0: stack Next.js + Supabase (sin Drizzle: SQL manual + supabase-js); web pública con `/en` y `/es`;
 cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` local autorizado; USD inicial con impuestos configurables.
 
 | Fase | Contenido | Depende de |
@@ -8,7 +8,7 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 | 0 | Arquitectura y planificación — **completada** (v0.0) | — |
 | 1 | Fundación: auth, tenants, roles, RLS, i18n, temas, sidebar, dashboard base — **completada** (`v0.1-fase1`) | 0 |
 | 2 | Clientes, prospectos, formulario público, conversión — **completada** (`v0.2-fase2`), con 2 pendientes | 1 |
-| 3 | Servicios, checklists, cotizaciones, PDF, Good/Better/Best | 2 |
+| 3 | Servicios, checklists, cotizaciones, PDF, Good/Better/Best — **completada** (`v0.3-fase3`); convertir cotización → trabajo pasa al inicio de la Fase 4 | 2 |
 | 4 | Trabajos, empleados, calendario, recurrencia, horas, notas, tareas | 3 |
 | 5 | Facturas, pagos, gastos, PDF, envío manual | 4 |
 | 6 | Inventario y reportes operativos | 5 |

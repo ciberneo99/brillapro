@@ -10,6 +10,9 @@ import { requireContext } from "@/lib/session";
 import { changeCustomerStatus, convertCustomer } from "@/modules/customers/actions";
 import { getCustomer, getCustomerEvents, hasDuplicateEmail } from "@/modules/customers/queries";
 import { centsToInput, displayName } from "@/modules/customers/schema";
+import { QuoteStatusBadge } from "@/components/quotes/QuoteStatusBadge";
+import { formatMoney, quoteNumber } from "@/lib/money";
+import { getQuoteSettings, listQuotes } from "@/modules/quotes/queries";
 
 export default async function CustomerProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,6 +20,9 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
   if (!can(ctx.role, "customers:read")) redirect("/dashboard");
   const c = await getCustomer(id);
   if (!c) notFound();
+  const canQuotes = can(ctx.role, "quotes:read");
+  const customerQuotes = canQuotes ? (await listQuotes({ customerId: id })).rows : [];
+  const quotePrefix = canQuotes ? (await getQuoteSettings(ctx.tenant.id)).quote_prefix : "Q-";
 
   const [t, format, events, duplicate] = await Promise.all([
     getTranslations("customers"),
@@ -119,8 +125,32 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
         </Card>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {([["quotes", 3], ["jobs", 4], ["invoices", 5], ["payments", 5]] as const).map(([key, phase]) => (
+      {can(ctx.role, "quotes:read") && (
+        <Card accent="violet" className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold">{t("profile.related.quotes")}</h2>
+            {can(ctx.role, "quotes:write") && (
+              <Link href={`/quotes/new?customer=${id}`} className="text-sm text-primary hover:underline">{t("profile.newQuote")}</Link>
+            )}
+          </div>
+          {customerQuotes.length === 0 ? (
+            <p className="text-xs text-muted">{t("profile.noQuotes")}</p>
+          ) : (
+            <ul className="divide-y divide-line text-sm">
+              {customerQuotes.map((q) => (
+                <li key={q.id} className="flex items-center justify-between gap-3 py-2">
+                  <Link href={`/quotes/${q.id}`} className="font-medium text-primary hover:underline">{quoteNumber(quotePrefix, q.number)}</Link>
+                  <QuoteStatusBadge status={q.display_status} />
+                  <span>{q.total_cents == null ? "—" : formatMoney(q.total_cents, ctx.settings.currency)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {([["jobs", 4], ["invoices", 5], ["payments", 5]] as const).map(([key, phase]) => (
           <Card key={key}>
             <h2 className="text-sm font-semibold">{t(`profile.related.${key}`)}</h2>
             <p className="mt-1 text-xs text-muted">{t("profile.related.availableIn", { phase })}</p>
