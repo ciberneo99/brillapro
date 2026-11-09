@@ -14,6 +14,8 @@ import {
   acceptQuote, addLine, addOption, declineQuote, deleteLine, deleteOption, deleteQuote, duplicateQuote, updateLine, updateOption, updateQuote,
 } from "@/modules/quotes/actions";
 import { getQuote, getQuoteSettings } from "@/modules/quotes/queries";
+import { createJobFromQuote } from "@/modules/jobs/actions";
+import { jobForQuote } from "@/modules/jobs/queries";
 import { listServiceTypes } from "@/modules/services/queries";
 
 export const metadata = { title: "Quote" };
@@ -40,6 +42,7 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
   const name = `${q.customer.first_name} ${q.customer.last_name}`.trim() || q.customer.company_name;
   const services = (await listServiceTypes()).filter((s) => s.is_active || s.id === q.service_type_id);
   const totalOf = (oid: string | null) => q.totals.find((x) => x.option_id === oid);
+  const existingJob = q.status === "accepted" && can(ctx.role, "jobs:read") ? await jobForQuote(id) : null;
   const headline = totalOf(q.selected_option_id ?? q.options[0]?.id ?? null);
 
   const mailto = q.customer.email
@@ -74,6 +77,20 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
       {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
       {q.display_status === "expired" && <Alert>{t("expiredNote")}</Alert>}
       {!draft && <p className="text-sm text-muted">{t("lockedNote")}</p>}
+
+      {q.status === "accepted" && can(ctx.role, "jobs:write") && (
+        <Card accent="green" className="space-y-2">
+          <h2 className="text-base font-semibold">{t("jobSection")}</h2>
+          {existingJob ? (
+            <Link href={`/jobs/${existingJob}`} className="text-sm text-primary hover:underline">{t("viewJob")}</Link>
+          ) : (
+            <form action={createJobFromQuote.bind(null, id)} className="flex flex-wrap items-end gap-2">
+              <Field label={t("jobDate")} htmlFor="scheduled_date"><DatePicker id="scheduled_date" name="scheduled_date" dateFormat={fmt} /></Field>
+              <Button type="submit">{t("createJob")}</Button>
+            </form>
+          )}
+        </Card>
+      )}
 
       {/* Send / respond */}
       {canWrite && (q.status === "draft" || q.status === "sent") && (

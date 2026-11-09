@@ -17,6 +17,7 @@ export default async function SettingsPage() {
   if (!can(ctx.role, "settings:read")) redirect("/dashboard");
   const t = await getTranslations("settings");
   const ts = await getTranslations("services");
+  const te = await getTranslations("employees");
   const theme = await getTheme();
   const s = ctx.settings;
 
@@ -41,6 +42,15 @@ export default async function SettingsPage() {
           <Card accent="teal" className="transition-shadow hover:shadow-md">
             <h2 className="text-base font-semibold">{ts("title")}</h2>
             <p className="mt-1 text-sm text-muted">{ts("intro")}</p>
+          </Card>
+        </Link>
+      )}
+
+      {can(ctx.role, "employees:read") && (
+        <Link href="/settings/employees" className="block">
+          <Card accent="violet" className="transition-shadow hover:shadow-md">
+            <h2 className="text-base font-semibold">{te("title")}</h2>
+            <p className="mt-1 text-sm text-muted">{te("intro")}</p>
           </Card>
         </Link>
       )}
