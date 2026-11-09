@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-day-picker/style.css";
 
 /* ───────── Design tokens (single source of truth for color) ─────────
    Components use only the semantic utilities below (bg-surface, text-fg, border-line…).
@@ -103,3 +104,25 @@ body {
 }
 
 :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* ───────── Date picker (react-day-picker) themed with our tokens; bigger touch targets ───────── */
+.bp-datepicker {
+  --rdp-accent-color: var(--primary);
+  --rdp-accent-background-color: var(--primary-soft);
+  --rdp-day-height: 46px;
+  --rdp-day-width: 46px;
+  --rdp-day_button-height: 44px;
+  --rdp-day_button-width: 44px;
+  --rdp-nav_button-height: 2.5rem;
+  --rdp-nav_button-width: 2.5rem;
+  font-size: 0.95rem;
+  color: var(--fg);
+}
+.bp-datepicker .rdp-weekday { color: var(--fg-muted); font-weight: 500; }
+.bp-datepicker .rdp-chevron { fill: var(--fg-muted); }
+.bp-datepicker .rdp-day_button:hover { background: var(--surface-2); }
+.bp-datepicker .rdp-today:not(.rdp-selected) { color: var(--primary); font-weight: 700; }
+.bp-datepicker .rdp-selected .rdp-day_button { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.bp-datepicker .rdp-dropdown_root select,
+.bp-datepicker select { background: var(--surface); color: var(--fg); }
+.bp-datepicker .rdp-dropdown_root { border-radius: 0.5rem; }

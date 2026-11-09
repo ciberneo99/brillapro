@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizePhone } from "@/lib/phone";
 
 export const STATUSES = ["prospect", "active", "inactive", "archived"] as const;
 export type CustomerStatus = (typeof STATUSES)[number];
@@ -8,6 +9,8 @@ export const FREQUENCIES = ["one_time", "weekly", "biweekly", "monthly", "every_
 /** "" → null so empty inputs clear the column instead of storing blank strings. */
 const text = (max: number) =>
   z.string().trim().max(max).transform((v) => (v === "" ? null : v));
+/** Phone numbers are stored as xxx-xxx-xxxx when they are complete US numbers. */
+const phone = z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v)));
 const textOrEmpty = (max: number) => z.string().trim().max(max);
 const intOrNull = (min: number, max: number) =>
   z.string().trim().transform((v, ctx) => {
@@ -64,8 +67,8 @@ const fields = z
     last_name: textOrEmpty(100),
     company_name: textOrEmpty(150),
     email: z.union([z.literal(""), z.string().trim().toLowerCase().pipe(z.email().max(254))]).transform((v) => (v === "" ? null : v)),
-    phone: text(40),
-    secondary_phone: text(40),
+    phone,
+    secondary_phone: phone,
     service_address: text(300),
     billing_address: text(300),
     city: text(100),

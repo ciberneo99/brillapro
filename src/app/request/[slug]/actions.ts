@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { normalizePhone } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
@@ -11,7 +12,7 @@ const t = (max: number) => z.string().trim().max(max).optional().default("");
 const schema = z.object({
   first_name: t(100), last_name: t(100), company_name: t(150),
   email: z.string().trim().toLowerCase().max(254).optional().default(""),
-  phone: t(40), service_address: t(300), city: t(100), state: t(60), zip_code: t(20),
+  phone: z.string().trim().max(40).optional().default("").transform(normalizePhone), service_address: t(300), city: t(100), state: t(60), zip_code: t(20),
   property_type: z.enum(PROPERTY_TYPES).or(z.literal("")).optional().default(""),
   square_footage: z.string().trim().regex(/^\d{0,7}$/).optional().default(""),
   bedrooms: z.string().trim().regex(/^\d{0,2}$/).optional().default(""),

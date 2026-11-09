@@ -25,7 +25,9 @@
     "comingSoon": "Coming soon",
     "comingSoonBody": "This module will be available in a later phase of BrillaPro.",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "pickDate": "Pick a date",
+    "clearDate": "Clear date"
   },
   "nav": {
     "dashboard": "Dashboard",

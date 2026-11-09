@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select, Card } from "@/components/ui";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { DatePicker } from "@/components/ui/DatePicker";
 import type { CustomerFormState } from "@/modules/customers/actions";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
@@ -25,10 +27,16 @@ export function CustomerForm({
 
   const input = (name: string, label: string, opts: { type?: string; autoComplete?: string; inputMode?: "numeric" | "decimal"; hint?: string } = {}) => (
     <Field label={label} hint={opts.hint} htmlFor={name}>
-      <Input
-        id={name} name={name} type={opts.type ?? "text"} defaultValue={v(name)} autoComplete={opts.autoComplete} inputMode={opts.inputMode}
-        aria-invalid={bad(name) || undefined} className={bad(name) ? "border-danger" : undefined}
-      />
+      {opts.type === "tel" ? (
+        <PhoneInput id={name} name={name} defaultValue={v(name)} invalid={bad(name)} />
+      ) : opts.type === "date" ? (
+        <DatePicker id={name} name={name} defaultValue={v(name)} />
+      ) : (
+        <Input
+          id={name} name={name} type={opts.type ?? "text"} defaultValue={v(name)} autoComplete={opts.autoComplete} inputMode={opts.inputMode}
+          aria-invalid={bad(name) || undefined} className={bad(name) ? "border-danger" : undefined}
+        />
+      )}
     </Field>
   );
   const area = (name: string, label: string) => (

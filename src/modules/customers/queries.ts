@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { formatPhone } from "@/lib/phone";
 import { STATUSES, type CustomerRow, type CustomerStatus } from "./schema";
 
 export const PAGE_SIZE = 25;
@@ -30,9 +31,13 @@ export async function listCustomers(params: ListParams) {
   query = status ? query.eq("status", status) : query.neq("status", "archived");
   if (q) {
     const like = `%${q}%`;
-    query = query.or(
-      ["first_name", "last_name", "company_name", "email", "phone", "secondary_phone"].map((c) => `${c}.ilike.${like}`).join(","),
-    );
+    const conditions = ["first_name", "last_name", "company_name", "email", "phone", "secondary_phone"].map((c) => `${c}.ilike.${like}`);
+    // Phones are stored as xxx-xxx-xxxx, so a search typed as digits must match that format too.
+    if (/^[ds().+-]{3,}$/.test(q)) {
+      const formatted = `%${formatPhone(q)}%`;
+      conditions.push(`phone.ilike.${formatted}`, `secondary_phone.ilike.${formatted}`);
+    }
+    query = query.or(conditions.join(","));
   }
   query =
     sort === "name"
