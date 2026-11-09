@@ -4,7 +4,9 @@
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "dotenv/config";
+import { config } from "dotenv";
+
+config({ path: ".env.local", quiet: true });
 
 const url = process.env.DATABASE_URL;
 const d = url ? describe : describe.skip;
