@@ -114,4 +114,36 @@ d("expenses", () => {
       await tx`rollback to savepoint e`;
     });
   });
+
+  it("receipts bucket is private and files are scoped to the company folder", async () => {
+    const b = (await sql`select public, file_size_limit from storage.buckets where id = 'receipts'`)[0];
+    expect(b.public).toBe(false);
+    expect(Number(b.file_size_limit)).toBe(5242880);
+    const path = `${tA}/${randomUUID()}/r.pdf`;
+    // Everything runs in one rolled-back transaction (the storage tables forbid direct deletes), switching the signed-in user in place.
+    await as(id.office, async (tx) => {
+      const who = (uid: string) => tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: uid, role: "authenticated" })}, true)`;
+      const put = (p: string) => tx`insert into storage.objects (bucket_id, name, owner_id) values ('receipts', ${p}, ${id.office})`;
+      const visible = async () => (await tx`select 1 from storage.objects where bucket_id = 'receipts' and name = ${path}`).length;
+      await put(path);
+      expect(await visible()).toBe(1);
+      await who(id.accountant);
+      expect(await visible()).toBe(1); // accountant can read
+      await tx`savepoint a`;
+      await expect(put(`${tA}/${randomUUID()}/x.pdf`)).rejects.toThrow(); // but not upload
+      await tx`rollback to savepoint a`;
+      for (const u of [id.ownerB, id.manager, id.employee]) {
+        await who(u);
+        expect(await visible()).toBe(0);
+      }
+      await who(id.ownerB);
+      await tx`savepoint b`;
+      await expect(put(`${tA}/${randomUUID()}/evil.pdf`)).rejects.toThrow(); // another company's folder
+      await tx`rollback to savepoint b`;
+      await who(id.office);
+      await tx`savepoint c`;
+      await expect(put("not-a-uuid/x.pdf")).rejects.toThrow();
+      await tx`rollback to savepoint c`;
+    });
+  });
 });
