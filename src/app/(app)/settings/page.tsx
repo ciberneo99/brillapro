@@ -18,6 +18,7 @@ export default async function SettingsPage() {
   const t = await getTranslations("settings");
   const ts = await getTranslations("services");
   const te = await getTranslations("employees");
+  const ti = await getTranslations("invoices");
   const theme = await getTheme();
   const s = ctx.settings;
 
@@ -42,6 +43,15 @@ export default async function SettingsPage() {
           <Card accent="teal" className="transition-shadow hover:shadow-md">
             <h2 className="text-base font-semibold">{ts("title")}</h2>
             <p className="mt-1 text-sm text-muted">{ts("intro")}</p>
+          </Card>
+        </Link>
+      )}
+
+      {can(ctx.role, "invoices:read") && (
+        <Link href="/settings/invoices" className="block">
+          <Card accent="green" className="transition-shadow hover:shadow-md">
+            <h2 className="text-base font-semibold">{ti("settings")}</h2>
+            <p className="mt-1 text-sm text-muted">{ti("settingsIntro")}</p>
           </Card>
         </Link>
       )}

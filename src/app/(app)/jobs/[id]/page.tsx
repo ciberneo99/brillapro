@@ -12,6 +12,8 @@ import { formatTime } from "@/lib/time";
 import { listEmployees } from "@/modules/employees/module";
 import { assignEmployee, loadChecklist, setJobStatus, toggleJobItem, unassignEmployee, updateJob } from "@/modules/jobs/actions";
 import { getJob } from "@/modules/jobs/queries";
+import { createInvoiceFromJob } from "@/modules/invoices/actions";
+import { invoiceForJob } from "@/modules/invoices/queries";
 import { listServiceTypes } from "@/modules/services/queries";
 
 export const metadata = { title: "Job" };
@@ -30,6 +32,8 @@ export default async function JobPage({ params, searchParams }: { params: Promis
   const m = (c: number) => formatMoney(c, ctx.settings.currency);
   const [employees, services] = staff ? await Promise.all([listEmployees({ activeOnly: true }), listServiceTypes()]) : [[], []];
   const free = employees.filter((e) => !job.assigned.some((a) => a.employee_id === e.id));
+  const canInvoice = can(ctx.role, "invoices:write");
+  const existingInvoice = can(ctx.role, "invoices:read") ? await invoiceForJob(id) : null;
   const done = job.items.filter((i) => i.is_done).length;
   const groups: { category: string; items: typeof job.items }[] = [];
   for (const it of job.items) {
@@ -66,8 +70,19 @@ export default async function JobPage({ params, searchParams }: { params: Promis
         </div>
       </div>
 
-      {sp.error && <Alert>{t(sp.error === "status" ? "statusError" : "invalid")}</Alert>}
+      {sp.error && <Alert>{t(sp.error === "status" ? "statusError" : sp.error === "invoice" ? "invoiceError" : "invalid")}</Alert>}
       {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+
+      {(existingInvoice || (canInvoice && job.status !== "cancelled")) && (
+        <Card accent="green" className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-base font-semibold">{t("invoiceSection")}</h2>
+          {existingInvoice ? (
+            <Link href={`/invoices/${existingInvoice}`} className="text-sm text-primary hover:underline">{t("viewInvoice")}</Link>
+          ) : (
+            <form action={createInvoiceFromJob.bind(null, id)}><Button type="submit">{t("createInvoice")}</Button></form>
+          )}
+        </Card>
+      )}
 
       {/* Checklist */}
       <Card accent="teal" className="space-y-4">
