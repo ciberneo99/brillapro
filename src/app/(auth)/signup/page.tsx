@@ -17,7 +17,7 @@ export default async function SignupPage() {
         submitLabel={t("signupButton")}
         doneMessage={`${t("checkEmailTitle")}. ${t("checkEmailBody")}`}
         fields={[
-          { name: "full_name", type: "text", label: tc("fullName"), autoComplete: "name" },
+          { name: "full_name", type: "text", label: tc("fullName"), autoComplete: "name", smart: "name" },
           { name: "email", type: "email", label: tc("email"), autoComplete: "email" },
           { name: "password", type: "password", label: tc("password"), autoComplete: "new-password", hint: t("passwordHint") },
         ]}

@@ -3,9 +3,12 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input } from "@/components/ui";
+import { EmailInput } from "@/components/ui/EmailInput";
+import { SmartTextInput } from "@/components/ui/SmartTextInput";
+import type { TextMode } from "@/lib/text";
 import type { FormState } from "@/app/(auth)/actions";
 
-type FieldDef = { name: string; type: string; label: string; autoComplete?: string; hint?: string; placeholder?: string };
+type FieldDef = { name: string; type: string; label: string; autoComplete?: string; hint?: string; placeholder?: string; smart?: TextMode };
 
 /** Generic server-action form: fields, submit button, translated error / success states. */
 export function AuthForm({
@@ -36,7 +39,13 @@ export function AuthForm({
       {state?.error && <Alert>{errorText(state.error)}</Alert>}
       {fields.map((f) => (
         <Field key={f.name} label={f.label} hint={f.hint} htmlFor={f.name}>
-          <Input id={f.name} name={f.name} type={f.type} autoComplete={f.autoComplete} placeholder={f.placeholder} required />
+          {f.smart ? (
+            <SmartTextInput id={f.name} name={f.name} mode={f.smart} autoComplete={f.autoComplete} required />
+          ) : f.type === "email" ? (
+            <EmailInput id={f.name} name={f.name} autoComplete={f.autoComplete} required />
+          ) : (
+            <Input id={f.name} name={f.name} type={f.type} autoComplete={f.autoComplete} placeholder={f.placeholder} required />
+          )}
         </Field>
       ))}
       <Button type="submit" disabled={pending} className="w-full">

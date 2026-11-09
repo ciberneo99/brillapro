@@ -1,55 +1,286 @@
 {
-  "brand": { "name": "BrillaPro", "tagline": "Run your cleaning business from one place." },
+  "brand": {
+    "name": "BrillaPro",
+    "tagline": "Run your cleaning business from one place."
+  },
   "common": {
-    "save": "Save changes", "saved": "Changes saved", "cancel": "Cancel", "loading": "Loading…",
-    "email": "Email", "password": "Password", "fullName": "Full name", "language": "Language",
-    "theme": "Theme", "light": "Light", "dark": "Dark", "system": "System default",
-    "english": "English", "spanish": "Español", "signOut": "Sign out", "settings": "Settings",
-    "genericError": "Something went wrong. Please try again.", "notAllowed": "You do not have permission to do that.",
-    "comingSoon": "Coming soon", "comingSoonBody": "This module will be available in a later phase of BrillaPro.",
-    "openMenu": "Open menu", "closeMenu": "Close menu"
+    "save": "Save changes",
+    "saved": "Changes saved",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System default",
+    "english": "English",
+    "spanish": "Español",
+    "signOut": "Sign out",
+    "settings": "Settings",
+    "genericError": "Something went wrong. Please try again.",
+    "notAllowed": "You do not have permission to do that.",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "This module will be available in a later phase of BrillaPro.",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "pickDate": "Pick a date",
+    "clearDate": "Clear date"
   },
   "nav": {
-    "dashboard": "Dashboard", "customers": "Customers", "jobs": "Jobs", "quotes": "Quotes",
-    "invoices": "Invoices", "expenses": "Expenses", "calendar": "Calendar", "inventory": "Inventory",
-    "notebook": "My Notebook", "reports": "Reports", "venmo": "Venmo Report Generator", "settings": "Settings"
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "jobs": "Jobs",
+    "quotes": "Quotes",
+    "invoices": "Invoices",
+    "expenses": "Expenses",
+    "calendar": "Calendar",
+    "inventory": "Inventory",
+    "notebook": "My Notebook",
+    "reports": "Reports",
+    "venmo": "Venmo Report Generator",
+    "settings": "Settings"
   },
   "auth": {
-    "loginTitle": "Welcome back", "loginSubtitle": "Sign in to your BrillaPro workspace.",
-    "loginButton": "Sign in", "noAccount": "New to BrillaPro?", "createAccount": "Create an account",
-    "signupTitle": "Create your account", "signupSubtitle": "Start your free trial. No card required.",
-    "signupButton": "Create account", "haveAccount": "Already have an account?",
-    "forgot": "Forgot your password?", "forgotTitle": "Reset your password",
-    "forgotSubtitle": "We will email you a link to choose a new password.", "forgotButton": "Send reset link",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your BrillaPro workspace.",
+    "loginButton": "Sign in",
+    "noAccount": "New to BrillaPro?",
+    "createAccount": "Create an account",
+    "signupTitle": "Create your account",
+    "signupSubtitle": "Start your free trial. No card required.",
+    "signupButton": "Create account",
+    "haveAccount": "Already have an account?",
+    "forgot": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "We will email you a link to choose a new password.",
+    "forgotButton": "Send reset link",
     "forgotSent": "If that email has an account, a reset link is on its way.",
-    "resetTitle": "Choose a new password", "resetButton": "Update password", "backToLogin": "Back to sign in",
-    "checkEmailTitle": "Check your email", "checkEmailBody": "We sent a confirmation link. Open it to finish creating your account.",
-    "invalidCredentials": "Incorrect email or password.", "emailTaken": "Could not create the account with those details.",
-    "passwordHint": "At least 8 characters.", "invalidEmail": "Enter a valid email address.",
-    "passwordShort": "Password must be at least 8 characters.", "nameRequired": "Enter your name.",
+    "resetTitle": "Choose a new password",
+    "resetButton": "Update password",
+    "backToLogin": "Back to sign in",
+    "checkEmailTitle": "Check your email",
+    "checkEmailBody": "We sent a confirmation link. Open it to finish creating your account.",
+    "invalidCredentials": "Incorrect email or password.",
+    "emailTaken": "Could not create the account with those details.",
+    "passwordHint": "At least 8 characters.",
+    "invalidEmail": "Enter a valid email address.",
+    "passwordShort": "Password must be at least 8 characters.",
+    "nameRequired": "Enter your name.",
     "callbackError": "That link is invalid or has expired. Request a new one."
   },
   "onboarding": {
-    "title": "Set up your company", "subtitle": "This creates your private workspace. You will be the owner.",
-    "companyName": "Company name", "companyPlaceholder": "e.g. Sunshine Cleaning LLC", "button": "Create workspace",
+    "title": "Set up your company",
+    "subtitle": "This creates your private workspace. You will be the owner.",
+    "companyName": "Company name",
+    "companyPlaceholder": "e.g. Sunshine Cleaning LLC",
+    "button": "Create workspace",
     "nameInvalid": "Company name must be 2–120 characters."
   },
   "dashboard": {
-    "title": "Dashboard", "welcome": "Welcome, {name}",
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}",
     "trial": "Free trial · {days, plural, =0 {ends today} one {# day left} other {# days left}}",
     "emptyTitle": "No data yet",
     "emptyBody": "Your numbers will appear here as you add customers, jobs and invoices. Nothing on this page is sample data.",
     "cards": {
-      "revenueMonth": "Revenue this month", "revenueYtd": "Revenue year to date", "outstanding": "Outstanding invoices",
-      "collected": "Payments collected", "customers": "Active customers", "activeJobs": "Active jobs",
-      "upcoming": "Upcoming jobs", "expenses": "Monthly expenses", "profit": "Estimated profit"
+      "revenueMonth": "Revenue this month",
+      "revenueYtd": "Revenue year to date",
+      "outstanding": "Outstanding invoices",
+      "collected": "Payments collected",
+      "customers": "Active customers",
+      "activeJobs": "Active jobs",
+      "upcoming": "Upcoming jobs",
+      "expenses": "Monthly expenses",
+      "profit": "Estimated profit"
     }
   },
   "settings": {
     "title": "Settings",
-    "business": { "title": "Business profile", "name": "Company name", "phone": "Phone", "email": "Business email", "address": "Address", "taxId": "Tax ID", "readOnly": "Only the owner or an admin can edit these details." },
-    "regional": { "title": "Currency & regional", "currency": "Currency", "timezone": "Time zone", "dateFormat": "Date format", "docLocale": "Document language", "docLocaleHelp": "Language used for quotes, invoices and emails." },
-    "preferences": { "title": "My preferences", "languageHelp": "Interface language for your account.", "themeHelp": "Applies instantly and is remembered on every device." }
+    "business": {
+      "title": "Business profile",
+      "name": "Company name",
+      "phone": "Phone",
+      "email": "Business email",
+      "address": "Address",
+      "taxId": "Tax ID",
+      "readOnly": "Only the owner or an admin can edit these details."
+    },
+    "regional": {
+      "title": "Currency & regional",
+      "currency": "Currency",
+      "timezone": "Time zone",
+      "dateFormat": "Date format",
+      "docLocale": "Document language",
+      "docLocaleHelp": "Language used for quotes, invoices and emails."
+    },
+    "preferences": {
+      "title": "My preferences",
+      "languageHelp": "Interface language for your account.",
+      "themeHelp": "Applies instantly and is remembered on every device."
+    }
   },
-  "errors": { "title": "Something went wrong", "retry": "Try again", "notFound": "Page not found", "home": "Go to dashboard" }
+  "errors": {
+    "title": "Something went wrong",
+    "retry": "Try again",
+    "notFound": "Page not found",
+    "home": "Go to dashboard"
+  },
+  "customers": {
+    "title": "Customers",
+    "new": "New customer",
+    "newTitle": "New customer",
+    "editTitle": "Edit customer",
+    "search": "Search",
+    "searchPlaceholder": "Name, company, email or phone",
+    "all": "All",
+    "sortLabel": "Sort by",
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "name": "Name A–Z"
+    },
+    "status": {
+      "prospect": "Prospect",
+      "active": "Active customer",
+      "inactive": "Inactive customer",
+      "archived": "Archived"
+    },
+    "count": "{count, plural, =0 {No customers} one {# customer} other {# customers}}",
+    "page": "Page {page} of {pages}",
+    "prev": "Previous",
+    "next": "Next",
+    "columns": {
+      "name": "Name",
+      "contact": "Contact",
+      "status": "Status",
+      "added": "Added"
+    },
+    "empty": {
+      "title": "No customers yet",
+      "body": "Add your first customer, or share your quote-request link to receive prospects.",
+      "filtered": "No customers match your search."
+    },
+    "unnamed": "Unnamed",
+    "form": {
+      "contact": "Contact",
+      "property": "Property",
+      "service": "Service",
+      "notesSection": "Notes",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "companyName": "Company name",
+      "email": "Email",
+      "phone": "Phone",
+      "secondaryPhone": "Secondary phone",
+      "serviceAddress": "Service address",
+      "billingAddress": "Billing address",
+      "city": "City",
+      "state": "State",
+      "zipCode": "ZIP code",
+      "propertyType": "Property type",
+      "squareFootage": "Square footage",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "frequency": "Cleaning frequency",
+      "preferredService": "Preferred service",
+      "estimatedPrice": "Estimated price",
+      "accessInstructions": "Access instructions",
+      "pets": "Pets",
+      "specialInstructions": "Special instructions",
+      "notes": "Internal notes",
+      "customerSince": "Customer since",
+      "status": "Status",
+      "choose": "Select…",
+      "create": "Create customer",
+      "identityHint": "Enter a name or a company name."
+    },
+    "propertyType": {
+      "house": "House",
+      "apartment": "Apartment",
+      "condo": "Condo",
+      "townhouse": "Townhouse",
+      "office": "Office",
+      "commercial": "Commercial space",
+      "other": "Other"
+    },
+    "frequency": {
+      "one_time": "One time",
+      "weekly": "Weekly",
+      "biweekly": "Every two weeks",
+      "monthly": "Monthly",
+      "every_four_weeks": "Every four weeks",
+      "custom": "Custom"
+    },
+    "profile": {
+      "back": "Back to customers",
+      "edit": "Edit",
+      "convert": "Convert to customer",
+      "archive": "Archive",
+      "restore": "Restore",
+      "markInactive": "Mark inactive",
+      "reactivate": "Reactivate",
+      "details": "Details",
+      "history": "History",
+      "source": {
+        "manual": "Added manually",
+        "web_form": "Quote request form"
+      },
+      "addedOn": "Added {date}",
+      "since": "Customer since {date}",
+      "none": "—",
+      "duplicate": "Another customer in your account uses this email.",
+      "converted": "Converted to an active customer.",
+      "events": {
+        "created": "Record created",
+        "updated": "Details updated",
+        "converted": "Converted from prospect to active customer",
+        "status_changed": "Status changed from {from} to {to}"
+      },
+      "related": {
+        "quotes": "Quotes",
+        "jobs": "Jobs",
+        "invoices": "Invoices",
+        "payments": "Payments",
+        "availableIn": "Available in phase {phase}"
+      }
+    },
+    "errors": {
+      "identityRequired": "Enter a name or a company name.",
+      "invalid": "Some fields are not valid. Check them and try again.",
+      "saveFailed": "The customer could not be saved.",
+      "notFound": "Customer not found."
+    }
+  },
+  "request": {
+    "title": "Request a cleaning quote",
+    "subtitle": "Tell {company} about your space and we will get back to you.",
+    "contact": "How can we reach you?",
+    "property": "About the property",
+    "message": "Anything else we should know?",
+    "submit": "Send request",
+    "contactNeeded": "Please provide an email or a phone number.",
+    "successTitle": "Request sent",
+    "successBody": "Thank you. {company} will contact you soon with your quote.",
+    "unavailable": "This request form is not available right now.",
+    "tooMany": "Too many requests right now. Please try again in a few minutes.",
+    "tooFast": "Please take a moment to review the form and send it again.",
+    "invalid": "Please check your details and try again.",
+    "failed": "We could not send your request. Please try again."
+  },
+  "requests": {
+    "title": "Quote request link",
+    "body": "Share this link on your website, social media or messages. Each request becomes a Prospect in Customers.",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "enabled": "Accepting requests",
+    "disabled": "Requests are turned off",
+    "turnOff": "Turn off",
+    "turnOn": "Turn on"
+  },
+  "dashboardExtra": {
+    "customersCount": "{count, plural, =0 {No active customers yet} one {# active customer} other {# active customers}}"
+  }
 }

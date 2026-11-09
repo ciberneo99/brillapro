@@ -3,6 +3,9 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select } from "@/components/ui";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { EmailInput } from "@/components/ui/EmailInput";
+import { SmartTextInput } from "@/components/ui/SmartTextInput";
 import { saveBusinessSettings } from "@/app/(app)/settings/actions";
 
 type Values = {
@@ -33,11 +36,11 @@ export function BusinessSettingsForm({ values, canEdit }: { values: Values; canE
         <h2 className="text-base font-semibold">{t("business.title")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t("business.name")} htmlFor="name"><Input id="name" name="name" defaultValue={values.name} required /></Field>
-          <Field label={t("business.phone")} htmlFor="phone"><Input id="phone" name="phone" type="tel" defaultValue={values.phone} /></Field>
-          <Field label={t("business.email")} htmlFor="email"><Input id="email" name="email" type="email" defaultValue={values.email} /></Field>
+          <Field label={t("business.phone")} htmlFor="phone"><PhoneInput id="phone" name="phone" defaultValue={values.phone} /></Field>
+          <Field label={t("business.email")} htmlFor="email"><EmailInput id="email" name="email" defaultValue={values.email} /></Field>
           <Field label={t("business.taxId")} htmlFor="tax_id"><Input id="tax_id" name="tax_id" defaultValue={values.tax_id} /></Field>
           <div className="sm:col-span-2">
-            <Field label={t("business.address")} htmlFor="address"><Input id="address" name="address" defaultValue={values.address} /></Field>
+            <Field label={t("business.address")} htmlFor="address"><SmartTextInput id="address" name="address" mode="address" defaultValue={values.address} maxLength={300} /></Field>
           </div>
         </div>
 

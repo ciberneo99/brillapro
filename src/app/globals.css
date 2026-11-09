@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-day-picker/style.css";
 
 /* ───────── Design tokens (single source of truth for color) ─────────
    Components use only the semantic utilities below (bg-surface, text-fg, border-line…).
@@ -24,6 +25,7 @@
   --danger-soft: #fde4e1;
   --ring: #0b7a75;
   --shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.08);
+  --c-blue: #2563eb; --c-green: #16a34a; --c-violet: #7c3aed; --c-amber: #d97706; --c-rose: #e11d48; --c-teal: #0d9488;
 }
 
 [data-theme="dark"] {
@@ -46,6 +48,7 @@
   --danger-soft: #3d1717;
   --ring: #2dd4bf;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
 }
 
 /* System default: follow the device with no JavaScript, so there is no flash. */
@@ -70,6 +73,7 @@
     --danger-soft: #3d1717;
     --ring: #2dd4bf;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
   }
 }
 [data-theme="system"] { color-scheme: light dark; }
@@ -103,3 +107,37 @@ body {
 }
 
 :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* ───────── Date picker (react-day-picker) themed with our tokens; bigger touch targets ───────── */
+.bp-datepicker {
+  --rdp-accent-color: var(--primary);
+  --rdp-accent-background-color: var(--primary-soft);
+  --rdp-day-height: 46px;
+  --rdp-day-width: 46px;
+  --rdp-day_button-height: 44px;
+  --rdp-day_button-width: 44px;
+  --rdp-nav_button-height: 2.5rem;
+  --rdp-nav_button-width: 2.5rem;
+  font-size: 0.95rem;
+  color: var(--fg);
+}
+.bp-datepicker .rdp-weekday { color: var(--fg-muted); font-weight: 500; }
+.bp-datepicker .rdp-chevron { fill: var(--fg-muted); }
+/* clear hover so you can see which day you are about to pick */
+.bp-datepicker .rdp-day:not(.rdp-selected):not(.rdp-disabled) .rdp-day_button:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+.bp-datepicker .rdp-today:not(.rdp-selected) { color: var(--primary); font-weight: 700; }
+.bp-datepicker .rdp-selected .rdp-day_button { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.bp-datepicker .rdp-dropdown_root select,
+.bp-datepicker select { background: var(--surface); color: var(--fg); }
+.bp-datepicker .rdp-dropdown_root { border-radius: 0.5rem; }
+
+/* ───────── Accent cards: tinted outline + colored top bar. Color is decoration; text keeps normal contrast. ───────── */
+.accent-card {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-top: 4px solid var(--accent);
+}

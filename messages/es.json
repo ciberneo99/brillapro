@@ -1,55 +1,286 @@
 {
-  "brand": { "name": "BrillaPro", "tagline": "Administra tu negocio de limpieza desde un solo lugar." },
+  "brand": {
+    "name": "BrillaPro",
+    "tagline": "Administra tu negocio de limpieza desde un solo lugar."
+  },
   "common": {
-    "save": "Guardar cambios", "saved": "Cambios guardados", "cancel": "Cancelar", "loading": "Cargando…",
-    "email": "Correo electrónico", "password": "Contraseña", "fullName": "Nombre completo", "language": "Idioma",
-    "theme": "Tema", "light": "Claro", "dark": "Oscuro", "system": "Predeterminado del sistema",
-    "english": "English", "spanish": "Español", "signOut": "Cerrar sesión", "settings": "Configuración",
-    "genericError": "Algo salió mal. Inténtalo de nuevo.", "notAllowed": "No tienes permiso para hacer eso.",
-    "comingSoon": "Próximamente", "comingSoonBody": "Este módulo estará disponible en una fase posterior de BrillaPro.",
-    "openMenu": "Abrir menú", "closeMenu": "Cerrar menú"
+    "save": "Guardar cambios",
+    "saved": "Cambios guardados",
+    "cancel": "Cancelar",
+    "loading": "Cargando…",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "fullName": "Nombre completo",
+    "language": "Idioma",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Predeterminado del sistema",
+    "english": "English",
+    "spanish": "Español",
+    "signOut": "Cerrar sesión",
+    "settings": "Configuración",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "notAllowed": "No tienes permiso para hacer eso.",
+    "comingSoon": "Próximamente",
+    "comingSoonBody": "Este módulo estará disponible en una fase posterior de BrillaPro.",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "pickDate": "Elegir fecha",
+    "clearDate": "Borrar fecha"
   },
   "nav": {
-    "dashboard": "Panel", "customers": "Clientes", "jobs": "Trabajos", "quotes": "Cotizaciones",
-    "invoices": "Facturas", "expenses": "Gastos", "calendar": "Calendario", "inventory": "Inventario",
-    "notebook": "Mi Cuaderno", "reports": "Reportes", "venmo": "Generador de reportes Venmo", "settings": "Configuración"
+    "dashboard": "Panel",
+    "customers": "Clientes",
+    "jobs": "Trabajos",
+    "quotes": "Cotizaciones",
+    "invoices": "Facturas",
+    "expenses": "Gastos",
+    "calendar": "Calendario",
+    "inventory": "Inventario",
+    "notebook": "Mi Cuaderno",
+    "reports": "Reportes",
+    "venmo": "Generador de reportes Venmo",
+    "settings": "Configuración"
   },
   "auth": {
-    "loginTitle": "Bienvenido de nuevo", "loginSubtitle": "Inicia sesión en tu espacio de BrillaPro.",
-    "loginButton": "Iniciar sesión", "noAccount": "¿Nuevo en BrillaPro?", "createAccount": "Crear una cuenta",
-    "signupTitle": "Crea tu cuenta", "signupSubtitle": "Comienza tu prueba gratuita. Sin tarjeta.",
-    "signupButton": "Crear cuenta", "haveAccount": "¿Ya tienes una cuenta?",
-    "forgot": "¿Olvidaste tu contraseña?", "forgotTitle": "Restablece tu contraseña",
-    "forgotSubtitle": "Te enviaremos un enlace para elegir una nueva contraseña.", "forgotButton": "Enviar enlace",
+    "loginTitle": "Bienvenido de nuevo",
+    "loginSubtitle": "Inicia sesión en tu espacio de BrillaPro.",
+    "loginButton": "Iniciar sesión",
+    "noAccount": "¿Nuevo en BrillaPro?",
+    "createAccount": "Crear una cuenta",
+    "signupTitle": "Crea tu cuenta",
+    "signupSubtitle": "Comienza tu prueba gratuita. Sin tarjeta.",
+    "signupButton": "Crear cuenta",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "forgotTitle": "Restablece tu contraseña",
+    "forgotSubtitle": "Te enviaremos un enlace para elegir una nueva contraseña.",
+    "forgotButton": "Enviar enlace",
     "forgotSent": "Si ese correo tiene una cuenta, el enlace está en camino.",
-    "resetTitle": "Elige una nueva contraseña", "resetButton": "Actualizar contraseña", "backToLogin": "Volver a iniciar sesión",
-    "checkEmailTitle": "Revisa tu correo", "checkEmailBody": "Enviamos un enlace de confirmación. Ábrelo para terminar de crear tu cuenta.",
-    "invalidCredentials": "Correo o contraseña incorrectos.", "emailTaken": "No se pudo crear la cuenta con esos datos.",
-    "passwordHint": "Al menos 8 caracteres.", "invalidEmail": "Ingresa un correo válido.",
-    "passwordShort": "La contraseña debe tener al menos 8 caracteres.", "nameRequired": "Ingresa tu nombre.",
+    "resetTitle": "Elige una nueva contraseña",
+    "resetButton": "Actualizar contraseña",
+    "backToLogin": "Volver a iniciar sesión",
+    "checkEmailTitle": "Revisa tu correo",
+    "checkEmailBody": "Enviamos un enlace de confirmación. Ábrelo para terminar de crear tu cuenta.",
+    "invalidCredentials": "Correo o contraseña incorrectos.",
+    "emailTaken": "No se pudo crear la cuenta con esos datos.",
+    "passwordHint": "Al menos 8 caracteres.",
+    "invalidEmail": "Ingresa un correo válido.",
+    "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
+    "nameRequired": "Ingresa tu nombre.",
     "callbackError": "El enlace no es válido o ya venció. Solicita uno nuevo."
   },
   "onboarding": {
-    "title": "Configura tu empresa", "subtitle": "Esto crea tu espacio privado. Serás el propietario.",
-    "companyName": "Nombre de la empresa", "companyPlaceholder": "p. ej. Sunshine Cleaning LLC", "button": "Crear espacio de trabajo",
+    "title": "Configura tu empresa",
+    "subtitle": "Esto crea tu espacio privado. Serás el propietario.",
+    "companyName": "Nombre de la empresa",
+    "companyPlaceholder": "p. ej. Sunshine Cleaning LLC",
+    "button": "Crear espacio de trabajo",
     "nameInvalid": "El nombre debe tener entre 2 y 120 caracteres."
   },
   "dashboard": {
-    "title": "Panel", "welcome": "Bienvenido, {name}",
+    "title": "Panel",
+    "welcome": "Bienvenido, {name}",
     "trial": "Prueba gratuita · {days, plural, =0 {termina hoy} one {queda # día} other {quedan # días}}",
     "emptyTitle": "Aún no hay datos",
     "emptyBody": "Tus cifras aparecerán aquí cuando agregues clientes, trabajos y facturas. Nada en esta página son datos de ejemplo.",
     "cards": {
-      "revenueMonth": "Ingresos del mes", "revenueYtd": "Ingresos del año", "outstanding": "Facturas pendientes",
-      "collected": "Pagos cobrados", "customers": "Clientes activos", "activeJobs": "Trabajos activos",
-      "upcoming": "Próximos trabajos", "expenses": "Gastos del mes", "profit": "Utilidad estimada"
+      "revenueMonth": "Ingresos del mes",
+      "revenueYtd": "Ingresos del año",
+      "outstanding": "Facturas pendientes",
+      "collected": "Pagos cobrados",
+      "customers": "Clientes activos",
+      "activeJobs": "Trabajos activos",
+      "upcoming": "Próximos trabajos",
+      "expenses": "Gastos del mes",
+      "profit": "Utilidad estimada"
     }
   },
   "settings": {
     "title": "Configuración",
-    "business": { "title": "Perfil del negocio", "name": "Nombre de la empresa", "phone": "Teléfono", "email": "Correo del negocio", "address": "Dirección", "taxId": "ID fiscal", "readOnly": "Solo el propietario o un administrador puede editar estos datos." },
-    "regional": { "title": "Moneda y región", "currency": "Moneda", "timezone": "Zona horaria", "dateFormat": "Formato de fecha", "docLocale": "Idioma de documentos", "docLocaleHelp": "Idioma de cotizaciones, facturas y correos." },
-    "preferences": { "title": "Mis preferencias", "languageHelp": "Idioma de la interfaz para tu cuenta.", "themeHelp": "Se aplica al instante y se recuerda en todos tus dispositivos." }
+    "business": {
+      "title": "Perfil del negocio",
+      "name": "Nombre de la empresa",
+      "phone": "Teléfono",
+      "email": "Correo del negocio",
+      "address": "Dirección",
+      "taxId": "ID fiscal",
+      "readOnly": "Solo el propietario o un administrador puede editar estos datos."
+    },
+    "regional": {
+      "title": "Moneda y región",
+      "currency": "Moneda",
+      "timezone": "Zona horaria",
+      "dateFormat": "Formato de fecha",
+      "docLocale": "Idioma de documentos",
+      "docLocaleHelp": "Idioma de cotizaciones, facturas y correos."
+    },
+    "preferences": {
+      "title": "Mis preferencias",
+      "languageHelp": "Idioma de la interfaz para tu cuenta.",
+      "themeHelp": "Se aplica al instante y se recuerda en todos tus dispositivos."
+    }
   },
-  "errors": { "title": "Algo salió mal", "retry": "Reintentar", "notFound": "Página no encontrada", "home": "Ir al panel" }
+  "errors": {
+    "title": "Algo salió mal",
+    "retry": "Reintentar",
+    "notFound": "Página no encontrada",
+    "home": "Ir al panel"
+  },
+  "customers": {
+    "title": "Clientes",
+    "new": "Nuevo cliente",
+    "newTitle": "Nuevo cliente",
+    "editTitle": "Editar cliente",
+    "search": "Buscar",
+    "searchPlaceholder": "Nombre, empresa, correo o teléfono",
+    "all": "Todos",
+    "sortLabel": "Ordenar por",
+    "sort": {
+      "newest": "Más recientes primero",
+      "oldest": "Más antiguos primero",
+      "name": "Nombre A–Z"
+    },
+    "status": {
+      "prospect": "Prospecto",
+      "active": "Cliente activo",
+      "inactive": "Cliente inactivo",
+      "archived": "Archivado"
+    },
+    "count": "{count, plural, =0 {Sin clientes} one {# cliente} other {# clientes}}",
+    "page": "Página {page} de {pages}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "columns": {
+      "name": "Nombre",
+      "contact": "Contacto",
+      "status": "Estado",
+      "added": "Agregado"
+    },
+    "empty": {
+      "title": "Aún no hay clientes",
+      "body": "Agrega tu primer cliente o comparte tu enlace de solicitud de cotización para recibir prospectos.",
+      "filtered": "Ningún cliente coincide con tu búsqueda."
+    },
+    "unnamed": "Sin nombre",
+    "form": {
+      "contact": "Contacto",
+      "property": "Propiedad",
+      "service": "Servicio",
+      "notesSection": "Notas",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "companyName": "Nombre de la empresa",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "secondaryPhone": "Teléfono secundario",
+      "serviceAddress": "Dirección del servicio",
+      "billingAddress": "Dirección de facturación",
+      "city": "Ciudad",
+      "state": "Estado",
+      "zipCode": "Código postal",
+      "propertyType": "Tipo de propiedad",
+      "squareFootage": "Pies cuadrados",
+      "bedrooms": "Recámaras",
+      "bathrooms": "Baños",
+      "frequency": "Frecuencia de limpieza",
+      "preferredService": "Servicio preferido",
+      "estimatedPrice": "Precio estimado",
+      "accessInstructions": "Instrucciones de acceso",
+      "pets": "Mascotas",
+      "specialInstructions": "Instrucciones especiales",
+      "notes": "Notas internas",
+      "customerSince": "Cliente desde",
+      "status": "Estado",
+      "choose": "Seleccionar…",
+      "create": "Crear cliente",
+      "identityHint": "Ingresa un nombre o el nombre de una empresa."
+    },
+    "propertyType": {
+      "house": "Casa",
+      "apartment": "Apartamento",
+      "condo": "Condominio",
+      "townhouse": "Casa adosada",
+      "office": "Oficina",
+      "commercial": "Local comercial",
+      "other": "Otro"
+    },
+    "frequency": {
+      "one_time": "Una vez",
+      "weekly": "Semanal",
+      "biweekly": "Cada dos semanas",
+      "monthly": "Mensual",
+      "every_four_weeks": "Cada cuatro semanas",
+      "custom": "Personalizada"
+    },
+    "profile": {
+      "back": "Volver a clientes",
+      "edit": "Editar",
+      "convert": "Convertir en cliente",
+      "archive": "Archivar",
+      "restore": "Restaurar",
+      "markInactive": "Marcar inactivo",
+      "reactivate": "Reactivar",
+      "details": "Detalles",
+      "history": "Historial",
+      "source": {
+        "manual": "Agregado manualmente",
+        "web_form": "Formulario de solicitud"
+      },
+      "addedOn": "Agregado el {date}",
+      "since": "Cliente desde {date}",
+      "none": "—",
+      "duplicate": "Otro cliente de tu cuenta usa este correo.",
+      "converted": "Convertido en cliente activo.",
+      "events": {
+        "created": "Registro creado",
+        "updated": "Datos actualizados",
+        "converted": "Convertido de prospecto a cliente activo",
+        "status_changed": "Estado cambiado de {from} a {to}"
+      },
+      "related": {
+        "quotes": "Cotizaciones",
+        "jobs": "Trabajos",
+        "invoices": "Facturas",
+        "payments": "Pagos",
+        "availableIn": "Disponible en la fase {phase}"
+      }
+    },
+    "errors": {
+      "identityRequired": "Ingresa un nombre o el nombre de una empresa.",
+      "invalid": "Algunos campos no son válidos. Revísalos e inténtalo de nuevo.",
+      "saveFailed": "No se pudo guardar el cliente.",
+      "notFound": "Cliente no encontrado."
+    }
+  },
+  "request": {
+    "title": "Solicita una cotización de limpieza",
+    "subtitle": "Cuéntale a {company} sobre tu espacio y te responderemos.",
+    "contact": "¿Cómo te contactamos?",
+    "property": "Sobre la propiedad",
+    "message": "¿Algo más que debamos saber?",
+    "submit": "Enviar solicitud",
+    "contactNeeded": "Indica un correo o un teléfono.",
+    "successTitle": "Solicitud enviada",
+    "successBody": "Gracias. {company} se pondrá en contacto contigo pronto con tu cotización.",
+    "unavailable": "Este formulario no está disponible en este momento.",
+    "tooMany": "Hay demasiadas solicitudes ahora. Inténtalo de nuevo en unos minutos.",
+    "tooFast": "Revisa el formulario con calma y envíalo de nuevo.",
+    "invalid": "Revisa tus datos e inténtalo de nuevo.",
+    "failed": "No pudimos enviar tu solicitud. Inténtalo de nuevo."
+  },
+  "requests": {
+    "title": "Enlace de solicitud de cotización",
+    "body": "Comparte este enlace en tu sitio web, redes sociales o mensajes. Cada solicitud se convierte en un Prospecto en Clientes.",
+    "copy": "Copiar enlace",
+    "copied": "Copiado",
+    "enabled": "Recibiendo solicitudes",
+    "disabled": "Las solicitudes están desactivadas",
+    "turnOff": "Desactivar",
+    "turnOn": "Activar"
+  },
+  "dashboardExtra": {
+    "customersCount": "{count, plural, =0 {Aún no hay clientes activos} one {# cliente activo} other {# clientes activos}}"
+  }
 }
