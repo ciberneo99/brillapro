@@ -1156,5 +1156,82 @@
       "body": "Access to this company is paused. Please contact support to resolve it. Your data is kept.",
       "signOut": "Sign out"
     }
+  },
+  "legal": {
+    "back": "Back",
+    "draft": "Draft pending legal review. This text is a starting point and is not legal advice.",
+    "updated": "Last updated: November 2026.",
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "title": "What we collect",
+          "body": "Account details (name, email), the business information you enter (customers, quotes, jobs, invoices, expenses, inventory), and basic technical data needed to run the service, such as session cookies and language and theme preferences."
+        },
+        {
+          "title": "How we use it",
+          "body": "Only to provide and secure the service for your company. We do not sell your data and we do not use your customers' information for advertising."
+        },
+        {
+          "title": "Who can see it",
+          "body": "Each company's data is isolated from other companies. Inside your company, people see only what their role allows. Platform staff can see company-level counts and subscription status, not your customers, money or documents."
+        },
+        {
+          "title": "Receipts and AI",
+          "body": "If receipt reading is enabled, the receipt image you choose is sent to an AI provider to suggest the amount, date, merchant and category. You review every suggestion before saving."
+        },
+        {
+          "title": "Service providers",
+          "body": "We use infrastructure providers to host the database, files and application. They process data only to deliver the service."
+        },
+        {
+          "title": "Your choices",
+          "body": "You can ask us to export or delete your company's data. Contact us using the details on our website."
+        },
+        {
+          "title": "Contact",
+          "body": "Questions about privacy can be sent to the contact address published on our website."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "sections": [
+        {
+          "title": "The service",
+          "body": "BrillaPro is software that helps cleaning companies manage customers, quotes, jobs, invoices, expenses and inventory."
+        },
+        {
+          "title": "Your account",
+          "body": "You are responsible for the activity under your account and for keeping your password safe. Owners decide who in their company can sign in and with which role."
+        },
+        {
+          "title": "Your data",
+          "body": "Your data remains yours. You grant us permission to store and process it only to provide the service. You are responsible for the accuracy of the documents you create and for complying with the laws that apply to your business, including taxes."
+        },
+        {
+          "title": "Plans and payment",
+          "body": "Plans limit how many people can sign in. During the free trial you can use every feature. Prices and billing terms will be shown before you subscribe."
+        },
+        {
+          "title": "Acceptable use",
+          "body": "Do not misuse the service, attempt to access other companies' data, or upload unlawful content."
+        },
+        {
+          "title": "Suspension",
+          "body": "We may suspend access for non-payment, abuse or security reasons. Your data is kept so the matter can be resolved."
+        },
+        {
+          "title": "Availability and liability",
+          "body": "We work to keep the service available but do not guarantee uninterrupted operation. To the extent the law allows, our liability is limited to the amount you paid in the previous twelve months."
+        },
+        {
+          "title": "Changes",
+          "body": "We may update these terms. We will give notice of material changes."
+        }
+      ]
+    },
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms"
   }
 }

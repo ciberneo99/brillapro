@@ -40,6 +40,7 @@ export default async function Home() {
 
   const t = await getTranslations("landing");
   const tb = await getTranslations("brand");
+  const tl = await getTranslations("legal");
   const theme = await getTheme();
 
   return (
@@ -149,6 +150,10 @@ export default async function Home() {
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} {tb("name")}</p>
+          <p className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-fg">{tl("footerPrivacy")}</Link>
+            <Link href="/terms" className="hover:text-fg">{tl("footerTerms")}</Link>
+          </p>
           <p>{t("footer")}</p>
         </div>
       </footer>

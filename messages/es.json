@@ -1156,5 +1156,82 @@
       "body": "El acceso a esta empresa está en pausa. Contacta a soporte para resolverlo. Tus datos se conservan.",
       "signOut": "Cerrar sesión"
     }
+  },
+  "legal": {
+    "back": "Volver",
+    "draft": "Borrador pendiente de revisión legal. Este texto es un punto de partida y no es asesoría legal.",
+    "updated": "Última actualización: noviembre de 2026.",
+    "privacy": {
+      "title": "Política de privacidad",
+      "sections": [
+        {
+          "title": "Qué recopilamos",
+          "body": "Datos de la cuenta (nombre, correo), la información del negocio que ingresas (clientes, cotizaciones, trabajos, facturas, gastos, inventario) y datos técnicos básicos para operar el servicio, como cookies de sesión y preferencias de idioma y tema."
+        },
+        {
+          "title": "Cómo la usamos",
+          "body": "Solo para prestar y proteger el servicio de tu empresa. No vendemos tus datos ni usamos la información de tus clientes para publicidad."
+        },
+        {
+          "title": "Quién puede verla",
+          "body": "Los datos de cada empresa están aislados de las demás. Dentro de tu empresa, cada persona ve solo lo que su rol permite. El personal de la plataforma ve conteos y estado de suscripción por empresa, no tus clientes, dinero ni documentos."
+        },
+        {
+          "title": "Recibos e IA",
+          "body": "Si la lectura de recibos está activada, la imagen del recibo que eliges se envía a un proveedor de IA para sugerir monto, fecha, comercio y categoría. Tú revisas cada sugerencia antes de guardar."
+        },
+        {
+          "title": "Proveedores de servicio",
+          "body": "Usamos proveedores de infraestructura para alojar la base de datos, los archivos y la aplicación. Procesan los datos solo para prestar el servicio."
+        },
+        {
+          "title": "Tus opciones",
+          "body": "Puedes pedirnos exportar o eliminar los datos de tu empresa. Escríbenos con los datos de contacto de nuestro sitio."
+        },
+        {
+          "title": "Contacto",
+          "body": "Las preguntas sobre privacidad pueden enviarse al contacto publicado en nuestro sitio."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Términos del servicio",
+      "sections": [
+        {
+          "title": "El servicio",
+          "body": "BrillaPro es un software que ayuda a empresas de limpieza a manejar clientes, cotizaciones, trabajos, facturas, gastos e inventario."
+        },
+        {
+          "title": "Tu cuenta",
+          "body": "Eres responsable de la actividad de tu cuenta y de cuidar tu contraseña. Los dueños deciden quién de su empresa puede entrar y con qué rol."
+        },
+        {
+          "title": "Tus datos",
+          "body": "Tus datos siguen siendo tuyos. Nos autorizas a guardarlos y procesarlos solo para prestar el servicio. Eres responsable de la exactitud de los documentos que creas y de cumplir las leyes que aplican a tu negocio, incluidos los impuestos."
+        },
+        {
+          "title": "Planes y pago",
+          "body": "Los planes limitan cuántas personas pueden entrar. Durante la prueba gratis puedes usar todas las funciones. Los precios y condiciones de cobro se mostrarán antes de suscribirte."
+        },
+        {
+          "title": "Uso aceptable",
+          "body": "No uses el servicio de forma indebida, no intentes acceder a datos de otras empresas ni subas contenido ilegal."
+        },
+        {
+          "title": "Suspensión",
+          "body": "Podemos suspender el acceso por falta de pago, abuso o razones de seguridad. Tus datos se conservan para resolver el asunto."
+        },
+        {
+          "title": "Disponibilidad y responsabilidad",
+          "body": "Trabajamos para mantener el servicio disponible pero no garantizamos que funcione sin interrupciones. En lo que la ley permita, nuestra responsabilidad se limita a lo que pagaste en los últimos doce meses."
+        },
+        {
+          "title": "Cambios",
+          "body": "Podemos actualizar estos términos. Avisaremos de los cambios importantes."
+        }
+      ]
+    },
+    "footerPrivacy": "Privacidad",
+    "footerTerms": "Términos"
   }
 }

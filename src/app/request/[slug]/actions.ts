@@ -6,6 +6,7 @@ import { isValidEmail } from "@/lib/email";
 import { normalizeAddress, normalizeName, normalizeSentences, normalizeState } from "@/lib/text";
 import { normalizeZip } from "@/lib/zip";
 import { createClient } from "@/lib/supabase/server";
+import { verifyTurnstile } from "@/lib/turnstile";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
 export type RequestState = { error?: "invalid" | "contactNeeded" | "unavailable" | "tooMany" | "tooFast" | "failed"; done?: boolean } | undefined;
@@ -44,6 +45,8 @@ export async function submitQuoteRequest(slug: string, _: RequestState, formData
 
   const rendered = Number(formData.get("rendered_at"));
   if (!Number.isFinite(rendered) || Date.now() - rendered < MIN_FILL_MS) return { error: "tooFast" };
+
+  if (!(await verifyTurnstile(String(formData.get("cf-turnstile-response") ?? "")))) return { error: "tooFast" };
 
   const parsed = schema.safeParse(Object.fromEntries([...formData.entries()].filter(([, v]) => typeof v === "string")));
   if (!parsed.success) return { error: "invalid" };
