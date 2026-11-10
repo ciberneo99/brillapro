@@ -805,7 +805,14 @@
     "addButton": "Add",
     "nameTaken": "A category with that name already exists.",
     "readOnly": "Only the owner or an admin can change categories.",
-    "settingsIntro": "Manage the categories used to organize expenses."
+    "settingsIntro": "Manage the categories used to organize expenses.",
+    "aiRead": "Read receipt with AI",
+    "aiReading": "Reading…",
+    "aiFilled": "Done. Check the vendor, date, amount and category before saving: AI can make mistakes.",
+    "aiNothing": "The AI could not read this receipt. Fill in the fields by hand.",
+    "aiFailed": "The receipt could not be read right now. Fill in the fields by hand.",
+    "aiDisabled": "AI reading is not set up yet.",
+    "aiPrivacy": "The photo is sent to Anthropic to read it. It is not saved by this step; nothing is filled in unless you press the button."
   },
   "inventory": {
     "title": "Inventory",

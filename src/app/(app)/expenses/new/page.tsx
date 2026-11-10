@@ -6,7 +6,9 @@ import { ExpenseFields } from "@/components/expenses/ExpenseFields";
 import { todayIso } from "@/lib/calendar";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
+import { ReceiptScanner } from "@/components/expenses/ReceiptScanner";
 import { createExpense } from "@/modules/expenses/actions";
+import { receiptAiEnabled } from "@/modules/expenses/receipt-ai";
 import { listCategories, recentJobs } from "@/modules/expenses/queries";
 
 export const metadata = { title: "New expense" };
@@ -29,7 +31,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams: P
         <form action={createExpense} className="space-y-4">
           <ExpenseFields categories={categories} jobs={jobs} today={todayIso(ctx.settings.timezone)} dateFormat={ctx.settings.date_format} currency={ctx.settings.currency} />
           <Field label={t("receipt")} htmlFor="receipt" hint={t("receiptHint")}>
-            <input id="receipt" name="receipt" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="block w-full text-sm" />
+            <ReceiptScanner aiEnabled={receiptAiEnabled()} />
           </Field>
           <Button type="submit">{t("save")}</Button>
         </form>

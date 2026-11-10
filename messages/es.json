@@ -805,7 +805,14 @@
     "addButton": "Agregar",
     "nameTaken": "Ya existe una categoría con ese nombre.",
     "readOnly": "Solo el propietario o un administrador puede cambiar las categorías.",
-    "settingsIntro": "Administra las categorías para organizar los gastos."
+    "settingsIntro": "Administra las categorías para organizar los gastos.",
+    "aiRead": "Leer recibo con IA",
+    "aiReading": "Leyendo…",
+    "aiFilled": "Listo. Revisa el comercio, la fecha, el monto y la categoría antes de guardar: la IA puede equivocarse.",
+    "aiNothing": "La IA no pudo leer este recibo. Llena los campos a mano.",
+    "aiFailed": "No se pudo leer el recibo en este momento. Llena los campos a mano.",
+    "aiDisabled": "La lectura con IA aún no está configurada.",
+    "aiPrivacy": "La foto se envía a Anthropic para leerla. Este paso no la guarda; nada se llena a menos que presiones el botón."
   },
   "inventory": {
     "title": "Inventario",

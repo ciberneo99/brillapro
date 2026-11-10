@@ -6,6 +6,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
+import { todayIso } from "@/lib/calendar";
+import { listCategories } from "./queries";
+import { readReceipt } from "./receipt-ai";
 import { categorySchema, checkReceipt, expenseSchema } from "./schema";
 
 const raw = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === "string"));
@@ -133,4 +136,21 @@ export async function updateCategory(id: string, formData: FormData) {
   const { error } = await supabase.from("expense_categories").update(patch).eq("id", id);
   revalidatePath(CAT);
   redirect(error ? `${CAT}?error=${error.code === "23505" ? "taken" : "invalid"}` : `${CAT}?saved=1`);
+}
+
+// ───────── AI receipt reading (suggestions only; nothing is saved) ─────────
+export type ScanResult =
+  | { ok: true; suggestion: import("./receipt-reading").ReceiptSuggestion }
+  | { ok: false; error: "denied" | "type" | "size" | "disabled" | "failed" };
+
+export async function scanReceipt(formData: FormData): Promise<ScanResult> {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "expenses:write")) return { ok: false, error: "denied" };
+  const f = formData.get("receipt");
+  if (!(f instanceof File) || f.size === 0) return { ok: false, error: "type" };
+  const check = checkReceipt(f);
+  if ("error" in check) return { ok: false, error: check.error };
+  const categories = (await listCategories({ activeOnly: true })).map((c) => ({ id: c.id, name: c.name }));
+  const today = todayIso(ctx.settings.timezone);
+  return readReceipt({ base64: Buffer.from(await f.arrayBuffer()).toString("base64"), mediaType: f.type }, categories, today);
 }
