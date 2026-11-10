@@ -11,7 +11,7 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 | 3 | Servicios, checklists, cotizaciones, PDF, Good/Better/Best — **completada** (`v0.3-fase3`); convertir cotización → trabajo pasa al inicio de la Fase 4 | 2 |
 | 4 | Trabajos, empleados, calendario, recurrencia, horas, notas, tareas — **completada** (`v0.4-fase4`) | 3 |
 | 5 | Facturas, pagos, gastos con recibos, PDF, envío manual — **completada** (`v0.5-fase5`, aprobada) | 4 |
-| 6 | Inventario y reportes operativos | 5 |
+| 6 | Inventario y reportes operativos — **completada** (`v0.6-fase6`) | 5 |
 | 7 | Venmo, importación bancaria, contabilidad de doble entrada | 5-6 |
 | 8 | Integraciones (incluye lectura de recibos con IA: comercio, fecha, total y categoría sugerida, siempre revisada por el usuario; requiere API key de Anthropic en .env.local y límite por plan) | 4-5 |
 | 9 | Landing, planes, Stripe Billing, Super Admin, lanzamiento | 1-8 |

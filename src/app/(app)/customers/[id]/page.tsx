@@ -16,6 +16,7 @@ import { getQuoteSettings, listQuotes } from "@/modules/quotes/queries";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { listJobs } from "@/modules/jobs/queries";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
+import { duplicateInvoice } from "@/modules/invoices/actions";
 import { getInvoiceSettings, listInvoices } from "@/modules/invoices/queries";
 
 export default async function CustomerProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -29,6 +30,7 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
   const customerJobs = can(ctx.role, "jobs:read") ? (await listJobs({ customerId: id })).rows : [];
   const canInvoices = can(ctx.role, "invoices:read");
   const customerInvoices = canInvoices ? (await listInvoices({ customerId: id })).rows : [];
+  const lastInvoice = customerInvoices.find((i) => i.status !== "void");
   const invoicePrefix = canInvoices ? (await getInvoiceSettings(ctx.tenant.id)).invoice_prefix : "INV-";
   const quotePrefix = canQuotes ? (await getQuoteSettings(ctx.tenant.id)).quote_prefix : "Q-";
 
@@ -183,7 +185,12 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
         <Card accent="green" className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">{t("profile.related.invoices")}</h2>
-            {can(ctx.role, "invoices:write") && <Link href={`/invoices/new?customer=${id}`} className="text-sm text-primary hover:underline">{t("profile.newInvoice")}</Link>}
+            {can(ctx.role, "invoices:write") && (
+              <div className="flex items-center gap-3">
+                {lastInvoice && <form action={duplicateInvoice.bind(null, lastInvoice.id)}><button type="submit" className="text-sm text-primary hover:underline">{t("profile.repeatLast")}</button></form>}
+                <Link href={`/invoices/new?customer=${id}`} className="text-sm text-primary hover:underline">{t("profile.newInvoice")}</Link>
+              </div>
+            )}
           </div>
           {customerInvoices.length === 0 ? (
             <p className="text-xs text-muted">{t("profile.noInvoices")}</p>

@@ -173,4 +173,30 @@ d("invoices & payments", () => {
       expect((await tx`select count(*)::int n from public.invoice_lines where invoice_id = ${inv2}`)[0].n).toBe(2);
     });
   });
+
+  it("duplicate_invoice makes a fresh draft with the same lines, discount and tax; roles and companies are enforced", async () => {
+    await as(id.office, async (tx) => {
+      const a = (await newInvoice(tx, id.office))[0];
+      await line(tx, a.id, "Weekly clean", 1, 12000);
+      await line(tx, a.id, "Extra", 2, 1500);
+      await tx`update public.invoices set discount_cents = 500, tax_rate = 5, notes = 'gate code 1234' where id = ${a.id}`;
+      await tx`select public.issue_invoice(${a.id})`;
+      const nid = (await tx`select public.duplicate_invoice(${a.id}) as id`)[0].id;
+      const n = (await tx`select * from public.invoices where id = ${nid}`)[0];
+      expect([n.status, n.number, n.discount_cents, Number(n.tax_rate), n.notes, n.job_id, n.sent_at]).toEqual(["draft", a.number + 1, 500, 5, "gate code 1234", null, null]);
+      const [t] = await tx`select * from public.invoice_totals(${nid})`;
+      const [o] = await tx`select * from public.invoice_totals(${a.id})`;
+      expect(Number(t.total_cents)).toBe(Number(o.total_cents));
+      expect((await tx`select count(*)::int n from public.invoice_lines where invoice_id = ${nid}`)[0].n).toBe(2);
+      expect((await tx`select count(*)::int n from public.payments where invoice_id = ${nid}`)[0].n).toBe(0);
+    });
+    const src = (await sql`insert into public.invoices (tenant_id, customer_id, due_date) values (${tA}, ${custA}, '2099-01-01') returning id`)[0].id;
+    for (const u of [id.accountant, id.manager, id.employee, id.ownerB]) {
+      await as(u, async (tx) => {
+        await tx`savepoint s`;
+        await expect(tx`select public.duplicate_invoice(${src})`).rejects.toThrow();
+        await tx`rollback to savepoint s`;
+      });
+    }
+  });
 });
