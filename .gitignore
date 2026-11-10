@@ -16,3 +16,7 @@ Thumbs.db
 .claude/
 playwright-report/
 test-results/
+
+# Real financial statements used for testing stay local
+public/*.csv
+public/invoice template.jpg
