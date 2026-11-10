@@ -43,6 +43,16 @@ export function DatePicker({ id, name, defaultValue = "", dateFormat }: { id: st
     };
   }, [open]);
 
+  // Lets other components (e.g. the AI receipt reader) set this date: window.dispatchEvent(new CustomEvent("bp:set-date", { detail: { name, value } }))
+  useEffect(() => {
+    const onSet = (e: Event) => {
+      const d = (e as CustomEvent<{ name: string; value: string }>).detail;
+      if (d?.name === name) setSelected(toDate(d.value));
+    };
+    window.addEventListener("bp:set-date", onSet);
+    return () => window.removeEventListener("bp:set-date", onSet);
+  }, [name]);
+
   const label = selected ? formatLocalDate(selected, dateFormat) : dateFormat ?? t("pickDate");
 
   return (
