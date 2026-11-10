@@ -908,6 +908,21 @@
       "placeholder": "Buscar por nombre, correo, teléfono o dirección",
       "clear": "Quitar cliente",
       "none": "Ningún cliente coincide."
+    },
+    "toolbar": {
+      "addPayment": "Agregar pago",
+      "actions": "Acciones",
+      "save": "Guardar factura",
+      "print": "Imprimir",
+      "download": "Descargar PDF",
+      "delete": "Eliminar",
+      "paymentHistory": "Historial de pagos",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "confirmDelete": "¿Eliminar este borrador? No se puede deshacer.",
+      "confirmVoid": "¿Anular esta factura? Quedará en tus registros como anulada.",
+      "confirmDeletePayment": "¿Eliminar este pago?",
+      "paymentNotAvailable": "Los pagos se pueden agregar cuando la factura ya fue enviada y tiene saldo."
     }
   },
   "expenses": {

@@ -133,6 +133,21 @@ export async function recordPayment(id: string, formData: FormData) {
   redirect(page(id, error ? "?error=payment" : "?saved=1"));
 }
 
+/** Edit a recorded payment (owner / admin, like deleting one). The database refuses totals above the invoice total. */
+export async function updatePayment(id: string, paymentId: string, formData: FormData) {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect(page(id));
+  const p = paymentSchema.safeParse(raw(formData));
+  if (!p.success || !UUID.test(paymentId)) redirect(page(id, "?error=payment"));
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("update_payment", {
+    p_id: paymentId, p_amount: p.data.amount, p_date: p.data.paid_on, p_method: p.data.method, p_reference: p.data.reference, p_notes: p.data.notes ?? "",
+  });
+  revalidatePath(page(id));
+  revalidatePath("/invoices");
+  redirect(page(id, error ? "?error=payment" : "?saved=1"));
+}
+
 export async function deletePayment(id: string, paymentId: string) {
   const ctx = await requireContext();
   if (!can(ctx.role, "settings:write")) redirect(page(id)); // owner / admin only (matches the database policy)

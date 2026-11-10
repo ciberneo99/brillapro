@@ -66,7 +66,7 @@ export function InvoiceEditor({
   const payload = JSON.stringify(rows.map(({ description, quantity, price }) => ({ description, quantity, price })));
 
   return (
-    <form action={(fd) => start(() => action(fd))} className="space-y-0 rounded-xl border border-line bg-surface p-5 shadow-card sm:p-8">
+    <form id="invoice-form" action={(fd) => start(() => action(fd))} className="space-y-0 rounded-xl border border-line bg-surface p-5 shadow-card sm:p-8">
       <SheetHeader company={company} alt={t("logoAlt")}>
         <div className="space-y-3">
           <p className="text-3xl font-bold tracking-tight text-primary">{t("invoice")}</p>

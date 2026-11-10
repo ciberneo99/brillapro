@@ -10,7 +10,7 @@ import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
 
 export const runtime = "nodejs";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAppContext();
   if (!ctx || !can(ctx.role, "invoices:read")) return new Response("Not found", { status: 404 });
   const { id } = await params;
@@ -29,6 +29,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   );
   const file = `${quoteNumber(is.invoice_prefix, invoice.number)}.pdf`.replace(/[^\w.-]/g, "_");
   return new Response(new Uint8Array(buffer), {
-    headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${file}"`, "Cache-Control": "private, no-store" },
+    headers: { "Content-Type": "application/pdf", "Content-Disposition": `${new URL(req.url).searchParams.has("download") ? "attachment" : "inline"}; filename="${file}"`, "Cache-Control": "private, no-store" },
   });
 }

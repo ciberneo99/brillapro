@@ -142,3 +142,46 @@ test("business profile saves city, state, ZIP and website", async ({ page }) => 
   await expect(page.locator("#city")).toHaveValue("Austin");
   await expect(page.locator("#website")).toHaveValue("https://www.sparkle.example");
 });
+
+test("invoice page: Actions menu, add a payment, then edit and delete it in the payment history", async ({ page }) => {
+  const [c] = await sql`insert into public.customers (tenant_id, first_name, status) values (${tenantId}, 'Pay', 'active') returning id`;
+  const [inv] = await sql`insert into public.invoices (tenant_id, customer_id, due_date, customer_name, created_by) values (${tenantId}, ${c.id}, '2099-12-31', 'Pay Test', ${uid}) returning id`;
+  await sql`insert into public.invoice_lines (tenant_id, invoice_id, description, quantity, unit_price_cents) values (${tenantId}, ${inv.id}, 'Clean', 1, 10000)`;
+  await sql.begin(async (tx) => {
+    await tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: uid, role: "authenticated" })}, true)`;
+    await tx`set local role authenticated`;
+    await tx`select public.issue_invoice(${inv.id})`;
+  });
+
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto(`/invoices/${inv.id}`);
+
+  await expect(async () => {
+    await page.getByRole("button", { name: /^(actions|acciones)/i }).click();
+    await expect(page.getByRole("menuitem", { name: /download pdf|descargar pdf/i })).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  for (const n of [/email again|enviar de nuevo/i, /duplicate|duplicar/i, /print|imprimir/i, /void|anular/i]) await expect(page.getByRole("menuitem", { name: n })).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: /add payment|agregar pago/i }).click();
+  const dlg = page.getByRole("dialog");
+  await dlg.locator("input[name=amount]").fill("40");
+  await dlg.getByRole("button", { name: /record payment|registrar pago/i }).click();
+  await expect(page).toHaveURL(/saved=1/);
+  const history = page.locator("section[aria-labelledby=pay-history]");
+  await expect(history).toContainText("$40.00");
+
+  await history.getByRole("button", { name: /edit|editar/i }).click();
+  await history.locator("input[name=amount]").fill("55");
+  await history.getByRole("button", { name: /^(save|guardar)/i }).click();
+  await expect(page).toHaveURL(/saved=1/);
+  await expect(history).toContainText("$55.00");
+
+  page.once("dialog", (d) => d.accept());
+  await history.getByRole("button", { name: /remove|quitar/i }).click();
+  await expect(page.locator("section[aria-labelledby=pay-history]")).toHaveCount(0);
+});

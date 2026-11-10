@@ -263,4 +263,26 @@ d("invoices & payments", () => {
       expect(await seen()).toBe(0);
     });
   });
+
+  it("update_payment: owner/admin only, keeps the paid total within the invoice total, sent invoices only", async () => {
+    const inv = (await sql`insert into public.invoices (tenant_id, customer_id, due_date, status) values (${tA}, ${custA}, '2099-01-01', 'draft') returning id`)[0].id;
+    await sql`insert into public.invoice_lines (tenant_id, invoice_id, description, quantity, unit_price_cents) values (${tA}, ${inv}, 'Clean', 1, 10000)`;
+    await as(id.ownerA, async (tx) => {
+      await tx`select public.issue_invoice(${inv})`;
+      const p1 = (await tx`select public.record_payment(${inv}, 4000, current_date, 'cash', null, null) as id`)[0].id;
+      const p2 = (await tx`select public.record_payment(${inv}, 6000, current_date, 'check', '#1', null) as id`)[0].id;
+      await tx`select public.update_payment(${p1}, 3000, current_date, 'zelle', 'ref', 'fixed')`;
+      const [row] = await tx`select amount_cents, method, reference, notes from public.payments where id = ${p1}`;
+      expect([row.amount_cents, row.method, row.reference, row.notes]).toEqual([3000, "zelle", "ref", "fixed"]);
+      await tx`savepoint a`;
+      await expect(tx`select public.update_payment(${p1}, 4001, current_date, 'cash', null, null)`).rejects.toThrow(/exceeds/);
+      await tx`rollback to savepoint a`;
+      await tx`select public.update_payment(${p2}, 6000, current_date, 'cash', null, null)`; // unchanged amount is fine
+      // office staff can record payments but not edit them
+      await tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: id.office, role: "authenticated" })}, true)`;
+      await tx`savepoint b`;
+      await expect(tx`select public.update_payment(${p1}, 100, current_date, 'cash', null, null)`).rejects.toThrow();
+      await tx`rollback to savepoint b`;
+    });
+  });
 });

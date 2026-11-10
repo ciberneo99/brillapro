@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Alert, Button, Card, Field, Input, Select } from "@/components/ui";
-import { DatePicker } from "@/components/ui/DatePicker";
-import { MoneyInput } from "@/components/ui/fields";
+import { Alert } from "@/components/ui";
 import { InvoiceEditor } from "@/components/invoices/InvoiceEditor";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
-import { SendInvoiceButton } from "@/components/invoices/SendInvoiceButton";
+import { InvoiceToolbar } from "@/components/invoices/InvoiceToolbar";
+import { PaymentHistory } from "@/components/invoices/PaymentHistory";
 import { SheetHeader } from "@/components/invoices/SheetHeader";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
@@ -17,9 +16,8 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { displayName } from "@/modules/customers/schema";
-import { deleteInvoice, deletePayment, duplicateInvoice, recordPayment, saveInvoiceDraft, voidInvoice } from "@/modules/invoices/actions";
+import { saveInvoiceDraft } from "@/modules/invoices/actions";
 import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
-import { PAYMENT_METHODS } from "@/modules/invoices/schema";
 
 export const metadata = { title: "Invoice" };
 
@@ -71,35 +69,22 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/invoices" className="text-sm text-muted hover:text-fg">← {t("back")}</Link>
-          <h1 className="mt-1 flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">{num} <InvoiceStatusBadge status={inv.display_status} /></h1>
+          <h1 className="flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">{num} <InvoiceStatusBadge status={inv.display_status} /></h1>
           <p className="mt-1 text-sm text-muted">
             <Link href={`/customers/${inv.customer_id}`} className="text-primary hover:underline">{inv.customer_name}</Link>
             {" · "}{t("due")} {formatDateOnly(inv.due_date, fmt)}
             {inv.job_id && can(ctx.role, "jobs:read") && <> · <Link href={`/jobs/${inv.job_id}`} className="text-primary hover:underline">{t("fromJob")}</Link></>}
           </p>
         </div>
-        <div className="flex flex-wrap items-start gap-2">
-          <a href={`/invoices/${id}/pdf`} target="_blank" rel="noopener" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("pdf")}</a>
-          {canWrite && <form action={duplicateInvoice.bind(null, id)}><Button type="submit" variant="secondary">{t("duplicate")}</Button></form>}
-          {canWrite && draft && <form action={deleteInvoice.bind(null, id)}><Button type="submit" variant="ghost" className="text-danger">{t("delete")}</Button></form>}
-          {canWrite && inv.status === "sent" && x.paid_cents === 0 && <form action={voidInvoice.bind(null, id)}><Button type="submit" variant="ghost" className="text-danger">{t("void")}</Button></form>}
-        </div>
+        <InvoiceToolbar
+          id={id} draft={draft} canWrite={canWrite} canVoid={inv.status === "sent" && x.paid_cents === 0} canPay={open} mailto={mailto} resend={!draft}
+          balanceText={centsToMoneyText(x.balance_cents)} today={today} currency={cur} dateFormat={fmt}
+        />
       </div>
 
       {sp.error && sp.error !== "invalid" && <Alert>{t(sp.error === "payment" ? "paymentError" : sp.error === "issue" ? "issueError" : "voidError")}</Alert>}
       {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
       {!draft && <p className="text-sm text-muted">{t("lockedNote")}</p>}
-
-      {canWrite && (draft || inv.status === "sent") && (
-        <Card accent="green" className="space-y-2">
-          <div className="flex flex-wrap items-start gap-3">
-            {mailto ? <SendInvoiceButton id={id} mailto={mailto} resend={!draft} /> : <p className="text-sm text-muted">{t("noEmail")}</p>}
-            <p className="max-w-md text-xs text-muted">{draft ? t("sendHelp") : t("resendHelp")}</p>
-          </div>
-          {draft && <p className="text-xs text-muted">{te("saveFirst")}</p>}
-        </Card>
-      )}
 
       {editable ? (
         <InvoiceEditor
@@ -158,38 +143,16 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
               <div className="flex justify-between rounded-lg bg-primary px-3 py-2 text-base font-semibold text-white"><dt>{t("balance")}</dt><dd>{m(x.balance_cents)}</dd></div>
             </dl>
           </div>
+          {inv.payments.length > 0 && (
+            <div className="pt-6">
+              <PaymentHistory
+                invoiceId={id} currency={cur} dateFormat={fmt} canManage={can(ctx.role, "settings:write") && inv.status === "sent"}
+                payments={inv.payments.map((p) => ({ ...p, paid_label: formatDateOnly(p.paid_on, fmt) }))}
+              />
+            </div>
+          )}
           <p className="pt-8 text-center text-sm font-semibold text-muted">{te("thanks")}</p>
         </div>
-      )}
-
-      {/* Payments */}
-      {inv.status !== "draft" && (
-        <Card accent="violet" className="space-y-3">
-          <h2 className="text-base font-semibold">{t("payments")}</h2>
-          {inv.payments.length === 0 && <p className="text-sm text-muted">{t("noPayments")}</p>}
-          <ul className="divide-y divide-line text-sm">
-            {inv.payments.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <span>{formatDateOnly(p.paid_on, fmt)} · {t(`method.${p.method}`)}{p.reference ? ` · ${p.reference}` : ""}{p.notes ? ` · ${p.notes}` : ""}</span>
-                <span className="flex items-center gap-3 font-medium">{m(p.amount_cents)}
-                  {can(ctx.role, "settings:write") && <form action={deletePayment.bind(null, id, p.id)}><button type="submit" className="text-xs font-normal text-danger hover:underline">{t("remove")}</button></form>}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {canWrite && open && (
-            <form action={recordPayment.bind(null, id)} className="grid gap-3 border-t border-line pt-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Field label={t("amount")} htmlFor="amount"><MoneyInput id="amount" name="amount" defaultValue={centsToMoneyText(x.balance_cents)} currency={cur} required /></Field>
-              <Field label={t("paidOn")} htmlFor="paid_on"><DatePicker id="paid_on" name="paid_on" defaultValue={today} dateFormat={fmt} /></Field>
-              <Field label={t("methodLabel")} htmlFor="method">
-                <Select id="method" name="method" defaultValue="cash">{PAYMENT_METHODS.map((k) => <option key={k} value={k}>{t(`method.${k}`)}</option>)}</Select>
-              </Field>
-              <Field label={t("reference")} htmlFor="reference"><Input id="reference" name="reference" maxLength={120} /></Field>
-              <div className="sm:col-span-2 lg:col-span-4"><Input name="notes" maxLength={500} placeholder={t("paymentNotes")} aria-label={t("paymentNotes")} /></div>
-              <div><Button type="submit">{t("recordPayment")}</Button></div>
-            </form>
-          )}
-        </Card>
       )}
     </div>
   );
