@@ -251,7 +251,8 @@
       "newJob": "Nuevo trabajo",
       "noJobs": "Este cliente aún no tiene trabajos.",
       "newInvoice": "Nueva factura",
-      "noInvoices": "Este cliente aún no tiene facturas."
+      "noInvoices": "Este cliente aún no tiene facturas.",
+      "repeatLast": "Repetir última factura"
     },
     "errors": {
       "identityRequired": "Ingresa un nombre o el nombre de una empresa.",
@@ -749,7 +750,8 @@
     "prefixHelp": "Se muestra antes del número, p. ej. INV-0001.",
     "dueDays": "Vence después de (días)",
     "defaultTerms": "Términos y condiciones por defecto",
-    "settingsReadOnly": "Solo el propietario o un administrador puede cambiar esto."
+    "settingsReadOnly": "Solo el propietario o un administrador puede cambiar esto.",
+    "duplicate": "Duplicar"
   },
   "expenses": {
     "title": "Gastos",

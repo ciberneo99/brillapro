@@ -251,7 +251,8 @@
       "newJob": "New job",
       "noJobs": "No jobs for this customer yet.",
       "newInvoice": "New invoice",
-      "noInvoices": "No invoices for this customer yet."
+      "noInvoices": "No invoices for this customer yet.",
+      "repeatLast": "Repeat last invoice"
     },
     "errors": {
       "identityRequired": "Enter a name or a company name.",
@@ -749,7 +750,8 @@
     "prefixHelp": "Shown before the number, e.g. INV-0001.",
     "dueDays": "Due after (days)",
     "defaultTerms": "Default terms and conditions",
-    "settingsReadOnly": "Only the owner or an admin can change these."
+    "settingsReadOnly": "Only the owner or an admin can change these.",
+    "duplicate": "Duplicate"
   },
   "expenses": {
     "title": "Expenses",

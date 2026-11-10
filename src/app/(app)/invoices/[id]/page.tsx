@@ -14,7 +14,7 @@ import { centsToMoneyText, formatMoney, quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import {
-  addInvoiceLine, deleteInvoice, deleteInvoiceLine, deletePayment, recordPayment, updateInvoice, updateInvoiceLine, voidInvoice,
+  addInvoiceLine, deleteInvoice, duplicateInvoice, deleteInvoiceLine, deletePayment, recordPayment, updateInvoice, updateInvoiceLine, voidInvoice,
 } from "@/modules/invoices/actions";
 import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
 import { PAYMENT_METHODS } from "@/modules/invoices/schema";
@@ -63,6 +63,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
         </div>
         <div className="flex flex-wrap items-start gap-2">
           <a href={`/invoices/${id}/pdf`} target="_blank" rel="noopener" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("pdf")}</a>
+          {canWrite && <form action={duplicateInvoice.bind(null, id)}><Button type="submit" variant="secondary">{t("duplicate")}</Button></form>}
           {canWrite && draft && <form action={deleteInvoice.bind(null, id)}><Button type="submit" variant="ghost" className="text-danger">{t("delete")}</Button></form>}
           {canWrite && inv.status === "sent" && x.paid_cents === 0 && <form action={voidInvoice.bind(null, id)}><Button type="submit" variant="ghost" className="text-danger">{t("void")}</Button></form>}
         </div>

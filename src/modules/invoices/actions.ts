@@ -53,6 +53,16 @@ export async function createInvoiceFromJob(jobId: string) {
   redirect(page(data as string));
 }
 
+/** New draft with the same lines as an existing invoice (repeat customers). */
+export async function duplicateInvoice(id: string) {
+  await guard();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("duplicate_invoice", { p_id: id });
+  if (error || !data) redirect(page(id, "?error=invalid"));
+  revalidatePath("/invoices");
+  redirect(page(data as string, "?saved=1"));
+}
+
 export async function updateInvoice(id: string, formData: FormData) {
   await guard();
   const p = invoiceHeaderSchema.safeParse(raw(formData));
