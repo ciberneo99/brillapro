@@ -7,6 +7,7 @@ import { GroupedNumberInput, SmartTextarea, ZipInput } from "@/components/ui/fie
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
+import { Turnstile } from "@/components/Turnstile";
 import type { TextMode } from "@/lib/text";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 import type { RequestState } from "@/app/request/[slug]/actions";
@@ -97,6 +98,7 @@ export function RequestForm({
         <SmartTextarea id="message" name="message" rows={4} maxLength={2000} />
       </Card>
 
+      <Turnstile />
       <Button type="submit" disabled={pending} className="w-full sm:w-auto">{pending ? tc("loading") : t("submit")}</Button>
     </form>
   );

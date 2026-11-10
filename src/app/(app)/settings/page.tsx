@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Card } from "@/components/ui";
+import { PlanCard } from "@/components/billing/PlanCard";
 import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
 import { publicEnv } from "@/lib/env";
 import { can } from "@/lib/permissions";
@@ -18,6 +19,7 @@ export default async function SettingsPage() {
   const t = await getTranslations("settings");
   const ts = await getTranslations("services");
   const te = await getTranslations("employees");
+  const tt = await getTranslations("team");
   const ti = await getTranslations("invoices");
   const tx = await getTranslations("expenses");
   const theme = await getTheme();
@@ -32,6 +34,8 @@ export default async function SettingsPage() {
         <PreferenceControls theme={theme} />
         <p className="text-xs text-muted">{t("preferences.languageHelp")} {t("preferences.themeHelp")}</p>
       </Card>
+
+      <PlanCard tenantId={ctx.tenant.id} dateFormat={ctx.settings.date_format} daysLeft={ctx.trialDaysLeft} />
 
       <RequestLinkCard
         url={`${publicEnv().NEXT_PUBLIC_APP_URL}/request/${ctx.tenant.public_slug}`}
@@ -62,6 +66,15 @@ export default async function SettingsPage() {
           <Card accent="amber" className="transition-shadow hover:shadow-md">
             <h2 className="text-base font-semibold">{tx("categories")}</h2>
             <p className="mt-1 text-sm text-muted">{tx("settingsIntro")}</p>
+          </Card>
+        </Link>
+      )}
+
+      {can(ctx.role, "users:read") && (
+        <Link href="/settings/team" className="block">
+          <Card accent="blue" className="transition-shadow hover:shadow-md">
+            <h2 className="text-base font-semibold">{tt("title")}</h2>
+            <p className="mt-1 text-sm text-muted">{tt("intro")}</p>
           </Card>
         </Link>
       )}

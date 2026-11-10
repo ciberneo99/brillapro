@@ -33,6 +33,9 @@ Implementado hasta la Fase 4 (migraciones `db/migrations/0001`–`0011`). Lo de 
 - inventory_items (se desactivan, no se borran; mínimo para alerta de stock bajo, costo opcional) e inventory_movements (compra, uso, ajuste; cantidad con signo; inmutables: las correcciones son ajustes). Un trigger bloquea el artículo y rechaza movimientos que dejen el stock en negativo. Vista `inventory_overview` (existencia y bandera de stock bajo). Acceso: owner/admin/manager.
 - Funciones de reportes (security invoker, la RLS decide qué ve cada rol): `report_jobs`, `report_hours` (solo entradas cerradas, en la zona horaria de la empresa), `report_money` (facturado, cobrado y gastos).
 
+## Fase 9 (en curso)
+- plans: starter, pro y business (más trial) con `limits.max_users`; `tenant_usage(tenant)` (personas activas y límite, solo miembros) y un trigger en memberships que impide pasar el límite del plan (bloquea la fila del tenant para evitar carreras). La prueba gratis permite 10 personas.
+
 ## Convenciones
 UUID, `created_at`, `updated_at`, `archived_at`; `tenant_id NOT NULL` con FK; dinero en centavos enteros;
 FK compuestas `(tenant_id, id)`; índices en `(tenant_id, ...)`; migraciones SQL versionadas, primero en staging;
@@ -60,3 +63,24 @@ erDiagram
   tenants ||--o{ subscriptions : pays
   plans ||--o{ subscriptions : defines
 ```
+
+### Equipo e invitaciones (migración 0018)
+
+- `invitations`: correo, rol (nunca `owner`), `token_hash` (solo se guarda el hash SHA-256; el token se muestra una vez), estado pending/accepted/revoked, vence a los 7 días. Solo owner/admin pueden leerla; todas las escrituras pasan por funciones.
+- `create_invitation` (owner/admin; solo el owner invita admins; las pendientes reservan un lugar del plan), `revoke_invitation`, `invitation_preview` y `accept_invitation` (el correo de la cuenta debe coincidir y estar confirmado; una persona, una empresa).
+- Trigger `memberships_protect`: la empresa nunca se queda sin dueño y nadie cambia su propio rol/estado.
+- La entrega es un enlace que el dueño copia o envía con `mailto:`; no hay proveedor de correo conectado.
+
+### Super Admin (migración 0019)
+
+- `is_platform_admin()`; las funciones `platform_companies`, `platform_set_company_status`, `platform_set_plan` y `platform_extend_trial` solo responden a quien esté en `platform_admins`. No se usa la clave de servicio en la app. Solo ven conteos y estado, nunca datos de clientes, dinero ni documentos.
+- Cada cambio queda en `audit_log` de la empresa afectada (`platform.*`).
+- Una empresa suspendida (`tenants.status = 'suspended'`) deja de pasar `is_member`/`has_role`, así que todas las políticas RLS la bloquean; `my_company_suspended()` permite mostrar la página `/suspended`.
+- Dar acceso de Super Admin se hace a mano: `npm run admin:grant -- correo@ejemplo.com` (no existe desde la app).
+
+### Revisión de seguridad (9e)
+
+- Todas las tablas de `public` tienen RLS salvo `schema_migrations` (interna). `anon` no tiene permisos sobre tablas.
+- Solo `submit_quote_request` y `public_company_name` son funciones privilegiadas que visitantes pueden ejecutar (a propósito); las demás que ven son triggers o helpers sin privilegios.
+- Todas las funciones SECURITY DEFINER fijan `search_path`. Las vistas usan `security_invoker`. El bucket `receipts` es privado.
+- Formulario público: honeypot, tiempo mínimo, límite por empresa en la base y Turnstile opcional (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`).

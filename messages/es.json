@@ -924,5 +924,314 @@
       "denied": "No tienes acceso a esto.",
       "pdf": "No se pudo crear el PDF. Inténtalo de nuevo."
     }
+  },
+  "landing": {
+    "nav": {
+      "features": "Funciones",
+      "pricing": "Precios",
+      "faq": "Preguntas"
+    },
+    "login": "Iniciar sesión",
+    "cta": "Probar gratis",
+    "hero": {
+      "title": "Maneja tu negocio de limpieza desde un solo lugar.",
+      "subtitle": "Clientes, cotizaciones, trabajos, facturas y gastos en un sistema sencillo hecho para empresas de limpieza, en español e inglés.",
+      "note": "{days} días gratis. No necesitas tarjeta."
+    },
+    "features": {
+      "title": "Todo lo que necesitas para llevar tu día",
+      "subtitle": "Pensado para cómo trabajan de verdad los negocios de limpieza: clientes fijos, un equipo pequeño y papeleo que quieres terminar rápido.",
+      "items": {
+        "customers": {
+          "title": "Clientes y solicitudes",
+          "body": "Guarda los datos y el historial de cada cliente en un solo lugar, y deja que los nuevos pidan una cotización desde tu propio enlace."
+        },
+        "quotes": {
+          "title": "Cotizaciones que cierran trabajos",
+          "body": "Envía cotizaciones en PDF con opciones Good, Better y Best, y convierte la aceptada en un trabajo."
+        },
+        "jobs": {
+          "title": "Trabajos y calendario",
+          "body": "Programa por mes, semana o día, configura una sola vez a tus clientes semanales o quincenales y asigna a tu equipo."
+        },
+        "team": {
+          "title": "El acceso correcto para tu equipo",
+          "body": "Los empleados solo ven los trabajos que tienen asignados, y pueden marcar entrada y salida y palomear tareas."
+        },
+        "invoices": {
+          "title": "Facturas y pagos",
+          "body": "Crea facturas en PDF, registra pagos y repite la factura de la semana pasada para un cliente fijo con un clic."
+        },
+        "expenses": {
+          "title": "Gastos con recibos",
+          "body": "Lleva tus costos por categoría y guarda la foto de cada recibo, almacenada de forma privada."
+        },
+        "inventory": {
+          "title": "Inventario",
+          "body": "Sabe qué insumos tienes y recibe un aviso cuando algo se esté acabando."
+        },
+        "reports": {
+          "title": "Reportes",
+          "body": "Mira lo que facturaste, cobraste y gastaste, además de trabajos y horas trabajadas, por mes o por año."
+        },
+        "venmo": {
+          "title": "Reporte de Venmo",
+          "body": "Sube tu estado de cuenta de Venmo y obtén un reporte en PDF limpio y ordenado para tus registros."
+        }
+      }
+    },
+    "steps": {
+      "title": "Listo en minutos",
+      "one": {
+        "title": "Crea tu cuenta",
+        "body": "Configura tu empresa y elige tu idioma."
+      },
+      "two": {
+        "title": "Agrega clientes, envía cotizaciones",
+        "body": "Trae a tus clientes y envía cotizaciones con aspecto profesional."
+      },
+      "three": {
+        "title": "Haz el trabajo, factura, cobra",
+        "body": "Programa el trabajo, factura con un clic y registra el pago."
+      }
+    },
+    "pricing": {
+      "title": "Precios sencillos",
+      "subtitle": "Todos los planes incluyen todas las funciones. Elige según cuántas personas de tu equipo necesitan entrar al sistema.",
+      "popular": "Más popular",
+      "perMonth": "al mes",
+      "yearly": "o {price} al año (2 meses gratis)",
+      "users": "Hasta {count} personas pueden entrar",
+      "everything": "Todas las funciones incluidas",
+      "bilingual": "Español e inglés",
+      "note": "Las suscripciones abren pronto. Empieza hoy tu prueba gratis de {days} días y conserva tus datos cuando te suscribas.",
+      "plans": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Para dueños que trabajan solos o equipos muy pequeños."
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Para equipos en crecimiento con oficina y cuadrilla."
+        },
+        "business": {
+          "name": "Business",
+          "tagline": "Para empresas grandes con varios equipos."
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas",
+      "items": {
+        "trial": {
+          "q": "¿Hay prueba gratis?",
+          "a": "Sí. Tienes {days} días para probar todo, y no necesitas tarjeta de crédito para empezar."
+        },
+        "spanish": {
+          "q": "¿Puedo usarlo en español?",
+          "a": "Sí. Cambia entre español e inglés cuando quieras. Las cotizaciones y facturas pueden salir en cualquiera de los dos idiomas."
+        },
+        "team": {
+          "q": "¿Pueden usarlo mis empleados?",
+          "a": "Sí. Dale un rol a cada persona. Los empleados solo ven los trabajos que tienen asignados, así que los datos de clientes y dinero siguen privados."
+        },
+        "payments": {
+          "q": "¿Mis clientes pueden pagar en línea?",
+          "a": "Todavía no. Tú registras cada pago (efectivo, cheque, Zelle, Venmo y más) en la factura, y el saldo se actualiza solo."
+        },
+        "data": {
+          "q": "¿Mis datos están separados de los de otras empresas?",
+          "a": "Sí. La información de cada empresa está aislada, y cada persona solo ve lo que su rol permite."
+        }
+      }
+    },
+    "final": {
+      "title": "¿Listo para simplificar tu semana?",
+      "body": "Prueba BrillaPro gratis por {days} días."
+    },
+    "footer": "Hecho para empresas de limpieza."
+  },
+  "plan": {
+    "title": "Plan y uso",
+    "trialPlan": "Prueba gratis (todas las funciones)",
+    "trialDays": "Quedan {days} días",
+    "trialEnded": "Prueba terminada",
+    "trialUntil": "Tu prueba dura hasta el {date}.",
+    "people": "Personas que pueden entrar",
+    "seatsFull": "Llegaste al límite de personas de este plan.",
+    "available": "Planes",
+    "perMonth": "al mes",
+    "upTo": "Hasta {count} personas",
+    "billingSoon": "Las suscripciones abren pronto. No se bloquea nada mientras terminamos los pagos, y tus datos se conservan.",
+    "status": {
+      "active": "Activo",
+      "past_due": "Pago vencido",
+      "canceled": "Cancelado",
+      "suspended": "Suspendido"
+    },
+    "names": {
+      "starter": "Starter",
+      "pro": "Pro",
+      "business": "Business"
+    }
+  },
+  "team": {
+    "title": "Equipo y accesos",
+    "intro": "Invita personas a entrar al sistema, elige qué puede hacer cada una y quita el acceso cuando alguien se va.",
+    "back": "Ajustes",
+    "inviteTitle": "Invitar a alguien",
+    "email": "Correo",
+    "role": "Rol",
+    "invite": "Crear invitación",
+    "linkReady": "Invitación lista para {email}",
+    "linkLabel": "Enlace de invitación",
+    "copy": "Copiar enlace",
+    "copied": "Copiado",
+    "sendEmail": "Escribir correo",
+    "linkNote": "Envía este enlace a la persona. Funciona una sola vez, solo para ese correo, y vence en 7 días. Por seguridad solo se muestra ahora.",
+    "mailSubject": "Tu invitación a BrillaPro",
+    "mailBody": "Te invitamos a unirte a nuestro equipo en BrillaPro. Abre este enlace e inicia sesión o crea tu cuenta con este mismo correo:\n\n{link}",
+    "pending": "Invitaciones pendientes",
+    "expires": "vence {date}",
+    "cancelInvite": "Cancelar",
+    "members": "Personas",
+    "you": "tú",
+    "inactive": "Inactivo",
+    "saveRole": "Cambiar",
+    "deactivate": "Quitar acceso",
+    "reactivate": "Dar acceso",
+    "saved": "Guardado.",
+    "seats": "{used} de {max} personas en uso, {pending} invitaciones pendientes.",
+    "seatsNoLimit": "{used} personas.",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "manager": "Gerente",
+      "office_staff": "Oficina",
+      "employee": "Empleado",
+      "accountant": "Contador"
+    },
+    "errors": {
+      "invalidInvite": "Escribe un correo válido y un rol.",
+      "seatsFull": "Llegaste al límite de personas de tu plan, contando las invitaciones pendientes.",
+      "alreadyMember": "Esa persona ya tiene acceso.",
+      "ownerOnlyAdmin": "Solo el dueño puede invitar administradores.",
+      "inviteFailed": "No pudimos crear la invitación.",
+      "saveFailed": "No pudimos guardar el cambio. El dueño no se puede modificar y no puedes cambiar tu propio acceso."
+    },
+    "accept": {
+      "title": "Te invitaron",
+      "body": "Únete a {company} como {role}.",
+      "accept": "Aceptar invitación",
+      "signInFirst": "Inicia sesión o crea tu cuenta para aceptar la invitación.",
+      "createAccount": "Crear cuenta",
+      "haveAccount": "Ya tengo cuenta",
+      "sameEmail": "Usa el mismo correo al que llegó la invitación.",
+      "invalid": "Esta invitación no es válida o ya venció. Pide una nueva.",
+      "mismatch": "Esta invitación se envió a un correo distinto de {email}. Inicia sesión con el correo invitado.",
+      "other": "Tu cuenta ya pertenece a una empresa, así que no puede unirse a otra.",
+      "seats": "Esa empresa no tiene lugares libres por ahora. Pídeles que liberen uno.",
+      "goBack": "Ir a la app"
+    }
+  },
+  "admin": {
+    "title": "Administración de la plataforma",
+    "intro": "Empresas que usan BrillaPro. Solo ves conteos y estado, nunca clientes, dinero ni documentos. Cada cambio queda en la auditoría de esa empresa.",
+    "summary": "{total} empresas, {active} activas.",
+    "counts": "{users} personas, {customers} clientes, {jobs} trabajos, {invoices} facturas",
+    "trialUntil": "prueba hasta {date}",
+    "suspendedBadge": "Suspendida",
+    "plan": "Plan",
+    "subStatus": "Estado de la suscripción",
+    "savePlan": "Guardar plan",
+    "days": "Días",
+    "extend": "Extender prueba",
+    "reason": "Motivo (opcional)",
+    "suspend": "Suspender empresa",
+    "reactivate": "Reactivar empresa",
+    "saved": "Guardado.",
+    "error": "No se pudo guardar ese cambio.",
+    "suspended": {
+      "title": "Esta cuenta está suspendida",
+      "body": "El acceso a esta empresa está en pausa. Contacta a soporte para resolverlo. Tus datos se conservan.",
+      "signOut": "Cerrar sesión"
+    }
+  },
+  "legal": {
+    "back": "Volver",
+    "draft": "Borrador pendiente de revisión legal. Este texto es un punto de partida y no es asesoría legal.",
+    "updated": "Última actualización: noviembre de 2026.",
+    "privacy": {
+      "title": "Política de privacidad",
+      "sections": [
+        {
+          "title": "Qué recopilamos",
+          "body": "Datos de la cuenta (nombre, correo), la información del negocio que ingresas (clientes, cotizaciones, trabajos, facturas, gastos, inventario) y datos técnicos básicos para operar el servicio, como cookies de sesión y preferencias de idioma y tema."
+        },
+        {
+          "title": "Cómo la usamos",
+          "body": "Solo para prestar y proteger el servicio de tu empresa. No vendemos tus datos ni usamos la información de tus clientes para publicidad."
+        },
+        {
+          "title": "Quién puede verla",
+          "body": "Los datos de cada empresa están aislados de las demás. Dentro de tu empresa, cada persona ve solo lo que su rol permite. El personal de la plataforma ve conteos y estado de suscripción por empresa, no tus clientes, dinero ni documentos."
+        },
+        {
+          "title": "Recibos e IA",
+          "body": "Si la lectura de recibos está activada, la imagen del recibo que eliges se envía a un proveedor de IA para sugerir monto, fecha, comercio y categoría. Tú revisas cada sugerencia antes de guardar."
+        },
+        {
+          "title": "Proveedores de servicio",
+          "body": "Usamos proveedores de infraestructura para alojar la base de datos, los archivos y la aplicación. Procesan los datos solo para prestar el servicio."
+        },
+        {
+          "title": "Tus opciones",
+          "body": "Puedes pedirnos exportar o eliminar los datos de tu empresa. Escríbenos con los datos de contacto de nuestro sitio."
+        },
+        {
+          "title": "Contacto",
+          "body": "Las preguntas sobre privacidad pueden enviarse al contacto publicado en nuestro sitio."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Términos del servicio",
+      "sections": [
+        {
+          "title": "El servicio",
+          "body": "BrillaPro es un software que ayuda a empresas de limpieza a manejar clientes, cotizaciones, trabajos, facturas, gastos e inventario."
+        },
+        {
+          "title": "Tu cuenta",
+          "body": "Eres responsable de la actividad de tu cuenta y de cuidar tu contraseña. Los dueños deciden quién de su empresa puede entrar y con qué rol."
+        },
+        {
+          "title": "Tus datos",
+          "body": "Tus datos siguen siendo tuyos. Nos autorizas a guardarlos y procesarlos solo para prestar el servicio. Eres responsable de la exactitud de los documentos que creas y de cumplir las leyes que aplican a tu negocio, incluidos los impuestos."
+        },
+        {
+          "title": "Planes y pago",
+          "body": "Los planes limitan cuántas personas pueden entrar. Durante la prueba gratis puedes usar todas las funciones. Los precios y condiciones de cobro se mostrarán antes de suscribirte."
+        },
+        {
+          "title": "Uso aceptable",
+          "body": "No uses el servicio de forma indebida, no intentes acceder a datos de otras empresas ni subas contenido ilegal."
+        },
+        {
+          "title": "Suspensión",
+          "body": "Podemos suspender el acceso por falta de pago, abuso o razones de seguridad. Tus datos se conservan para resolver el asunto."
+        },
+        {
+          "title": "Disponibilidad y responsabilidad",
+          "body": "Trabajamos para mantener el servicio disponible pero no garantizamos que funcione sin interrupciones. En lo que la ley permita, nuestra responsabilidad se limita a lo que pagaste en los últimos doce meses."
+        },
+        {
+          "title": "Cambios",
+          "body": "Podemos actualizar estos términos. Avisaremos de los cambios importantes."
+        }
+      ]
+    },
+    "footerPrivacy": "Privacidad",
+    "footerTerms": "Términos"
   }
 }

@@ -94,6 +94,7 @@ export async function createWorkspace(_: FormState, formData: FormData): Promise
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) redirect("/login");
 
+  if ((await supabase.rpc("my_company_suspended")).data === true) redirect("/suspended");
   // Single atomic SECURITY DEFINER function: tenant + owner membership + settings + trial + audit.
   const { error } = await supabase.rpc("create_tenant", { p_name: parsed.data, p_locale: await resolveLocale() });
   if (error) return { error: "genericError" };
