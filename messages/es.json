@@ -341,7 +341,8 @@
       "area": "Pies cuadrados",
       "pet": "Mascotas",
       "noRating": "Sin calificar",
-      "stars": "{count} de 5 estrellas"
+      "stars": "{count} de 5 estrellas",
+      "openMap": "Abrir en Google Maps"
     },
     "time": {
       "none": "Sin visitas todavía",

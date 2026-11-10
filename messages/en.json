@@ -341,7 +341,8 @@
       "area": "Square feet",
       "pet": "Pets",
       "noRating": "Not rated",
-      "stars": "{count} of 5 stars"
+      "stars": "{count} of 5 stars",
+      "openMap": "Open in Google Maps"
     },
     "time": {
       "none": "No visits yet",

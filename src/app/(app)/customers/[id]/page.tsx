@@ -5,6 +5,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { Alert, Button, Card } from "@/components/ui";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { can } from "@/lib/permissions";
+import { mapsUrl } from "@/lib/maps";
 import { formatDateOnly, formatTimestamp } from "@/lib/dates";
 import { requireContext } from "@/lib/session";
 import { changeCustomerStatus, convertCustomer } from "@/modules/customers/actions";
@@ -44,10 +45,11 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
   const date = (d: string) => formatTimestamp(d, ctx.settings.date_format, ctx.settings.timezone);
   const dash = t("profile.none");
 
-  const rows: [string, string | null][] = [
+  const serviceAddress = [c.service_address, c.city, c.state, c.zip_code].filter(Boolean).join(", ");
+  const rows: [string, string | null, string?][] = [
     [t("form.email"), c.email], [t("form.phone"), c.phone], [t("form.secondaryPhone"), c.secondary_phone],
-    [t("form.serviceAddress"), [c.service_address, c.city, c.state, c.zip_code].filter(Boolean).join(", ") || null],
-    [t("form.billingAddress"), c.billing_address],
+    [t("form.serviceAddress"), serviceAddress || null, serviceAddress ? mapsUrl(serviceAddress) : undefined],
+    [t("form.billingAddress"), c.billing_address, c.billing_address ? mapsUrl(c.billing_address) : undefined],
     [t("form.propertyType"), c.property_type ? t(`propertyType.${c.property_type}` as never) : null],
     [t("form.squareFootage"), c.square_footage ? format.number(c.square_footage) : null],
     [t("form.bedrooms"), c.bedrooms?.toString() ?? null], [t("form.bathrooms"), c.bathrooms?.toString() ?? null],
@@ -111,10 +113,12 @@ export default async function CustomerProfilePage({ params }: { params: Promise<
         <Card className="lg:col-span-2">
           <h2 className="mb-4 text-base font-semibold">{t("profile.details")}</h2>
           <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-            {rows.map(([label, value]) => (
+            {rows.map(([label, value, link]) => (
               <div key={label} className="min-w-0">
                 <dt className="text-xs text-muted">{label}</dt>
-                <dd className="whitespace-pre-wrap break-words text-sm">{value || dash}</dd>
+                <dd className="whitespace-pre-wrap break-words text-sm">
+                  {value && link ? <a href={link} target="_blank" rel="noopener noreferrer" title={t("list.openMap")} className="text-primary hover:underline">{value}</a> : value || dash}
+                </dd>
               </div>
             ))}
           </dl>

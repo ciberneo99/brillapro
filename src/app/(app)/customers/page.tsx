@@ -9,6 +9,7 @@ import { Stars } from "@/components/customers/Stars";
 import { TimeBar } from "@/components/customers/TimeBar";
 import { Button, Select, cn } from "@/components/ui";
 import { formatMoney } from "@/lib/money";
+import { mapsUrl } from "@/lib/maps";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { listCustomers, SORTS } from "@/modules/customers/queries";
@@ -168,7 +169,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                       <td className="min-w-40 max-w-48 px-2.5 py-4">
                         <Link href={`/customers/${c.id}`} className="text-base font-semibold hover:text-primary">{displayName(c) || t("unnamed")}</Link>
                         {c.company_name && displayName(c) !== c.company_name && <p className="text-xs text-muted">{c.company_name}</p>}
-                        {addr && <p className="mt-1 flex gap-1 text-xs text-primary"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{addr}</p>}
+                        {addr && <a href={mapsUrl(addr)} target="_blank" rel="noopener noreferrer" title={t("list.openMap")} className="mt-1 flex gap-1 text-xs text-primary hover:underline"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{addr}<span className="sr-only"> ({t("list.openMap")})</span></a>}
                       </td>
                       <td className="px-2.5 py-4 text-muted">
                         {c.email && <p className="flex items-center gap-1.5"><Mail className="h-4 w-4 shrink-0" aria-hidden /><span className="max-w-32 truncate">{c.email}</span></p>}
@@ -204,7 +205,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <Link href={`/customers/${c.id}`} className="text-base font-semibold hover:text-primary">{displayName(c) || t("unnamed")}</Link>
-                      {addr && <p className="mt-0.5 flex gap-1 text-xs text-primary"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{addr}</p>}
+                      {addr && <a href={mapsUrl(addr)} target="_blank" rel="noopener noreferrer" title={t("list.openMap")} className="mt-0.5 flex gap-1 text-xs text-primary hover:underline"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{addr}<span className="sr-only"> ({t("list.openMap")})</span></a>}
                     </div>
                     <div className="flex shrink-0 items-center gap-1"><StatusBadge status={c.status} />{menu(c)}</div>
                   </div>
