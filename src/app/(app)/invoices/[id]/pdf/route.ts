@@ -1,5 +1,6 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
+import { logoForPdf } from "@/lib/logo-server";
 import { quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { getAppContext } from "@/lib/session";
@@ -17,10 +18,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!invoice) return new Response("Not found", { status: 404 });
   const is = await getInvoiceSettings(ctx.tenant.id);
   const s = ctx.settings;
+  const logo = await logoForPdf(s.logo_path);
 
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
-      invoice, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
+      invoice, logo, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
       business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: s.address, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],
   );

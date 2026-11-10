@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Card } from "@/components/ui";
+import { LogoCard } from "@/components/LogoCard";
+import { logoUrl } from "@/lib/logo-server";
 import { PlanCard } from "@/components/billing/PlanCard";
 import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
 import { publicEnv } from "@/lib/env";
@@ -13,9 +15,10 @@ import { getTheme } from "@/lib/theme";
 
 export const metadata = { title: "Settings" };
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ logo?: string }> }) {
   const ctx = await requireContext();
   if (!can(ctx.role, "settings:read")) redirect("/dashboard");
+  const sp = await searchParams;
   const t = await getTranslations("settings");
   const ts = await getTranslations("services");
   const te = await getTranslations("employees");
@@ -24,6 +27,8 @@ export default async function SettingsPage() {
   const tx = await getTranslations("expenses");
   const theme = await getTheme();
   const s = ctx.settings;
+  const logo = await logoUrl(s.logo_path);
+  const logoStatus = ["saved", "removed", "type", "size", "upload"].includes(sp.logo ?? "") ? sp.logo : undefined;
 
   return (
     <div className="space-y-6">
@@ -87,6 +92,8 @@ export default async function SettingsPage() {
           </Card>
         </Link>
       )}
+
+      <LogoCard url={logo} canEdit={can(ctx.role, "settings:write")} status={logoStatus} />
 
       <Card>
         <BusinessSettingsForm

@@ -63,43 +63,27 @@ export async function duplicateInvoice(id: string) {
   redirect(page(data as string, "?saved=1"));
 }
 
-export async function updateInvoice(id: string, formData: FormData) {
+/** Saves the whole draft in one go: header, customer, and every line in the order shown on screen. */
+export async function saveInvoiceDraft(id: string, formData: FormData) {
   await guard();
-  const p = invoiceHeaderSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
+  const h = invoiceHeaderSchema.safeParse(raw(formData));
+  let lines: unknown;
+  try { lines = JSON.parse(String(formData.get("lines") ?? "[]")); } catch { lines = null; }
+  if (!h.success || !Array.isArray(lines) || lines.length > 100) redirect(page(id, "?error=invalid"));
+  // Rows left completely blank in the editor are ignored, not errors.
+  const filled = lines.filter((l) => String(l?.description ?? "").trim() !== "" || String(l?.price ?? "").trim() !== "");
+  const parsed = filled.map((l) => lineSchema.safeParse(l));
+  if (parsed.some((p) => !p.success)) redirect(page(id, "?error=invalid"));
+  const customerId = String(formData.get("customer_id") ?? "");
   const supabase = await createClient();
-  const { data, error } = await supabase.from("invoices").update(p.data).eq("id", id).select("id");
+  const { error } = await supabase.rpc("save_invoice_draft", {
+    p_id: id,
+    p_header: { ...h.data, customer_id: UUID.test(customerId) ? customerId : null },
+    p_lines: parsed.map((p) => (p.success ? p.data : null)),
+  });
   revalidatePath(page(id));
-  redirect(page(id, error || !data?.length ? "?error=invalid" : "?saved=1"));
-}
-
-export async function addInvoiceLine(id: string, formData: FormData) {
-  const ctx = await guard();
-  const p = lineSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { data: last } = await supabase.from("invoice_lines").select("position").eq("invoice_id", id).order("position", { ascending: false }).limit(1);
-  const { error } = await supabase.from("invoice_lines").insert({ ...p.data, tenant_id: ctx.tenant.id, invoice_id: id, position: (last?.[0]?.position ?? 0) + 1 });
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function updateInvoiceLine(id: string, lineId: string, formData: FormData) {
-  await guard();
-  const p = lineSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { error } = await supabase.from("invoice_lines").update(p.data).eq("id", lineId).eq("invoice_id", id);
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function deleteInvoiceLine(id: string, lineId: string) {
-  await guard();
-  const supabase = await createClient();
-  await supabase.from("invoice_lines").delete().eq("id", lineId).eq("invoice_id", id);
-  revalidatePath(page(id));
-  redirect(page(id));
+  revalidatePath("/invoices");
+  redirect(page(id, error ? "?error=invalid" : "?saved=1"));
 }
 
 /** Issues a draft (marks it sent). Called right before the browser opens the user's own email app. */

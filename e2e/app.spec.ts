@@ -71,3 +71,53 @@ test("owner invites a teammate and gets a one-time link; the platform admin page
   const res = await page.goto("/admin");
   expect(res?.status()).toBe(404); // signed in, but not a platform admin
 });
+
+test("invoice editor: search a customer, reorder items by drag, save, and the order sticks", async ({ page }) => {
+  await sql`insert into public.customers (tenant_id, first_name, last_name, status, email, service_address, city, state, zip_code)
+    values (${tenantId}, 'Maria', 'Gonzalez', 'active', 'maria@example.com', '12 Oak St', 'Austin', 'TX', '78701'),
+           (${tenantId}, 'Peter', 'Smith', 'active', 'peter@example.com', null, null, null, null)`;
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  await page.goto("/invoices/new");
+  // Retry: the first keystrokes can land before the page has hydrated.
+  await expect(async () => {
+    await page.locator("#customer_search").fill("gonz");
+    await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await page.getByRole("listbox").getByRole("option").first().click();
+  await page.getByRole("button", { name: /create invoice|crear factura/i }).click();
+  await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}/);
+
+  // Customer details were filled from the search.
+  await expect(page.locator("#customer_name")).toHaveValue("Maria Gonzalez");
+  await expect(page.locator("#billing_address")).toHaveValue(/12 Oak St/);
+
+  // Three items, then drag the last one to the top.
+  const desc = (n: number) => page.getByLabel(new RegExp(`^(Description|Descripción) ${n}$`));
+  await desc(1).fill("Kitchen deep clean");
+  await page.getByLabel(/^(Rate|Precio) 1$/).fill("100");
+  await page.getByRole("button", { name: /add item|agregar concepto/i }).click();
+  await desc(2).fill("Bathrooms");
+  await page.getByRole("button", { name: /add item|agregar concepto/i }).click();
+  await desc(3).fill("Windows");
+  await page.getByLabel(/^(Rate|Precio) 3$/).fill("45");
+
+  const rows = page.locator("section[aria-labelledby=items] li");
+  await rows.nth(2).locator("[draggable=true]").dragTo(rows.nth(0));
+  await expect(desc(1)).toHaveValue("Windows");
+
+  // Keyboard-friendly alternative: move buttons.
+  await rows.nth(1).getByRole("button", { name: /move up|subir/i }).click();
+  await expect(desc(1)).toHaveValue("Kitchen deep clean");
+
+  await page.getByRole("button", { name: /save invoice|guardar factura/i }).click();
+  await expect(page).toHaveURL(/saved=1/);
+  await page.reload();
+  await expect(desc(1)).toHaveValue("Kitchen deep clean");
+  await expect(desc(2)).toHaveValue("Windows");
+  await expect(desc(3)).toHaveValue("Bathrooms");
+});

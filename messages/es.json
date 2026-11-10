@@ -168,6 +168,22 @@
       "title": "Mis preferencias",
       "languageHelp": "Idioma de la interfaz para tu cuenta.",
       "themeHelp": "Se aplica al instante y se recuerda en todos tus dispositivos."
+    },
+    "logo": {
+      "title": "Logo de la empresa",
+      "alt": "Logo de la empresa",
+      "none": "Aún sin logo",
+      "choose": "Elegir archivo de logo",
+      "upload": "Subir logo",
+      "remove": "Quitar logo",
+      "help": "PNG o JPG, hasta 1 MB. Se muestra arriba en tus facturas.",
+      "status": {
+        "saved": "Logo guardado.",
+        "removed": "Logo quitado.",
+        "type": "Usa una imagen PNG o JPG.",
+        "size": "La imagen pesa más de 1 MB.",
+        "upload": "No se pudo subir el logo. Inténtalo de nuevo."
+      }
     }
   },
   "errors": {
@@ -844,7 +860,51 @@
     "dueDays": "Vence después de (días)",
     "defaultTerms": "Términos y condiciones por defecto",
     "settingsReadOnly": "Solo el propietario o un administrador puede cambiar esto.",
-    "duplicate": "Duplicar"
+    "duplicate": "Duplicar",
+    "editor": {
+      "invoice": "FACTURA",
+      "draft": "Borrador",
+      "date": "Fecha",
+      "dueDate": "Vencimiento",
+      "billTo": "Facturar a",
+      "searchLabel": "Buscar clientes",
+      "searchHelp": "Elige un cliente para llenar los datos de abajo. Aun puedes editarlos en esta factura.",
+      "customerName": "Nombre",
+      "customerEmail": "Correo",
+      "customerAddress": "Dirección",
+      "items": "Conceptos",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Qué se hizo",
+      "qty": "Cant.",
+      "rate": "Precio",
+      "amount": "Importe",
+      "addItem": "Agregar concepto",
+      "drag": "Arrastra para reordenar",
+      "dragHelp": "Arrastra el asa para reordenar los conceptos, o usa las flechas.",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "removeItem": "Quitar concepto",
+      "moved": "Concepto movido a la posición {position} de {total}",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "taxRate": "Impuesto (%)",
+      "tax": "Impuesto",
+      "total": "Total",
+      "notes": "Notas",
+      "notesPlaceholder": "Algo que el cliente deba saber",
+      "terms": "Términos y condiciones",
+      "thanks": "¡Gracias por su preferencia!",
+      "save": "Guardar factura",
+      "saving": "Guardando…",
+      "error": "Revisa el cliente, las fechas y los conceptos, e inténtalo de nuevo.",
+      "logoAlt": "Logo de la empresa",
+      "saveFirst": "Guarda tus cambios antes de enviar: el correo y el PDF usan la factura guardada."
+    },
+    "search": {
+      "placeholder": "Buscar por nombre, correo, teléfono o dirección",
+      "clear": "Quitar cliente",
+      "none": "Ningún cliente coincide."
+    }
   },
   "expenses": {
     "title": "Gastos",

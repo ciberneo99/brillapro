@@ -1,4 +1,4 @@
-import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Image as PdfImage, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney, quoteNumber } from "@/lib/money";
 import type { InvoiceDetail } from "./queries";
@@ -18,7 +18,7 @@ const L = {
   },
 } as const;
 
-const TEAL = "#1596ad";
+const TEAL = "#0b7a75"; // same teal as the app
 const GREEN = "#15803d";
 const RED = "#c62828";
 const INK = "#1f2937";
@@ -28,13 +28,16 @@ const LINE = "#d1d5db";
 const s = StyleSheet.create({
   page: { paddingTop: 40, paddingBottom: 50, paddingHorizontal: 44, fontSize: 10, fontFamily: "Helvetica", color: INK },
   row: { flexDirection: "row", justifyContent: "space-between" },
+  logo: { maxHeight: 60, maxWidth: 120, objectFit: "contain", objectPositionX: 0 },
+  logoBox: { width: 48, height: 48, borderRadius: 8, backgroundColor: TEAL, alignItems: "center", justifyContent: "center" },
+  logoLetter: { color: "#ffffff", fontSize: 24, fontFamily: "Helvetica-Bold" },
   biz: { fontSize: 15, fontFamily: "Helvetica-Bold", marginBottom: 4 },
   muted: { color: MUTED, marginBottom: 2 },
   pill: { alignSelf: "flex-end", borderRadius: 10, paddingVertical: 3, paddingHorizontal: 12, color: "#ffffff", fontSize: 9, fontFamily: "Helvetica-Bold" },
   h1: { fontSize: 24, fontFamily: "Helvetica-Bold", color: TEAL, marginTop: 8, marginBottom: 6, textAlign: "right" },
   meta: { flexDirection: "row", justifyContent: "flex-end", marginTop: 3 },
-  metaLabel: { color: MUTED, width: 62, textAlign: "right", paddingRight: 8 },
-  metaValue: { width: 92, textAlign: "right", fontFamily: "Helvetica-Bold" },
+  metaLabel: { color: MUTED, width: 52, textAlign: "right", paddingRight: 8 },
+  metaValue: { width: 70, textAlign: "right", fontFamily: "Helvetica-Bold" },
   divider: { borderBottomWidth: 1, borderBottomColor: LINE, marginTop: 18, marginBottom: 14 },
   billLabel: { fontSize: 10, fontFamily: "Helvetica-Bold" },
   customer: { fontSize: 14, fontFamily: "Helvetica-Bold", textAlign: "right", marginBottom: 3 },
@@ -48,7 +51,7 @@ const s = StyleSheet.create({
   balance: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 7, paddingHorizontal: 8, marginTop: 4, color: "#ffffff", fontFamily: "Helvetica-Bold", fontSize: 11 },
   sectionTitle: { fontSize: 9, fontFamily: "Helvetica-Bold", marginTop: 22, marginBottom: 6 },
   payBox: { backgroundColor: "#f3f4f6", borderRadius: 4, padding: 8 },
-  pay: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#8b5cf6", borderRadius: 4, backgroundColor: "#ffffff", paddingVertical: 6, paddingHorizontal: 10, marginBottom: 4 },
+  pay: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: TEAL, borderRadius: 4, backgroundColor: "#ffffff", paddingVertical: 6, paddingHorizontal: 10, marginBottom: 4 },
   stamp: { position: "absolute", top: 176, left: 225, borderWidth: 3, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 12, transform: "rotate(-14deg)", alignItems: "center" },
   stampText: { fontSize: 26, fontFamily: "Helvetica-Bold", letterSpacing: 1 },
   stampDate: { fontSize: 9, fontFamily: "Helvetica-Bold" },
@@ -58,10 +61,11 @@ const s = StyleSheet.create({
 });
 
 export type PdfBusiness = { name: string; phone: string | null; email: string | null; address: string | null; tax_id: string | null };
+export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function InvoicePdf({
-  invoice, business, prefix, currency, dateFormat, locale,
-}: { invoice: InvoiceDetail; business: PdfBusiness; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
+  invoice, business, logo, prefix, currency, dateFormat, locale,
+}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
   const t = L[locale];
   const m = (c: number) => formatMoney(c, currency);
   const d = (v: string) => formatDateOnly(v, dateFormat);
@@ -77,14 +81,17 @@ export function InvoicePdf({
     <Document title={`${quoteNumber(prefix, invoice.number)} - ${business.name}`}>
       <Page size="LETTER" style={s.page}>
         <View style={s.row}>
-          <View style={{ maxWidth: 270 }}>
+          <View style={{ width: "30%" }}>
+            {logo ? <PdfImage src={{ data: logo.data, format: logo.format }} style={s.logo} /> : <View style={s.logoBox}><Text style={s.logoLetter}>{business.name.trim().charAt(0).toUpperCase() || "B"}</Text></View>}
+          </View>
+          <View style={{ width: "36%" }}>
             <Text style={s.biz}>{business.name}</Text>
             {business.address && <Text style={s.muted}>{business.address}</Text>}
             {business.phone && <Text style={s.muted}>{business.phone}</Text>}
             {business.email && <Text style={s.muted}>{business.email}</Text>}
             {business.tax_id && <Text style={s.muted}>{business.tax_id}</Text>}
           </View>
-          <View>
+          <View style={{ width: "34%" }}>
             {label && <Text style={[s.pill, { backgroundColor: color }]}>{label}</Text>}
             <Text style={s.h1}>{t.invoice}</Text>
             <View style={s.meta}><Text style={s.metaLabel}>{t.number}</Text><Text style={s.metaValue}>{quoteNumber(prefix, invoice.number)}</Text></View>

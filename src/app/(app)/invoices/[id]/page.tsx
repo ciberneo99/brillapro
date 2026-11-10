@@ -3,19 +3,20 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Alert, Button, Card, Field, Input, Select } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { EmailInput } from "@/components/ui/EmailInput";
 import { MoneyInput } from "@/components/ui/fields";
-import { SmartTextInput } from "@/components/ui/SmartTextInput";
+import { InvoiceEditor } from "@/components/invoices/InvoiceEditor";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
 import { SendInvoiceButton } from "@/components/invoices/SendInvoiceButton";
+import { SheetHeader } from "@/components/invoices/SheetHeader";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
+import { logoUrl } from "@/lib/logo-server";
 import { centsToMoneyText, formatMoney, quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
-import {
-  addInvoiceLine, deleteInvoice, duplicateInvoice, deleteInvoiceLine, deletePayment, recordPayment, updateInvoice, updateInvoiceLine, voidInvoice,
-} from "@/modules/invoices/actions";
+import { createClient } from "@/lib/supabase/server";
+import { displayName } from "@/modules/customers/schema";
+import { deleteInvoice, deletePayment, duplicateInvoice, recordPayment, saveInvoiceDraft, voidInvoice } from "@/modules/invoices/actions";
 import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
 import { PAYMENT_METHODS } from "@/modules/invoices/schema";
 
@@ -30,6 +31,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   const inv = await getInvoice(id);
   if (!inv) notFound();
   const t = await getTranslations("invoices");
+  const te = await getTranslations("invoices.editor");
   const settings = await getInvoiceSettings(ctx.tenant.id);
   const canWrite = can(ctx.role, "invoices:write");
   const draft = inv.status === "draft";
@@ -41,13 +43,28 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   const x = inv.totals;
   const today = todayIso(ctx.settings.timezone);
   const open = inv.status === "sent" && x.balance_cents > 0;
+  const company = {
+    name: ctx.tenant.name, address: ctx.settings.address, phone: ctx.settings.phone, email: ctx.settings.email, taxId: ctx.settings.tax_id,
+    logoUrl: await logoUrl(ctx.settings.logo_path),
+  };
+
+  let customers: { id: string; name: string; email: string | null; phone: string | null; address: string | null }[] = [];
+  if (editable) {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("customers").select("id,first_name,last_name,company_name,email,phone,billing_address,service_address,city,state,zip_code")
+      .neq("status", "archived").order("first_name").limit(1000);
+    customers = (data ?? []).map((c) => ({
+      id: c.id, name: displayName(c), email: c.email, phone: c.phone,
+      address: [c.billing_address || c.service_address, c.city, [c.state, c.zip_code].filter(Boolean).join(" ")].filter(Boolean).join(", ") || null,
+    }));
+  }
 
   const mailto = inv.customer_email
     ? `mailto:${encodeURIComponent(inv.customer_email)}?subject=${encodeURIComponent(t("mail.subject", { number: num, business: ctx.tenant.name }))}&body=${encodeURIComponent(
         t("mail.body", { name: inv.customer_name, number: num, total: m(x.total_cents), date: formatDateOnly(inv.due_date, fmt), business: ctx.tenant.name }),
       )}`
     : null;
-  const ta = "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm";
 
   return (
     <div className="space-y-6">
@@ -69,7 +86,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
         </div>
       </div>
 
-      {sp.error && <Alert>{t(sp.error === "payment" ? "paymentError" : sp.error === "issue" ? "issueError" : sp.error === "void" ? "voidError" : "invalid")}</Alert>}
+      {sp.error && sp.error !== "invalid" && <Alert>{t(sp.error === "payment" ? "paymentError" : sp.error === "issue" ? "issueError" : "voidError")}</Alert>}
       {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
       {!draft && <p className="text-sm text-muted">{t("lockedNote")}</p>}
 
@@ -79,75 +96,70 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
             {mailto ? <SendInvoiceButton id={id} mailto={mailto} resend={!draft} /> : <p className="text-sm text-muted">{t("noEmail")}</p>}
             <p className="max-w-md text-xs text-muted">{draft ? t("sendHelp") : t("resendHelp")}</p>
           </div>
+          {draft && <p className="text-xs text-muted">{te("saveFirst")}</p>}
         </Card>
       )}
 
-      {/* Customer + dates */}
-      <Card accent="blue">
-        {editable ? (
-          <form action={updateInvoice.bind(null, id)} className="grid gap-4 sm:grid-cols-2">
-            <h2 className="text-base font-semibold sm:col-span-2">{t("details")}</h2>
-            <Field label={t("billTo")} htmlFor="customer_name"><SmartTextInput id="customer_name" name="customer_name" mode="name" defaultValue={inv.customer_name} required maxLength={160} /></Field>
-            <Field label={t("email")} htmlFor="customer_email"><EmailInput id="customer_email" name="customer_email" defaultValue={inv.customer_email ?? ""} /></Field>
-            <div className="sm:col-span-2"><Field label={t("address")} htmlFor="billing_address"><SmartTextInput id="billing_address" name="billing_address" mode="address" defaultValue={inv.billing_address ?? ""} maxLength={300} /></Field></div>
-            <Field label={t("issueDate")} htmlFor="issue_date"><DatePicker id="issue_date" name="issue_date" defaultValue={inv.issue_date} dateFormat={fmt} /></Field>
-            <Field label={t("due")} htmlFor="due_date"><DatePicker id="due_date" name="due_date" defaultValue={inv.due_date} dateFormat={fmt} /></Field>
-            <Field label={t("discount")} htmlFor="discount"><MoneyInput id="discount" name="discount" defaultValue={centsToMoneyText(inv.discount_cents)} currency={cur} /></Field>
-            <Field label={t("taxRate")} htmlFor="tax_rate"><Input id="tax_rate" name="tax_rate" inputMode="decimal" defaultValue={String(inv.tax_rate)} maxLength={6} /></Field>
-            <div className="sm:col-span-2"><Field label={t("notes")} htmlFor="notes"><textarea id="notes" name="notes" rows={3} maxLength={2000} defaultValue={inv.notes ?? ""} className={ta} /></Field></div>
-            <div className="sm:col-span-2"><Field label={t("terms")} htmlFor="terms"><textarea id="terms" name="terms" rows={4} maxLength={3000} defaultValue={inv.terms ?? ""} className={ta} /></Field></div>
-            <div className="sm:col-span-2"><Button type="submit">{t("save")}</Button></div>
-          </form>
-        ) : (
-          <div className="space-y-1 text-sm">
-            <h2 className="text-base font-semibold">{inv.customer_name}</h2>
+      {editable ? (
+        <InvoiceEditor
+          number={num} company={company} customers={customers} currency={cur} dateFormat={fmt} error={sp.error === "invalid"}
+          action={saveInvoiceDraft.bind(null, id)}
+          initial={{
+            customerId: inv.customer_id, customerName: inv.customer_name, customerEmail: inv.customer_email ?? "", billingAddress: inv.billing_address ?? "",
+            issueDate: inv.issue_date, dueDate: inv.due_date, discount: centsToMoneyText(inv.discount_cents), taxRate: String(inv.tax_rate),
+            notes: inv.notes ?? "", terms: inv.terms ?? "",
+            lines: inv.lines.map((l) => ({ description: l.description, quantity: String(l.quantity), price: centsToMoneyText(l.unit_price_cents) })),
+          }}
+        />
+      ) : (
+        <div className="rounded-xl border border-line bg-surface p-5 shadow-card sm:p-8">
+          <SheetHeader company={company} alt={te("logoAlt")}>
+            <div className="space-y-1 text-sm">
+              <p className="text-3xl font-bold tracking-tight text-primary">{te("invoice")}</p>
+              <p className="font-semibold">{num}</p>
+              <p className="text-muted">{te("date")}: {formatDateOnly(inv.issue_date, fmt)}</p>
+              <p className="text-muted">{te("dueDate")}: {formatDateOnly(inv.due_date, fmt)}</p>
+            </div>
+          </SheetHeader>
+          <div className="space-y-0.5 border-b border-line py-6 text-sm">
+            <h2 className="text-sm font-semibold">{te("billTo")}</h2>
+            <p className="text-base font-semibold">{inv.customer_name}</p>
             {inv.billing_address && <p className="text-muted">{inv.billing_address}</p>}
             {inv.customer_email && <p className="text-muted">{inv.customer_email}</p>}
-            <p>{t("issueDate")}: {formatDateOnly(inv.issue_date, fmt)} · {t("due")}: {formatDateOnly(inv.due_date, fmt)}</p>
-            {inv.notes && <p className="whitespace-pre-wrap">{inv.notes}</p>}
-            {inv.terms && <p className="whitespace-pre-wrap text-xs text-muted">{inv.terms}</p>}
           </div>
-        )}
-      </Card>
-
-      {/* Lines */}
-      <Card accent="amber" className="space-y-3">
-        <h2 className="text-base font-semibold">{t("lines")}</h2>
-        {inv.lines.length === 0 && <p className="text-sm text-muted">{t("noLines")}</p>}
-        {inv.lines.map((l) =>
-          editable ? (
-            <form key={l.id} action={updateInvoiceLine.bind(null, id, l.id)} className="grid gap-2 sm:grid-cols-[1fr_5rem_9rem_auto_auto]">
-              <Input name="description" defaultValue={l.description} required maxLength={200} aria-label={t("lineDescription")} />
-              <Input name="quantity" defaultValue={String(l.quantity)} inputMode="decimal" aria-label={t("qty")} />
-              <MoneyInput id={`l-${l.id}`} name="price" defaultValue={centsToMoneyText(l.unit_price_cents)} currency={cur} />
-              <Button type="submit" variant="secondary">{t("save")}</Button>
-              <Button type="submit" variant="ghost" className="text-danger" formAction={deleteInvoiceLine.bind(null, id, l.id)} formNoValidate>{t("remove")}</Button>
-            </form>
-          ) : (
-            <div key={l.id} className="flex justify-between text-sm"><span>{l.description} × {l.quantity}</span><span>{m(Math.round(l.quantity * l.unit_price_cents))}</span></div>
-          ),
-        )}
-        {editable && (
-          <form action={addInvoiceLine.bind(null, id)} className="grid gap-2 border-t border-line pt-3 sm:grid-cols-[1fr_5rem_9rem_auto]">
-            <Input name="description" required maxLength={200} placeholder={t("lineDescription")} aria-label={t("lineDescription")} />
-            <Input name="quantity" defaultValue="1" inputMode="decimal" aria-label={t("qty")} />
-            <MoneyInput id="l-new" name="price" currency={cur} />
-            <Button type="submit">{t("addLine")}</Button>
-          </form>
-        )}
-      </Card>
-
-      {/* Totals */}
-      <Card accent="teal">
-        <div className="ml-auto max-w-sm space-y-1 text-sm">
-          <p className="flex justify-between"><span className="text-muted">{t("subtotal")}</span>{m(x.subtotal_cents)}</p>
-          {x.discount_cents > 0 && <p className="flex justify-between"><span className="text-muted">{t("discount")}</span>−{m(x.discount_cents)}</p>}
-          {inv.tax_rate > 0 && <p className="flex justify-between"><span className="text-muted">{t("tax")} ({inv.tax_rate}%)</span>{m(x.tax_cents)}</p>}
-          <p className="flex justify-between border-t border-line pt-1 text-base font-semibold"><span>{t("total")}</span>{m(x.total_cents)}</p>
-          {inv.status !== "draft" && <p className="flex justify-between"><span className="text-muted">{t("paid")}</span>−{m(x.paid_cents)}</p>}
-          {inv.status !== "draft" && <p className="flex justify-between text-base font-semibold"><span>{t("balance")}</span>{m(x.balance_cents)}</p>}
+          <div className="py-6">
+            <div className="hidden grid-cols-[minmax(0,1fr)_5rem_8rem_7rem] gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white md:grid">
+              <span>{te("description")}</span><span className="text-right">{te("qty")}</span><span className="text-right">{te("rate")}</span><span className="text-right">{te("amount")}</span>
+            </div>
+            {inv.lines.length === 0 && <p className="py-3 text-sm text-muted">{t("noLines")}</p>}
+            <ul className="divide-y divide-line text-sm">
+              {inv.lines.map((l) => (
+                <li key={l.id} className="grid grid-cols-[1fr_auto] gap-x-2 gap-y-0.5 px-3 py-3 md:grid-cols-[minmax(0,1fr)_5rem_8rem_7rem]">
+                  <span>{l.description}</span>
+                  <span className="text-right text-muted md:order-none">{l.quantity}</span>
+                  <span className="hidden text-right md:block">{m(l.unit_price_cents)}</span>
+                  <span className="text-right font-semibold">{m(Math.round(l.quantity * l.unit_price_cents))}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="grid gap-6 border-t border-line pt-6 md:grid-cols-2">
+            <div className="space-y-3 text-sm">
+              {inv.notes && <div><h3 className="font-semibold">{te("notes")}</h3><p className="whitespace-pre-wrap text-muted">{inv.notes}</p></div>}
+              {inv.terms && <div><h3 className="font-semibold">{te("terms")}</h3><p className="whitespace-pre-wrap text-xs text-muted">{inv.terms}</p></div>}
+            </div>
+            <dl className="space-y-1.5 text-sm md:ml-auto md:w-full md:max-w-xs">
+              <div className="flex justify-between"><dt className="text-muted">{t("subtotal")}</dt><dd>{m(x.subtotal_cents)}</dd></div>
+              {x.discount_cents > 0 && <div className="flex justify-between"><dt className="text-muted">{t("discount")}</dt><dd>−{m(x.discount_cents)}</dd></div>}
+              {inv.tax_rate > 0 && <div className="flex justify-between"><dt className="text-muted">{t("tax")} ({inv.tax_rate}%)</dt><dd>{m(x.tax_cents)}</dd></div>}
+              <div className="flex justify-between border-t border-line pt-1.5 font-semibold"><dt>{t("total")}</dt><dd>{m(x.total_cents)}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted">{t("paid")}</dt><dd>−{m(x.paid_cents)}</dd></div>
+              <div className="flex justify-between rounded-lg bg-primary px-3 py-2 text-base font-semibold text-white"><dt>{t("balance")}</dt><dd>{m(x.balance_cents)}</dd></div>
+            </dl>
+          </div>
+          <p className="pt-8 text-center text-sm font-semibold text-muted">{te("thanks")}</p>
         </div>
-      </Card>
+      )}
 
       {/* Payments */}
       {inv.status !== "draft" && (
