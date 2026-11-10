@@ -1133,5 +1133,28 @@
       "seats": "That company has no free seats right now. Ask them to make room.",
       "goBack": "Go to the app"
     }
+  },
+  "admin": {
+    "title": "Platform admin",
+    "intro": "Companies using BrillaPro. You see counts and status only, never customers, money or documents. Every change is recorded in that company's audit log.",
+    "summary": "{total} companies, {active} active.",
+    "counts": "{users} people, {customers} customers, {jobs} jobs, {invoices} invoices",
+    "trialUntil": "trial until {date}",
+    "suspendedBadge": "Suspended",
+    "plan": "Plan",
+    "subStatus": "Subscription status",
+    "savePlan": "Save plan",
+    "days": "Days",
+    "extend": "Extend trial",
+    "reason": "Reason (optional)",
+    "suspend": "Suspend company",
+    "reactivate": "Reactivate company",
+    "saved": "Saved.",
+    "error": "That change could not be saved.",
+    "suspended": {
+      "title": "This account is suspended",
+      "body": "Access to this company is paused. Please contact support to resolve it. Your data is kept.",
+      "signOut": "Sign out"
+    }
   }
 }

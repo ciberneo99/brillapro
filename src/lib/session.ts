@@ -65,5 +65,6 @@ export async function requireContext(): Promise<AppContext> {
   if (ctx) return ctx;
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
+  if (data.user && (await supabase.rpc("my_company_suspended")).data === true) redirect("/suspended");
   redirect(data.user ? "/onboarding" : "/login");
 }

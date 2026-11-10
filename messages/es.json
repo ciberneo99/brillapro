@@ -1133,5 +1133,28 @@
       "seats": "Esa empresa no tiene lugares libres por ahora. Pídeles que liberen uno.",
       "goBack": "Ir a la app"
     }
+  },
+  "admin": {
+    "title": "Administración de la plataforma",
+    "intro": "Empresas que usan BrillaPro. Solo ves conteos y estado, nunca clientes, dinero ni documentos. Cada cambio queda en la auditoría de esa empresa.",
+    "summary": "{total} empresas, {active} activas.",
+    "counts": "{users} personas, {customers} clientes, {jobs} trabajos, {invoices} facturas",
+    "trialUntil": "prueba hasta {date}",
+    "suspendedBadge": "Suspendida",
+    "plan": "Plan",
+    "subStatus": "Estado de la suscripción",
+    "savePlan": "Guardar plan",
+    "days": "Días",
+    "extend": "Extender prueba",
+    "reason": "Motivo (opcional)",
+    "suspend": "Suspender empresa",
+    "reactivate": "Reactivar empresa",
+    "saved": "Guardado.",
+    "error": "No se pudo guardar ese cambio.",
+    "suspended": {
+      "title": "Esta cuenta está suspendida",
+      "body": "El acceso a esta empresa está en pausa. Contacta a soporte para resolverlo. Tus datos se conservan.",
+      "signOut": "Cerrar sesión"
+    }
   }
 }
