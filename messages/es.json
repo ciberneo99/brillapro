@@ -154,7 +154,11 @@
       "email": "Correo del negocio",
       "address": "Dirección",
       "taxId": "ID fiscal",
-      "readOnly": "Solo el propietario o un administrador puede editar estos datos."
+      "readOnly": "Solo el propietario o un administrador puede editar estos datos.",
+      "website": "Sitio web",
+      "city": "Ciudad",
+      "state": "Estado",
+      "zip": "Código postal"
     },
     "regional": {
       "title": "Moneda y región",

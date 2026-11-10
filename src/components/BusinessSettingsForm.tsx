@@ -5,11 +5,12 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Field, Input, Select } from "@/components/ui";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
+import { ZipInput } from "@/components/ui/fields";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
 import { saveBusinessSettings } from "@/app/(app)/settings/actions";
 
 type Values = {
-  name: string; phone: string; email: string; address: string; tax_id: string;
+  name: string; phone: string; email: string; address: string; city: string; state: string; zip_code: string; website: string; tax_id: string;
   currency: string; timezone: string; date_format: string; doc_locale: string;
 };
 
@@ -39,8 +40,14 @@ export function BusinessSettingsForm({ values, canEdit }: { values: Values; canE
           <Field label={t("business.phone")} htmlFor="phone"><PhoneInput id="phone" name="phone" defaultValue={values.phone} /></Field>
           <Field label={t("business.email")} htmlFor="email"><EmailInput id="email" name="email" defaultValue={values.email} /></Field>
           <Field label={t("business.taxId")} htmlFor="tax_id"><Input id="tax_id" name="tax_id" defaultValue={values.tax_id} /></Field>
+          <Field label={t("business.website")} htmlFor="website"><Input id="website" name="website" type="text" inputMode="url" autoComplete="url" defaultValue={values.website} maxLength={200} placeholder="www.example.com" /></Field>
           <div className="sm:col-span-2">
             <Field label={t("business.address")} htmlFor="address"><SmartTextInput id="address" name="address" mode="address" defaultValue={values.address} maxLength={300} /></Field>
+          </div>
+          <Field label={t("business.city")} htmlFor="city"><Input id="city" name="city" defaultValue={values.city} maxLength={80} autoComplete="address-level2" /></Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label={t("business.state")} htmlFor="state"><Input id="state" name="state" defaultValue={values.state} maxLength={40} autoComplete="address-level1" /></Field>
+            <Field label={t("business.zip")} htmlFor="zip_code"><ZipInput id="zip_code" name="zip_code" defaultValue={values.zip_code} /></Field>
           </div>
         </div>
 

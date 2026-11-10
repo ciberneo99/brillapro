@@ -14,6 +14,7 @@ export type AppContext = {
     currency: string; timezone: string; date_format: string; doc_locale: "en" | "es";
     phone: string | null; email: string | null; address: string | null; tax_id: string | null;
     logo_path: string | null;
+    city: string | null; state: string | null; zip_code: string | null; website: string | null;
   };
   /** Whole days left in the free trial, or null when not trialing. */
   trialDaysLeft: number | null;
@@ -41,7 +42,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
 
   const [{ data: profile }, { data: settings }, { data: sub }] = await Promise.all([
     supabase.from("profiles").select("full_name, locale, theme").eq("id", user.id).single(),
-    supabase.from("tenant_settings").select("currency, timezone, date_format, doc_locale, phone, email, address, tax_id, logo_path").eq("tenant_id", tenant.id).single(),
+    supabase.from("tenant_settings").select("currency, timezone, date_format, doc_locale, phone, email, address, tax_id, logo_path, city, state, zip_code, website").eq("tenant_id", tenant.id).single(),
     supabase.from("subscriptions").select("status, trial_ends_at").eq("tenant_id", tenant.id).maybeSingle(),
   ]);
   if (!profile || !settings) return null;

@@ -99,7 +99,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <BusinessSettingsForm
           canEdit={can(ctx.role, "settings:write")}
           values={{
-            name: ctx.tenant.name, phone: s.phone ?? "", email: s.email ?? "", address: s.address ?? "",
+            name: ctx.tenant.name, phone: s.phone ?? "", email: s.email ?? "", address: s.address ?? "", city: s.city ?? "", state: s.state ?? "", zip_code: s.zip_code ?? "", website: s.website ?? "",
             tax_id: s.tax_id ?? "", currency: s.currency, timezone: s.timezone,
             date_format: s.date_format, doc_locale: s.doc_locale,
           }}

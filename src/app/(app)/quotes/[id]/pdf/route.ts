@@ -4,6 +4,7 @@ import { can } from "@/lib/permissions";
 import { getAppContext } from "@/lib/session";
 import { QuotePdf } from "@/modules/quotes/pdf";
 import { getQuote, getQuoteSettings } from "@/modules/quotes/queries";
+import { fullAddress } from "@/lib/business";
 import { quoteNumber } from "@/lib/money";
 
 export const runtime = "nodejs";
@@ -21,7 +22,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const buffer = await renderToBuffer(
     createElement(QuotePdf, {
       quote, prefix: qs.quote_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
-      business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: s.address, tax_id: s.tax_id },
+      business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],
   );
   const file = `${quoteNumber(qs.quote_prefix, quote.number)}.pdf`.replace(/[^\w.-]/g, "_");

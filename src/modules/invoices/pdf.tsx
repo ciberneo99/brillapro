@@ -1,5 +1,6 @@
 import { Document, Image as PdfImage, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { formatDateOnly } from "@/lib/dates";
+import { displayUrl } from "@/lib/business";
 import { formatMoney, quoteNumber } from "@/lib/money";
 import type { InvoiceDetail } from "./queries";
 
@@ -32,7 +33,7 @@ const s = StyleSheet.create({
   logoBox: { width: 48, height: 48, borderRadius: 8, backgroundColor: TEAL, alignItems: "center", justifyContent: "center" },
   logoLetter: { color: "#ffffff", fontSize: 24, fontFamily: "Helvetica-Bold" },
   biz: { fontSize: 15, fontFamily: "Helvetica-Bold", marginBottom: 4 },
-  muted: { color: MUTED, marginBottom: 2 },
+  muted: { color: MUTED, marginBottom: 2, textAlign: "right" },
   pill: { alignSelf: "flex-end", borderRadius: 10, paddingVertical: 3, paddingHorizontal: 12, color: "#ffffff", fontSize: 9, fontFamily: "Helvetica-Bold" },
   h1: { fontSize: 24, fontFamily: "Helvetica-Bold", color: TEAL, marginTop: 8, marginBottom: 6, textAlign: "right" },
   meta: { flexDirection: "row", justifyContent: "flex-end", marginTop: 3 },
@@ -60,7 +61,7 @@ const s = StyleSheet.create({
   thanks: { textAlign: "center", fontFamily: "Helvetica-Bold", fontSize: 11, marginTop: 14 },
 });
 
-export type PdfBusiness = { name: string; phone: string | null; email: string | null; address: string | null; tax_id: string | null };
+export type PdfBusiness = { name: string; phone: string | null; email: string | null; address: string | null; tax_id: string | null; website?: string | null };
 export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function InvoicePdf({
@@ -84,11 +85,12 @@ export function InvoicePdf({
           <View style={{ width: "30%" }}>
             {logo ? <PdfImage src={{ data: logo.data, format: logo.format }} style={s.logo} /> : <View style={s.logoBox}><Text style={s.logoLetter}>{business.name.trim().charAt(0).toUpperCase() || "B"}</Text></View>}
           </View>
-          <View style={{ width: "36%" }}>
-            <Text style={s.biz}>{business.name}</Text>
+          <View style={{ width: "36%", alignItems: "flex-end" }}>
+            <Text style={[s.biz, { textAlign: "right" }]}>{business.name}</Text>
             {business.address && <Text style={s.muted}>{business.address}</Text>}
             {business.phone && <Text style={s.muted}>{business.phone}</Text>}
             {business.email && <Text style={s.muted}>{business.email}</Text>}
+            {business.website && <Text style={s.muted}>{displayUrl(business.website)}</Text>}
             {business.tax_id && <Text style={s.muted}>{business.tax_id}</Text>}
           </View>
           <View style={{ width: "34%" }}>

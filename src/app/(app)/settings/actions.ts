@@ -7,6 +7,8 @@ import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
 import { isValidEmail } from "@/lib/email";
 import { normalizeAddress } from "@/lib/text";
+import { normalizeWebsite } from "@/lib/business";
+import { normalizeZip } from "@/lib/zip";
 import { checkLogo } from "@/lib/logo";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
@@ -22,6 +24,18 @@ const schema = z.object({
   phone: z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v))),
   email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
   address: z.string().trim().max(300).transform((v) => (v === "" ? null : normalizeAddress(v))),
+  city: optional(80),
+  state: optional(40),
+  zip_code: z.string().trim().max(12).transform((v, ctx) => {
+    const zip = normalizeZip(v);
+    if (zip === "invalid") { ctx.addIssue({ code: "custom", message: "zip" }); return z.NEVER; }
+    return zip;
+  }),
+  website: z.string().trim().max(200).transform((v, ctx) => {
+    const w = normalizeWebsite(v);
+    if (w === "invalid") { ctx.addIssue({ code: "custom", message: "website" }); return z.NEVER; }
+    return w;
+  }),
   tax_id: optional(60),
   currency: z.string().trim().toUpperCase().length(3),
   timezone: z.string().trim().min(1).max(60).refine((tz) => {

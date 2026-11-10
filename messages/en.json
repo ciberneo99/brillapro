@@ -154,7 +154,11 @@
       "email": "Business email",
       "address": "Address",
       "taxId": "Tax ID",
-      "readOnly": "Only the owner or an admin can edit these details."
+      "readOnly": "Only the owner or an admin can edit these details.",
+      "website": "Website",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code"
     },
     "regional": {
       "title": "Currency & regional",

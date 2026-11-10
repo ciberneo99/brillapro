@@ -10,6 +10,7 @@ import { SendInvoiceButton } from "@/components/invoices/SendInvoiceButton";
 import { SheetHeader } from "@/components/invoices/SheetHeader";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
+import { fullAddress } from "@/lib/business";
 import { logoUrl } from "@/lib/logo-server";
 import { centsToMoneyText, formatMoney, quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -44,7 +45,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   const today = todayIso(ctx.settings.timezone);
   const open = inv.status === "sent" && x.balance_cents > 0;
   const company = {
-    name: ctx.tenant.name, address: ctx.settings.address, phone: ctx.settings.phone, email: ctx.settings.email, taxId: ctx.settings.tax_id,
+    name: ctx.tenant.name, address: fullAddress(ctx.settings), website: ctx.settings.website, phone: ctx.settings.phone, email: ctx.settings.email, taxId: ctx.settings.tax_id,
     logoUrl: await logoUrl(ctx.settings.logo_path),
   };
 

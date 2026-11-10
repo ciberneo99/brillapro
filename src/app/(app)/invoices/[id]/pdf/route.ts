@@ -1,5 +1,6 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
+import { fullAddress } from "@/lib/business";
 import { logoForPdf } from "@/lib/logo-server";
 import { quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -23,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
       invoice, logo, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
-      business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: s.address, tax_id: s.tax_id },
+      business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), website: s.website, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],
   );
   const file = `${quoteNumber(is.invoice_prefix, invoice.number)}.pdf`.replace(/[^\w.-]/g, "_");

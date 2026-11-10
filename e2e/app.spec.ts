@@ -121,3 +121,24 @@ test("invoice editor: search a customer, reorder items by drag, save, and the or
   await expect(desc(2)).toHaveValue("Windows");
   await expect(desc(3)).toHaveValue("Bathrooms");
 });
+
+test("business profile saves city, state, ZIP and website", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto("/settings");
+  await expect(async () => {
+    await page.locator("#city").fill("Austin");
+    await page.locator("#state").fill("TX");
+    await page.locator("#zip_code").fill("787451234");
+    await page.locator("#website").fill("www.sparkle.example");
+    await expect(page.locator("#zip_code")).toHaveValue("78745-1234", { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await page.locator("#website").locator("xpath=ancestor::form").getByRole("button", { name: /save|guardar/i }).click();
+  await expect(page.getByText(/saved|guardado/i).first()).toBeVisible();
+  await page.reload();
+  await expect(page.locator("#city")).toHaveValue("Austin");
+  await expect(page.locator("#website")).toHaveValue("https://www.sparkle.example");
+});
