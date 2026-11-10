@@ -924,5 +924,131 @@
       "denied": "No tienes acceso a esto.",
       "pdf": "No se pudo crear el PDF. Inténtalo de nuevo."
     }
+  },
+  "landing": {
+    "nav": {
+      "features": "Funciones",
+      "pricing": "Precios",
+      "faq": "Preguntas"
+    },
+    "login": "Iniciar sesión",
+    "cta": "Probar gratis",
+    "hero": {
+      "title": "Maneja tu negocio de limpieza desde un solo lugar.",
+      "subtitle": "Clientes, cotizaciones, trabajos, facturas y gastos en un sistema sencillo hecho para empresas de limpieza, en español e inglés.",
+      "note": "{days} días gratis. No necesitas tarjeta."
+    },
+    "features": {
+      "title": "Todo lo que necesitas para llevar tu día",
+      "subtitle": "Pensado para cómo trabajan de verdad los negocios de limpieza: clientes fijos, un equipo pequeño y papeleo que quieres terminar rápido.",
+      "items": {
+        "customers": {
+          "title": "Clientes y solicitudes",
+          "body": "Guarda los datos y el historial de cada cliente en un solo lugar, y deja que los nuevos pidan una cotización desde tu propio enlace."
+        },
+        "quotes": {
+          "title": "Cotizaciones que cierran trabajos",
+          "body": "Envía cotizaciones en PDF con opciones Good, Better y Best, y convierte la aceptada en un trabajo."
+        },
+        "jobs": {
+          "title": "Trabajos y calendario",
+          "body": "Programa por mes, semana o día, configura una sola vez a tus clientes semanales o quincenales y asigna a tu equipo."
+        },
+        "team": {
+          "title": "El acceso correcto para tu equipo",
+          "body": "Los empleados solo ven los trabajos que tienen asignados, y pueden marcar entrada y salida y palomear tareas."
+        },
+        "invoices": {
+          "title": "Facturas y pagos",
+          "body": "Crea facturas en PDF, registra pagos y repite la factura de la semana pasada para un cliente fijo con un clic."
+        },
+        "expenses": {
+          "title": "Gastos con recibos",
+          "body": "Lleva tus costos por categoría y guarda la foto de cada recibo, almacenada de forma privada."
+        },
+        "inventory": {
+          "title": "Inventario",
+          "body": "Sabe qué insumos tienes y recibe un aviso cuando algo se esté acabando."
+        },
+        "reports": {
+          "title": "Reportes",
+          "body": "Mira lo que facturaste, cobraste y gastaste, además de trabajos y horas trabajadas, por mes o por año."
+        },
+        "venmo": {
+          "title": "Reporte de Venmo",
+          "body": "Sube tu estado de cuenta de Venmo y obtén un reporte en PDF limpio y ordenado para tus registros."
+        }
+      }
+    },
+    "steps": {
+      "title": "Listo en minutos",
+      "one": {
+        "title": "Crea tu cuenta",
+        "body": "Configura tu empresa y elige tu idioma."
+      },
+      "two": {
+        "title": "Agrega clientes, envía cotizaciones",
+        "body": "Trae a tus clientes y envía cotizaciones con aspecto profesional."
+      },
+      "three": {
+        "title": "Haz el trabajo, factura, cobra",
+        "body": "Programa el trabajo, factura con un clic y registra el pago."
+      }
+    },
+    "pricing": {
+      "title": "Precios sencillos",
+      "subtitle": "Todos los planes incluyen todas las funciones. Elige según cuántas personas de tu equipo necesitan entrar al sistema.",
+      "popular": "Más popular",
+      "perMonth": "al mes",
+      "yearly": "o {price} al año (2 meses gratis)",
+      "users": "Hasta {count} personas pueden entrar",
+      "everything": "Todas las funciones incluidas",
+      "bilingual": "Español e inglés",
+      "note": "Las suscripciones abren pronto. Empieza hoy tu prueba gratis de {days} días y conserva tus datos cuando te suscribas.",
+      "plans": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Para dueños que trabajan solos o equipos muy pequeños."
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Para equipos en crecimiento con oficina y cuadrilla."
+        },
+        "business": {
+          "name": "Business",
+          "tagline": "Para empresas grandes con varios equipos."
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas",
+      "items": {
+        "trial": {
+          "q": "¿Hay prueba gratis?",
+          "a": "Sí. Tienes {days} días para probar todo, y no necesitas tarjeta de crédito para empezar."
+        },
+        "spanish": {
+          "q": "¿Puedo usarlo en español?",
+          "a": "Sí. Cambia entre español e inglés cuando quieras. Las cotizaciones y facturas pueden salir en cualquiera de los dos idiomas."
+        },
+        "team": {
+          "q": "¿Pueden usarlo mis empleados?",
+          "a": "Sí. Dale un rol a cada persona. Los empleados solo ven los trabajos que tienen asignados, así que los datos de clientes y dinero siguen privados."
+        },
+        "payments": {
+          "q": "¿Mis clientes pueden pagar en línea?",
+          "a": "Todavía no. Tú registras cada pago (efectivo, cheque, Zelle, Venmo y más) en la factura, y el saldo se actualiza solo."
+        },
+        "data": {
+          "q": "¿Mis datos están separados de los de otras empresas?",
+          "a": "Sí. La información de cada empresa está aislada, y cada persona solo ve lo que su rol permite."
+        }
+      }
+    },
+    "final": {
+      "title": "¿Listo para simplificar tu semana?",
+      "body": "Prueba BrillaPro gratis por {days} días."
+    },
+    "footer": "Hecho para empresas de limpieza."
   }
 }

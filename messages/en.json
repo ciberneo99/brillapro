@@ -924,5 +924,131 @@
       "denied": "You don't have access to this.",
       "pdf": "The PDF could not be created. Try again."
     }
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "faq": "FAQ"
+    },
+    "login": "Log in",
+    "cta": "Start free trial",
+    "hero": {
+      "title": "Run your cleaning business from one place.",
+      "subtitle": "Customers, quotes, jobs, invoices and expenses in one simple system built for cleaning companies, in English and Spanish.",
+      "note": "{days} days free. No credit card needed."
+    },
+    "features": {
+      "title": "Everything you need to run the day",
+      "subtitle": "Built around how cleaning businesses really work: regular customers, a small team and paperwork you want to finish fast.",
+      "items": {
+        "customers": {
+          "title": "Customers and requests",
+          "body": "Keep each customer's details and history in one place, and let new customers ask for a quote from your own link."
+        },
+        "quotes": {
+          "title": "Quotes that win jobs",
+          "body": "Send professional PDF quotes with Good, Better and Best options, then turn an accepted quote into a job."
+        },
+        "jobs": {
+          "title": "Jobs and calendar",
+          "body": "Schedule by month, week or day, set up weekly or biweekly customers once, and assign your team."
+        },
+        "team": {
+          "title": "The right access for your team",
+          "body": "Employees only see the jobs assigned to them, and can clock in and out and check off tasks."
+        },
+        "invoices": {
+          "title": "Invoices and payments",
+          "body": "Create PDF invoices, record payments, and repeat last week's invoice for a regular customer in one click."
+        },
+        "expenses": {
+          "title": "Expenses with receipts",
+          "body": "Track costs by category and keep a photo of each receipt, stored privately."
+        },
+        "inventory": {
+          "title": "Inventory",
+          "body": "Know which supplies you have and get a warning when something is running low."
+        },
+        "reports": {
+          "title": "Reports",
+          "body": "See what you invoiced, collected and spent, plus jobs and hours worked, by month or year."
+        },
+        "venmo": {
+          "title": "Venmo report",
+          "body": "Upload your Venmo statement and get a clean, organized PDF report for your records."
+        }
+      }
+    },
+    "steps": {
+      "title": "Up and running in minutes",
+      "one": {
+        "title": "Create your account",
+        "body": "Set up your company and choose your language."
+      },
+      "two": {
+        "title": "Add customers, send quotes",
+        "body": "Bring in your customers and send quotes that look professional."
+      },
+      "three": {
+        "title": "Do the job, invoice, get paid",
+        "body": "Schedule the work, invoice with one click and record the payment."
+      }
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "subtitle": "Every plan includes every feature. Choose by how many people on your team need to sign in.",
+      "popular": "Most popular",
+      "perMonth": "per month",
+      "yearly": "or {price} per year (2 months free)",
+      "users": "Up to {count} people can sign in",
+      "everything": "All features included",
+      "bilingual": "English and Spanish",
+      "note": "Subscriptions open soon. Start your {days}-day free trial now and keep your data when you subscribe.",
+      "plans": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "For owner-operators and very small teams."
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "For growing teams with an office and a crew."
+        },
+        "business": {
+          "name": "Business",
+          "tagline": "For larger companies with several teams."
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions",
+      "items": {
+        "trial": {
+          "q": "Is there a free trial?",
+          "a": "Yes. You get {days} days to try everything, and you don't need a credit card to start."
+        },
+        "spanish": {
+          "q": "Can I use it in Spanish?",
+          "a": "Yes. Switch between English and Spanish at any time. Quotes and invoices can go out in either language."
+        },
+        "team": {
+          "q": "Can my employees use it?",
+          "a": "Yes. Give each person a role. Employees only see the jobs assigned to them, so customer and money details stay private."
+        },
+        "payments": {
+          "q": "Can customers pay online?",
+          "a": "Not yet. You record each payment (cash, check, Zelle, Venmo and more) on the invoice, and the balance updates for you."
+        },
+        "data": {
+          "q": "Is my data kept separate from other companies?",
+          "a": "Yes. Each company's information is isolated, and people only see what their role allows."
+        }
+      }
+    },
+    "final": {
+      "title": "Ready to simplify your week?",
+      "body": "Try BrillaPro free for {days} days."
+    },
+    "footer": "Made for cleaning companies."
   }
 }
