@@ -201,10 +201,16 @@
     "prev": "Anterior",
     "next": "Siguiente",
     "columns": {
-      "name": "Nombre",
+      "name": "Cliente",
       "contact": "Contacto",
       "status": "Estado",
-      "added": "Agregado"
+      "added": "Agregado",
+      "property": "Propiedad",
+      "time": "Tiempo",
+      "frequency": "Frecuencia",
+      "rating": "Calificación",
+      "outstanding": "Pendiente",
+      "actions": "Acciones"
     },
     "empty": {
       "title": "Aún no hay clientes",
@@ -243,7 +249,9 @@
       "status": "Estado",
       "choose": "Seleccionar…",
       "create": "Crear cliente",
-      "identityHint": "Ingresa un nombre o el nombre de una empresa."
+      "identityHint": "Ingresa un nombre o el nombre de una empresa.",
+      "rating": "Calificación",
+      "ratingHint": "Tus propias estrellas de 1 a 5 para este cliente"
     },
     "propertyType": {
       "house": "Casa",
@@ -307,6 +315,42 @@
       "invalid": "Algunos campos no son válidos. Revísalos e inténtalo de nuevo.",
       "saveFailed": "No se pudo guardar el cliente.",
       "notFound": "Cliente no encontrado."
+    },
+    "summary": {
+      "overdue": "Monto vencido",
+      "outstanding": "Total pendiente",
+      "drafts": "Cotizaciones en borrador",
+      "viewInvoices": "Ver facturas",
+      "viewQuotes": "Ver cotizaciones"
+    },
+    "list": {
+      "newClient": "Nuevo cliente",
+      "advanced": "Avanzado",
+      "status": "Estado",
+      "sort": "Ordenar por",
+      "apply": "Aplicar",
+      "clear": "Limpiar",
+      "menu": "Acciones",
+      "view": "Ver perfil",
+      "edit": "Editar",
+      "newQuote": "Nueva cotización",
+      "newJob": "Nuevo trabajo",
+      "sqft": "pies²",
+      "beds": "Recámaras",
+      "baths": "Baños",
+      "area": "Pies cuadrados",
+      "pet": "Mascotas",
+      "noRating": "Sin calificar",
+      "stars": "{count} de 5 estrellas"
+    },
+    "time": {
+      "none": "Sin visitas todavía",
+      "of": "de {planned}",
+      "noPlan": "Sin horario programado",
+      "crew": "{count, plural, one {# persona} other {# personas}}",
+      "running": "En curso",
+      "over": "Más del tiempo planeado",
+      "last": "Última visita {date}"
     }
   },
   "request": {

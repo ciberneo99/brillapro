@@ -84,3 +84,9 @@ erDiagram
 - Solo `submit_quote_request` y `public_company_name` son funciones privilegiadas que visitantes pueden ejecutar (a propósito); las demás que ven son triggers o helpers sin privilegios.
 - Todas las funciones SECURITY DEFINER fijan `search_path`. Las vistas usan `security_invoker`. El bucket `receipts` es privado.
 - Formulario público: honeypot, tiempo mínimo, límite por empresa en la base y Turnstile opcional (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`).
+
+### Lista de clientes (migración 0020)
+
+- `customers.rating` (1 a 5, la pone el usuario a mano; editable desde el formulario del cliente).
+- `customer_list_extras(ids)`: por cliente, saldo pendiente y vencido, y el último trabajo iniciado con horas reales (entradas/salidas) contra horas planeadas (ventana programada × personas asignadas). Corre con los permisos de quien consulta: sin acceso a facturas ve ceros.
+- `customers_summary()`: monto vencido, total pendiente y cotizaciones en borrador.

@@ -201,10 +201,16 @@
     "prev": "Previous",
     "next": "Next",
     "columns": {
-      "name": "Name",
+      "name": "Client",
       "contact": "Contact",
       "status": "Status",
-      "added": "Added"
+      "added": "Added",
+      "property": "Property",
+      "time": "Time",
+      "frequency": "Frequency",
+      "rating": "Rating",
+      "outstanding": "Outstanding",
+      "actions": "Actions"
     },
     "empty": {
       "title": "No customers yet",
@@ -243,7 +249,9 @@
       "status": "Status",
       "choose": "Select…",
       "create": "Create customer",
-      "identityHint": "Enter a name or a company name."
+      "identityHint": "Enter a name or a company name.",
+      "rating": "Rating",
+      "ratingHint": "Your own 1 to 5 stars for this customer"
     },
     "propertyType": {
       "house": "House",
@@ -307,6 +315,42 @@
       "invalid": "Some fields are not valid. Check them and try again.",
       "saveFailed": "The customer could not be saved.",
       "notFound": "Customer not found."
+    },
+    "summary": {
+      "overdue": "Overdue amount",
+      "outstanding": "Total outstanding",
+      "drafts": "Draft quotes",
+      "viewInvoices": "View invoices",
+      "viewQuotes": "View quotes"
+    },
+    "list": {
+      "newClient": "New client",
+      "advanced": "Advanced",
+      "status": "Status",
+      "sort": "Sort by",
+      "apply": "Apply",
+      "clear": "Clear",
+      "menu": "Actions",
+      "view": "View profile",
+      "edit": "Edit",
+      "newQuote": "New quote",
+      "newJob": "New job",
+      "sqft": "sqft",
+      "beds": "Bedrooms",
+      "baths": "Bathrooms",
+      "area": "Square feet",
+      "pet": "Pets",
+      "noRating": "Not rated",
+      "stars": "{count} of 5 stars"
+    },
+    "time": {
+      "none": "No visits yet",
+      "of": "of {planned}",
+      "noPlan": "No scheduled time",
+      "crew": "{count, plural, one {# person} other {# people}}",
+      "running": "In progress",
+      "over": "Over the planned time",
+      "last": "Last visit {date}"
     }
   },
   "request": {

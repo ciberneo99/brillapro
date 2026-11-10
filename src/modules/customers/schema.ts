@@ -101,6 +101,7 @@ const fields = z
     special_instructions: sentence(2000),
     notes: sentence(5000),
     customer_since: date,
+    rating: intOrNull(1, 5),
   })
   .refine((v) => `${v.first_name}${v.last_name}${v.company_name}`.trim() !== "", { message: "identityRequired", path: ["first_name"] })
   .transform(({ estimated_price, ...rest }) => ({ ...rest, estimated_price_cents: estimated_price }));
@@ -108,7 +109,7 @@ const fields = z
 const FORM_KEYS = [
   "first_name", "last_name", "company_name", "email", "phone", "secondary_phone", "service_address", "billing_address",
   "city", "state", "zip_code", "property_type", "square_footage", "bedrooms", "bathrooms", "cleaning_frequency",
-  "preferred_service", "estimated_price", "access_instructions", "pets", "special_instructions", "notes", "customer_since",
+  "preferred_service", "estimated_price", "access_instructions", "pets", "special_instructions", "notes", "customer_since", "rating",
 ] as const;
 
 /** Missing keys count as empty (a form never has to send every field). Unknown keys are dropped. */
@@ -130,7 +131,7 @@ export type CustomerRow = {
   property_type: string | null; square_footage: number | null; bedrooms: number | null; bathrooms: number | null;
   cleaning_frequency: string | null; preferred_service: string | null; estimated_price_cents: number | null;
   access_instructions: string | null; pets: string | null; special_instructions: string | null; notes: string | null;
-  customer_since: string | null; converted_at: string | null; created_at: string;
+  customer_since: string | null; rating: number | null; converted_at: string | null; created_at: string;
 };
 
 export function displayName(c: Pick<CustomerRow, "first_name" | "last_name" | "company_name">): string {

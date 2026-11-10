@@ -10,7 +10,7 @@ export type Sort = (typeof SORTS)[number];
 const COLUMNS =
   "id,status,source,first_name,last_name,company_name,email,phone,secondary_phone,service_address,billing_address,city,state,zip_code," +
   "property_type,square_footage,bedrooms,bathrooms,cleaning_frequency,preferred_service,estimated_price_cents,access_instructions," +
-  "pets,special_instructions,notes,customer_since,converted_at,created_at";
+  "pets,special_instructions,notes,customer_since,rating,converted_at,created_at";
 
 /** Characters with meaning in PostgREST filters / LIKE are removed from the search term. */
 function cleanSearch(q: string): string {
