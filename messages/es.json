@@ -95,7 +95,55 @@
       "upcoming": "Próximos trabajos",
       "expenses": "Gastos del mes",
       "profit": "Utilidad estimada"
-    }
+    },
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "search": "Buscar clientes por nombre, teléfono o correo",
+    "kpis": "Cifras principales",
+    "new": {
+      "button": "Nuevo",
+      "customer": "Nuevo cliente",
+      "quote": "Nueva cotización",
+      "job": "Nuevo trabajo",
+      "invoice": "Nueva factura",
+      "expense": "Agregar gasto"
+    },
+    "invoicesCount": "{count, plural, one {# factura} other {# facturas}}",
+    "activeBadge": "Activos",
+    "profitable": "Con ganancia",
+    "loss": "Con pérdida",
+    "growth": {
+      "title": "Ventas y crecimiento",
+      "vsLast": "vs mes anterior",
+      "newCustomers": "Clientes nuevos este mes",
+      "newCustomersHint": "Clientes agregados este mes",
+      "completedJobs": "Trabajos completados",
+      "completedJobsHint": "Terminados este mes",
+      "avgJob": "Valor promedio por trabajo",
+      "avgJobHint": "Ingresos cobrados ÷ trabajos completados",
+      "perCustomer": "Ingreso por cliente",
+      "perCustomerHint": "Ingresos cobrados ÷ clientes activos"
+    },
+    "charts": {
+      "monthlyRevenue": "Ingresos cobrados, últimos 12 meses",
+      "byMethod": "Ingresos por método de pago",
+      "revenueVsExpenses": "Ingresos vs gastos, últimos 12 meses",
+      "revenue": "Ingresos",
+      "expenses": "Gastos",
+      "noPayments": "Los pagos que registres aparecerán aquí."
+    },
+    "tasks": {
+      "title": "Tareas abiertas",
+      "empty": "No hay tareas abiertas."
+    },
+    "upcoming": {
+      "title": "Próximos trabajos",
+      "empty": "No hay trabajos programados."
+    },
+    "viewAll": "Ver todo"
   },
   "settings": {
     "title": "Configuración",
