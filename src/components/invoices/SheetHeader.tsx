@@ -17,7 +17,7 @@ export function SheetHeader({ company, alt, children }: { company: SheetCompany;
           </div>
         )}
       </div>
-      <div className="space-y-0.5 text-sm md:text-right">
+      <div className="space-y-0.5 text-sm">
         <p className="text-base font-semibold">{company.name}</p>
         {company.address && <p className="whitespace-pre-line text-muted">{company.address}</p>}
         {company.phone && <p className="text-muted">{company.phone}</p>}
