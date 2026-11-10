@@ -875,5 +875,47 @@
     "hours": "Hours worked",
     "lowStock": "Low stock",
     "stockOk": "Everything is above its minimum."
+  },
+  "venmo": {
+    "title": "Venmo Report Generator",
+    "intro": "Upload the statement CSV from Venmo and get an organized report you can download as a PDF.",
+    "upload": "Upload your Venmo statement",
+    "uploadHelp": "In Venmo: Statements → download the monthly statement as CSV, then choose that file here.",
+    "clear": "Clear",
+    "privacy": "The file is read to build the report and is not saved anywhere.",
+    "reading": "Reading the file…",
+    "preparing": "Preparing…",
+    "downloadPdf": "Download PDF",
+    "reportTitle": "Venmo report",
+    "received": "Received",
+    "transfers": "Transferred to bank",
+    "sent": "Sent",
+    "fees": "Fees",
+    "beginning": "Beginning balance",
+    "ending": "Ending balance",
+    "checkOk": "The statement adds up: beginning balance plus movements equals the ending balance.",
+    "checkBad": "The statement does not add up. Difference:",
+    "excluded": "Not counted (pending, failed or cancelled):",
+    "byClient": "Received by customer",
+    "byWeek": "Received by week (starting Sunday)",
+    "transactions": "Transactions",
+    "date": "Date",
+    "kind": "Type",
+    "who": "Name",
+    "note": "Note",
+    "amount": "Amount",
+    "kinds": {
+      "received": "Received",
+      "sent": "Sent",
+      "transfer": "To bank"
+    },
+    "errors": {
+      "file": "Choose a .csv file.",
+      "empty": "The file is empty.",
+      "format": "This does not look like a Venmo statement. Download the CSV from Venmo's Statements page.",
+      "tooBig": "The file is too large.",
+      "denied": "You don't have access to this.",
+      "pdf": "The PDF could not be created. Try again."
+    }
   }
 }

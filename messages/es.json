@@ -875,5 +875,47 @@
     "hours": "Horas trabajadas",
     "lowStock": "Poco stock",
     "stockOk": "Todo está por encima de su mínimo."
+  },
+  "venmo": {
+    "title": "Generador de reporte de Venmo",
+    "intro": "Sube el CSV del estado de cuenta de Venmo y obtén un reporte ordenado que puedes bajar en PDF.",
+    "upload": "Sube tu estado de cuenta de Venmo",
+    "uploadHelp": "En Venmo: Statements → descarga el estado de cuenta mensual en CSV y elige ese archivo aquí.",
+    "clear": "Quitar",
+    "privacy": "El archivo se lee para armar el reporte y no se guarda en ningún lado.",
+    "reading": "Leyendo el archivo…",
+    "preparing": "Preparando…",
+    "downloadPdf": "Descargar PDF",
+    "reportTitle": "Reporte de Venmo",
+    "received": "Recibido",
+    "transfers": "Transferido al banco",
+    "sent": "Enviado",
+    "fees": "Comisiones",
+    "beginning": "Saldo inicial",
+    "ending": "Saldo final",
+    "checkOk": "El estado de cuenta cuadra: saldo inicial más movimientos es igual al saldo final.",
+    "checkBad": "El estado de cuenta no cuadra. Diferencia:",
+    "excluded": "No contados (pendientes, fallidos o cancelados):",
+    "byClient": "Recibido por cliente",
+    "byWeek": "Recibido por semana (inicia en domingo)",
+    "transactions": "Movimientos",
+    "date": "Fecha",
+    "kind": "Tipo",
+    "who": "Nombre",
+    "note": "Nota",
+    "amount": "Monto",
+    "kinds": {
+      "received": "Recibido",
+      "sent": "Enviado",
+      "transfer": "Al banco"
+    },
+    "errors": {
+      "file": "Elige un archivo .csv.",
+      "empty": "El archivo está vacío.",
+      "format": "No parece un estado de cuenta de Venmo. Descarga el CSV desde la página Statements de Venmo.",
+      "tooBig": "El archivo es demasiado grande.",
+      "denied": "No tienes acceso a esto.",
+      "pdf": "No se pudo crear el PDF. Inténtalo de nuevo."
+    }
   }
 }
