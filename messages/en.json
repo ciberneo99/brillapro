@@ -1074,5 +1074,64 @@
       "pro": "Pro",
       "business": "Business"
     }
+  },
+  "team": {
+    "title": "Team and access",
+    "intro": "Invite people to sign in, choose what each can do, and turn access off when someone leaves.",
+    "back": "Settings",
+    "inviteTitle": "Invite someone",
+    "email": "Email",
+    "role": "Role",
+    "invite": "Create invitation",
+    "linkReady": "Invitation ready for {email}",
+    "linkLabel": "Invitation link",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "sendEmail": "Write email",
+    "linkNote": "Send this link to the person. It works once, for that email only, and expires in 7 days. For security it is shown only now.",
+    "mailSubject": "Your invitation to BrillaPro",
+    "mailBody": "You have been invited to join our team on BrillaPro. Open this link and sign in or create your account with this same email:\n\n{link}",
+    "pending": "Pending invitations",
+    "expires": "expires {date}",
+    "cancelInvite": "Cancel",
+    "members": "People",
+    "you": "you",
+    "inactive": "Inactive",
+    "saveRole": "Change",
+    "deactivate": "Turn off access",
+    "reactivate": "Turn on access",
+    "saved": "Saved.",
+    "seats": "{used} of {max} people in use, {pending} invitations pending.",
+    "seatsNoLimit": "{used} people.",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Administrator",
+      "manager": "Manager",
+      "office_staff": "Office staff",
+      "employee": "Employee",
+      "accountant": "Accountant"
+    },
+    "errors": {
+      "invalidInvite": "Enter a valid email and a role.",
+      "seatsFull": "You have reached the limit of people for your plan, counting pending invitations.",
+      "alreadyMember": "That person already has access.",
+      "ownerOnlyAdmin": "Only the owner can invite administrators.",
+      "inviteFailed": "We couldn't create the invitation.",
+      "saveFailed": "We couldn't save that change. The owner can't be changed, and you can't change your own access."
+    },
+    "accept": {
+      "title": "You have been invited",
+      "body": "Join {company} as {role}.",
+      "accept": "Accept invitation",
+      "signInFirst": "Sign in or create your account to accept the invitation.",
+      "createAccount": "Create account",
+      "haveAccount": "I already have an account",
+      "sameEmail": "Use the same email address the invitation was sent to.",
+      "invalid": "This invitation is not valid or has expired. Ask for a new one.",
+      "mismatch": "This invitation was sent to a different email than {email}. Sign in with the invited email.",
+      "other": "Your account already belongs to a company, so it can't join another one.",
+      "seats": "That company has no free seats right now. Ask them to make room.",
+      "goBack": "Go to the app"
+    }
   }
 }

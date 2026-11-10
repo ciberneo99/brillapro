@@ -14,7 +14,7 @@ cuentas Supabase/Vercel/GitHub se conectan solo con autorización; `git init` lo
 | 6 | Inventario y reportes operativos — **completada** (`v0.6-fase6`) | 5 |
 | 7 | Reporte de Venmo (CSV → reporte y PDF, sin guardar datos) — **completada** (`v0.7-fase7`); importación bancaria y contabilidad de doble entrada quedan fuera por decisión del usuario | 5-6 |
 | 8 | Integraciones — **8a lectura de recibos con IA construida, inactiva hasta poner `ANTHROPIC_API_KEY`** (`v0.8-fase8`); Google Calendar, correo desde la app y mapas quedan fuera por decisión del usuario | 4-5 |
-| 9 | Landing, planes, Stripe Billing, Super Admin, lanzamiento — **9a landing pública y 9b planes y límites hechas** (planes borrador en `src/lib/plans.ts`); 9c-9e pendientes | 1-8 |
+| 9 | Landing, planes, Stripe Billing, Super Admin, lanzamiento — **9a landing pública, 9b planes y límites y equipo/invitaciones hechas** (planes borrador en `src/lib/plans.ts`); 9c-9e pendientes | 1-8 |
 
 Regla: no se avanza de fase sin aprobación explícita.
 

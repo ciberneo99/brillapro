@@ -1074,5 +1074,64 @@
       "pro": "Pro",
       "business": "Business"
     }
+  },
+  "team": {
+    "title": "Equipo y accesos",
+    "intro": "Invita personas a entrar al sistema, elige qué puede hacer cada una y quita el acceso cuando alguien se va.",
+    "back": "Ajustes",
+    "inviteTitle": "Invitar a alguien",
+    "email": "Correo",
+    "role": "Rol",
+    "invite": "Crear invitación",
+    "linkReady": "Invitación lista para {email}",
+    "linkLabel": "Enlace de invitación",
+    "copy": "Copiar enlace",
+    "copied": "Copiado",
+    "sendEmail": "Escribir correo",
+    "linkNote": "Envía este enlace a la persona. Funciona una sola vez, solo para ese correo, y vence en 7 días. Por seguridad solo se muestra ahora.",
+    "mailSubject": "Tu invitación a BrillaPro",
+    "mailBody": "Te invitamos a unirte a nuestro equipo en BrillaPro. Abre este enlace e inicia sesión o crea tu cuenta con este mismo correo:\n\n{link}",
+    "pending": "Invitaciones pendientes",
+    "expires": "vence {date}",
+    "cancelInvite": "Cancelar",
+    "members": "Personas",
+    "you": "tú",
+    "inactive": "Inactivo",
+    "saveRole": "Cambiar",
+    "deactivate": "Quitar acceso",
+    "reactivate": "Dar acceso",
+    "saved": "Guardado.",
+    "seats": "{used} de {max} personas en uso, {pending} invitaciones pendientes.",
+    "seatsNoLimit": "{used} personas.",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "manager": "Gerente",
+      "office_staff": "Oficina",
+      "employee": "Empleado",
+      "accountant": "Contador"
+    },
+    "errors": {
+      "invalidInvite": "Escribe un correo válido y un rol.",
+      "seatsFull": "Llegaste al límite de personas de tu plan, contando las invitaciones pendientes.",
+      "alreadyMember": "Esa persona ya tiene acceso.",
+      "ownerOnlyAdmin": "Solo el dueño puede invitar administradores.",
+      "inviteFailed": "No pudimos crear la invitación.",
+      "saveFailed": "No pudimos guardar el cambio. El dueño no se puede modificar y no puedes cambiar tu propio acceso."
+    },
+    "accept": {
+      "title": "Te invitaron",
+      "body": "Únete a {company} como {role}.",
+      "accept": "Aceptar invitación",
+      "signInFirst": "Inicia sesión o crea tu cuenta para aceptar la invitación.",
+      "createAccount": "Crear cuenta",
+      "haveAccount": "Ya tengo cuenta",
+      "sameEmail": "Usa el mismo correo al que llegó la invitación.",
+      "invalid": "Esta invitación no es válida o ya venció. Pide una nueva.",
+      "mismatch": "Esta invitación se envió a un correo distinto de {email}. Inicia sesión con el correo invitado.",
+      "other": "Tu cuenta ya pertenece a una empresa, así que no puede unirse a otra.",
+      "seats": "Esa empresa no tiene lugares libres por ahora. Pídeles que liberen uno.",
+      "goBack": "Ir a la app"
+    }
   }
 }

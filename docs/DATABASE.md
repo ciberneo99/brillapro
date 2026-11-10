@@ -63,3 +63,10 @@ erDiagram
   tenants ||--o{ subscriptions : pays
   plans ||--o{ subscriptions : defines
 ```
+
+### Equipo e invitaciones (migración 0018)
+
+- `invitations`: correo, rol (nunca `owner`), `token_hash` (solo se guarda el hash SHA-256; el token se muestra una vez), estado pending/accepted/revoked, vence a los 7 días. Solo owner/admin pueden leerla; todas las escrituras pasan por funciones.
+- `create_invitation` (owner/admin; solo el owner invita admins; las pendientes reservan un lugar del plan), `revoke_invitation`, `invitation_preview` y `accept_invitation` (el correo de la cuenta debe coincidir y estar confirmado; una persona, una empresa).
+- Trigger `memberships_protect`: la empresa nunca se queda sin dueño y nadie cambia su propio rol/estado.
+- La entrega es un enlace que el dueño copia o envía con `mailto:`; no hay proveedor de correo conectado.
