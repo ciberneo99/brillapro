@@ -24,18 +24,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="space-y-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{ctx.profile.full_name || ctx.email}</p>
-              <p className="truncate text-xs text-muted">{ctx.email}</p>
+              <p className="truncate text-xs opacity-75">{ctx.email}</p>
             </div>
             <PreferenceControls compact theme={theme} />
             <form action="/auth/signout" method="post">
-              <button type="submit" className="flex items-center gap-2 text-sm text-muted hover:text-fg">
+              <button type="submit" className="flex items-center gap-2 text-sm opacity-80 hover:opacity-100">
                 <LogOut className="h-4 w-4" aria-hidden /> {t("signOut")}
               </button>
             </form>
           </div>
         }
       />
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+      <main className="mx-auto min-w-0 max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
     </div>
   );
 }

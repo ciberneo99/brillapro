@@ -95,7 +95,55 @@
       "upcoming": "Upcoming jobs",
       "expenses": "Monthly expenses",
       "profit": "Estimated profit"
-    }
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "search": "Search customers by name, phone or email",
+    "kpis": "Key figures",
+    "new": {
+      "button": "New",
+      "customer": "New customer",
+      "quote": "New quote",
+      "job": "New job",
+      "invoice": "New invoice",
+      "expense": "Add expense"
+    },
+    "invoicesCount": "{count, plural, one {# invoice} other {# invoices}}",
+    "activeBadge": "Active",
+    "profitable": "Profitable",
+    "loss": "Loss",
+    "growth": {
+      "title": "Sales and growth",
+      "vsLast": "vs last month",
+      "newCustomers": "New customers this month",
+      "newCustomersHint": "Customers added this month",
+      "completedJobs": "Jobs completed",
+      "completedJobsHint": "Finished this month",
+      "avgJob": "Average job value",
+      "avgJobHint": "Revenue collected ÷ jobs completed",
+      "perCustomer": "Revenue per customer",
+      "perCustomerHint": "Revenue collected ÷ active customers"
+    },
+    "charts": {
+      "monthlyRevenue": "Revenue collected, last 12 months",
+      "byMethod": "Revenue by payment method",
+      "revenueVsExpenses": "Revenue vs expenses, last 12 months",
+      "revenue": "Revenue",
+      "expenses": "Expenses",
+      "noPayments": "Payments you record will show up here."
+    },
+    "tasks": {
+      "title": "Open tasks",
+      "empty": "No open tasks."
+    },
+    "upcoming": {
+      "title": "Upcoming jobs",
+      "empty": "No jobs scheduled."
+    },
+    "viewAll": "View all"
   },
   "settings": {
     "title": "Settings",

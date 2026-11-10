@@ -7,16 +7,18 @@
 :root,
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f8fa;
+  --bg: #eef2f4;
   --surface: #ffffff;
-  --surface-2: #eef2f6;
-  --fg: #0f172a;
+  --surface-2: #eef3f6;
+  --fg: #0f1b24;
   --fg-muted: #526173;
-  --line: #dde3ea;
+  --line: #dde4ea;
   --primary: #0b7a75;
   --primary-hover: #096560;
   --primary-fg: #ffffff;
   --primary-soft: #dff3f1;
+  --sidebar: #0a615d;
+  --sidebar-fg: #ffffff;
   --success: #067647;
   --success-soft: #dcf5e7;
   --warning: #a84b06;
@@ -24,22 +26,24 @@
   --danger: #b42318;
   --danger-soft: #fde4e1;
   --ring: #0b7a75;
-  --shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.08);
+  --shadow: 0 1px 2px rgb(15 27 36 / 0.05), 0 2px 8px rgb(15 27 36 / 0.06);
   --c-blue: #2563eb; --c-green: #16a34a; --c-violet: #7c3aed; --c-amber: #d97706; --c-rose: #e11d48; --c-teal: #0d9488;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b1220;
-  --surface: #111a2b;
-  --surface-2: #17223a;
-  --fg: #e6edf6;
-  --fg-muted: #9aaac0;
-  --line: #243049;
+  --bg: #0b1418;
+  --surface: #111f26;
+  --surface-2: #172a33;
+  --fg: #e6f0f3;
+  --fg-muted: #9ab0b8;
+  --line: #22373f;
   --primary: #2dd4bf;
   --primary-hover: #5eead4;
   --primary-fg: #04201e;
   --primary-soft: #0f3a3a;
+  --sidebar: #0c3a3a;
+  --sidebar-fg: #e6f0f3;
   --success: #4ade80;
   --success-soft: #0f3322;
   --warning: #fbbf24;
@@ -55,16 +59,18 @@
 @media (prefers-color-scheme: dark) {
   [data-theme="system"] {
     color-scheme: dark;
-    --bg: #0b1220;
-    --surface: #111a2b;
-    --surface-2: #17223a;
-    --fg: #e6edf6;
-    --fg-muted: #9aaac0;
-    --line: #243049;
+    --bg: #0b1418;
+    --surface: #111f26;
+    --surface-2: #172a33;
+    --fg: #e6f0f3;
+    --fg-muted: #9ab0b8;
+    --line: #22373f;
     --primary: #2dd4bf;
     --primary-hover: #5eead4;
     --primary-fg: #04201e;
     --primary-soft: #0f3a3a;
+  --sidebar: #0c3a3a;
+  --sidebar-fg: #e6f0f3;
     --success: #4ade80;
     --success-soft: #0f3322;
     --warning: #fbbf24;
@@ -96,14 +102,16 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-fg: var(--sidebar-fg);
   --shadow-card: var(--shadow);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
 :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
