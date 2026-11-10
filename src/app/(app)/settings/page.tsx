@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Card } from "@/components/ui";
+import { PlanCard } from "@/components/billing/PlanCard";
 import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
 import { publicEnv } from "@/lib/env";
 import { can } from "@/lib/permissions";
@@ -32,6 +33,8 @@ export default async function SettingsPage() {
         <PreferenceControls theme={theme} />
         <p className="text-xs text-muted">{t("preferences.languageHelp")} {t("preferences.themeHelp")}</p>
       </Card>
+
+      <PlanCard tenantId={ctx.tenant.id} dateFormat={ctx.settings.date_format} daysLeft={ctx.trialDaysLeft} />
 
       <RequestLinkCard
         url={`${publicEnv().NEXT_PUBLIC_APP_URL}/request/${ctx.tenant.public_slug}`}

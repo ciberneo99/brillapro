@@ -1050,5 +1050,29 @@
       "body": "Prueba BrillaPro gratis por {days} días."
     },
     "footer": "Hecho para empresas de limpieza."
+  },
+  "plan": {
+    "title": "Plan y uso",
+    "trialPlan": "Prueba gratis (todas las funciones)",
+    "trialDays": "Quedan {days} días",
+    "trialEnded": "Prueba terminada",
+    "trialUntil": "Tu prueba dura hasta el {date}.",
+    "people": "Personas que pueden entrar",
+    "seatsFull": "Llegaste al límite de personas de este plan.",
+    "available": "Planes",
+    "perMonth": "al mes",
+    "upTo": "Hasta {count} personas",
+    "billingSoon": "Las suscripciones abren pronto. No se bloquea nada mientras terminamos los pagos, y tus datos se conservan.",
+    "status": {
+      "active": "Activo",
+      "past_due": "Pago vencido",
+      "canceled": "Cancelado",
+      "suspended": "Suspendido"
+    },
+    "names": {
+      "starter": "Starter",
+      "pro": "Pro",
+      "business": "Business"
+    }
   }
 }

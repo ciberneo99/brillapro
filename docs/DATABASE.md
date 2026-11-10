@@ -33,6 +33,9 @@ Implementado hasta la Fase 4 (migraciones `db/migrations/0001`–`0011`). Lo de 
 - inventory_items (se desactivan, no se borran; mínimo para alerta de stock bajo, costo opcional) e inventory_movements (compra, uso, ajuste; cantidad con signo; inmutables: las correcciones son ajustes). Un trigger bloquea el artículo y rechaza movimientos que dejen el stock en negativo. Vista `inventory_overview` (existencia y bandera de stock bajo). Acceso: owner/admin/manager.
 - Funciones de reportes (security invoker, la RLS decide qué ve cada rol): `report_jobs`, `report_hours` (solo entradas cerradas, en la zona horaria de la empresa), `report_money` (facturado, cobrado y gastos).
 
+## Fase 9 (en curso)
+- plans: starter, pro y business (más trial) con `limits.max_users`; `tenant_usage(tenant)` (personas activas y límite, solo miembros) y un trigger en memberships que impide pasar el límite del plan (bloquea la fila del tenant para evitar carreras). La prueba gratis permite 10 personas.
+
 ## Convenciones
 UUID, `created_at`, `updated_at`, `archived_at`; `tenant_id NOT NULL` con FK; dinero en centavos enteros;
 FK compuestas `(tenant_id, id)`; índices en `(tenant_id, ...)`; migraciones SQL versionadas, primero en staging;

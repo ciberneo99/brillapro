@@ -1050,5 +1050,29 @@
       "body": "Try BrillaPro free for {days} days."
     },
     "footer": "Made for cleaning companies."
+  },
+  "plan": {
+    "title": "Plan and usage",
+    "trialPlan": "Free trial (all features)",
+    "trialDays": "{days} days left",
+    "trialEnded": "Trial ended",
+    "trialUntil": "Your trial runs until {date}.",
+    "people": "People who can sign in",
+    "seatsFull": "You have reached the limit of people for this plan.",
+    "available": "Plans",
+    "perMonth": "per month",
+    "upTo": "Up to {count} people",
+    "billingSoon": "Subscriptions open soon. Nothing is blocked while we finish payments, and your data is kept.",
+    "status": {
+      "active": "Active",
+      "past_due": "Payment overdue",
+      "canceled": "Canceled",
+      "suspended": "Suspended"
+    },
+    "names": {
+      "starter": "Starter",
+      "pro": "Pro",
+      "business": "Business"
+    }
   }
 }
