@@ -1818,6 +1818,8 @@
     "picker": {
       "search": "Buscar categorías…",
       "empty": "Ninguna categoría coincide."
-    }
+    },
+    "pdfTitle": "Movimientos bancarios",
+    "pdfCount": "Movimientos"
   }
 }

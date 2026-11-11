@@ -4,7 +4,7 @@ import type { createClient } from "@/lib/supabase/server";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 export type Kind = "text" | "date" | "money" | "int" | "pct";
-export type Col = { key: string; label: string; kind: Kind; /** The cell links to the row's `_href`. */ link?: boolean; /** Shown in the positive (green) colour, like money received. */ positive?: boolean };
+export type Col = { key: string; label: string; kind: Kind; /** The cell links to the row's `_href`. */ link?: boolean; /** Shown in the positive (green) colour, like money received. */ positive?: boolean; /** Shown in red, like money paid out. */ negative?: boolean; /** Takes more width (long text such as a description). */ wide?: boolean };
 export type Cell = string | number | boolean | null;
 export type Row = Record<string, Cell> & { _bold?: boolean; _href?: string };
 export type Tone = "default" | "green" | "accent" | "danger";

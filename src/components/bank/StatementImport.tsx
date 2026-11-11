@@ -78,10 +78,11 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
         <div className="space-y-3">
           <p className="text-sm">{t("import.found", { count: rows.length, name })}</p>
           <div className="max-h-[28rem] overflow-auto rounded-lg border border-line">
-            <table className="w-full min-w-[44rem] text-sm">
+            <table className="w-full min-w-[40rem] table-fixed text-sm">
+              <colgroup><col className="w-10" /><col className="w-28" /><col /><col className="w-56" /><col className="w-28" /></colgroup>
               <thead className="sticky top-0 bg-surface-2 text-left text-xs text-muted">
                 <tr>
-                  <th className="w-10 px-3 py-2"><input type="checkbox" aria-label={t("import.all")} checked={rows.every((r) => r.on)} onChange={(e) => setRows(rows.map((r) => ({ ...r, on: e.target.checked })))} /></th>
+                  <th className="px-3 py-2"><input type="checkbox" aria-label={t("import.all")} checked={rows.every((r) => r.on)} onChange={(e) => setRows(rows.map((r) => ({ ...r, on: e.target.checked })))} /></th>
                   <th className="px-3 py-2">{t("cols.date")}</th><th className="px-3 py-2">{t("cols.description")}</th>
                   <th className="px-3 py-2">{t("cols.category")}</th><th className="px-3 py-2 text-right">{t("cols.amount")}</th>
                 </tr>
@@ -91,7 +92,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
                   <tr key={i} className={cn(!r.on && "opacity-50")}>
                     <td className="px-3 py-2"><input type="checkbox" checked={r.on} aria-label={r.description} onChange={(e) => set(i, { on: e.target.checked })} /></td>
                     <td className="whitespace-nowrap px-3 py-2">{formatDateOnly(r.date, dateFormat)}</td>
-                    <td className="max-w-[24rem] px-3 py-2"><ExpandableText text={r.description} />{r.duplicate && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">{t("import.already")}</span>}</td>
+                    <td className="px-3 py-2"><ExpandableText text={r.description} />{r.duplicate && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">{t("import.already")}</span>}</td>
                     <td className="px-3 py-2">
                       <CategoryPicker choices={categories} ariaLabel={t("cols.category")} placeholder={t("uncategorized")} className="h-9 min-w-48" value={r.categoryId ?? ""} onChange={(id) => set(i, { categoryId: id || null })} extras={[{ value: "", label: t("uncategorized") }]} />
                     </td>

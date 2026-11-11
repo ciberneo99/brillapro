@@ -34,7 +34,7 @@ const s = StyleSheet.create({
   footer: { position: "absolute", bottom: 22, left: 40, right: 40, flexDirection: "row", justifyContent: "space-between", fontSize: 8, color: MUTED },
 });
 
-const flex = (c: Col, first: boolean) => (c.kind === "money" ? 1.3 : c.kind === "date" ? 1.2 : c.kind === "int" || c.kind === "pct" ? 0.9 : first ? 2.4 : 1.6);
+const flex = (c: Col, first: boolean) => (c.wide ? 3.2 : c.kind === "money" ? 1.3 : c.kind === "date" ? 1.2 : c.kind === "int" || c.kind === "pct" ? 0.9 : first ? 2.4 : 1.6);
 
 function Table({ cols, rows, totals, currency, dateFormat }: { cols: Col[]; rows: Row[]; totals?: Row; currency: string; dateFormat: string }) {
   const cellText = (c: Col, r: Row) => formatCell(c, r[c.key] ?? null, currency, dateFormat);
@@ -44,7 +44,7 @@ function Table({ cols, rows, totals, currency, dateFormat }: { cols: Col[]; rows
       <View style={s.th} wrap={false}>{cols.map((c, i) => <Text key={c.key} style={[s.thText, style(c, i)]}>{c.label}</Text>)}</View>
       {rows.map((r, i) => (
         <View key={i} style={[s.tr, r._bold ? { fontFamily: "Helvetica-Bold", backgroundColor: "#f3f4f6" } : {}, i % 2 === 1 && !r._bold ? { backgroundColor: "#f9fafb" } : {}]} wrap={false}>
-          {cols.map((c, ci) => <Text key={c.key} style={[style(c, ci), c.positive ? { color: GREEN } : {}]}>{cellText(c, r)}</Text>)}
+          {cols.map((c, ci) => <Text key={c.key} style={[style(c, ci), c.positive ? { color: GREEN } : {}, c.negative ? { color: RED } : {}]}>{cellText(c, r)}</Text>)}
         </View>
       ))}
       {totals && <View style={s.total} wrap={false}>{cols.map((c, i) => <Text key={c.key} style={style(c, i)}>{cellText(c, totals)}</Text>)}</View>}

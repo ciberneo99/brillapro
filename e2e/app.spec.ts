@@ -398,6 +398,16 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await expect(zelle).toContainText("Zelle payment"); // category chip
   await expect(page.getByRole("row", { name: /shell oil/i })).toContainText("$45.20");
 
+  // Everything fits in the table without scrolling sideways, and the list prints as a PDF.
+  const fits = await page.locator("table").last().evaluate((t) => { const w = t.parentElement!; return w.scrollWidth <= w.clientWidth + 1; });
+  expect(fits).toBe(true);
+  await expect(page.getByRole("link", { name: /preview pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download pdf/i })).toBeVisible();
+  const pdf = await page.request.get("/reports/bank/pdf?type=in");
+  expect(pdf.headers()["content-type"]).toContain("application/pdf");
+  expect((await pdf.body()).subarray(0, 4).toString()).toBe("%PDF");
+  expect((await page.request.get("/reports/bank/pdf?download=1")).headers()["content-disposition"]).toContain("attachment");
+
   // Importing the same statement again adds nothing.
   await page.locator("#bank-file").setInputFiles("e2e/fixtures/statement.pdf");
   await expect(page.getByText(/already imported/i).first()).toBeVisible({ timeout: 20000 });

@@ -34,7 +34,7 @@ export type TxRow = { id: string; tx_date: string; description: string; amount_c
 
 const clean = (s: string) => s.replace(/[%,()]/g, " ").trim();
 
-export async function listTransactions(f: TxFilters, categoryIds?: string[]) {
+export async function listTransactions(f: TxFilters, categoryIds?: string[], size = BANK_PAGE_SIZE) {
   const supabase = await createClient();
   const page = Math.max(1, Math.floor(f.page ?? 1));
   let q = supabase.from("bank_transactions").select("id,tx_date,description,amount_cents,balance_cents,category_id", { count: "exact" });
@@ -49,7 +49,7 @@ export async function listTransactions(f: TxFilters, categoryIds?: string[]) {
     q = q.gte("tx_date", `${f.month}-01`).lte("tx_date", `${f.month}-${String(end).padStart(2, "0")}`);
   }
   const asc = f.sort === "asc";
-  const { data, count } = await q.order("tx_date", { ascending: asc }).order("created_at", { ascending: asc }).range((page - 1) * BANK_PAGE_SIZE, page * BANK_PAGE_SIZE - 1);
+  const { data, count } = await q.order("tx_date", { ascending: asc }).order("created_at", { ascending: asc }).range((page - 1) * size, page * size - 1);
   return { rows: (data ?? []) as TxRow[], total: count ?? 0, page };
 }
 

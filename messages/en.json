@@ -1818,6 +1818,8 @@
     "picker": {
       "search": "Search categories…",
       "empty": "No categories match."
-    }
+    },
+    "pdfTitle": "Bank Transactions",
+    "pdfCount": "Transactions"
   }
 }

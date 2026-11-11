@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Pencil, Search, Trash2 } from "lucide-react";
+import { Eye, FileText, Pencil, Search, Trash2 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CategoryPicker, type CategoryChoice } from "@/components/bank/CategoryPicker";
 import { ExpandableText } from "@/components/bank/ExpandableText";
@@ -19,6 +19,7 @@ export const metadata = { title: "Bank reports" };
 
 type SP = { tab?: string; q?: string; type?: string; category?: string; month?: string; sort?: string; page?: string; edit?: string; error?: string; saved?: string };
 const TONES = ["blue", "green", "violet", "amber", "rose", "teal"] as const;
+const breakable = (label: string) => label.split("/").flatMap((p, i) => (i === 0 ? [p] : ["/", <wbr key={i} />, p]));
 const chip = (tone: number) => ({ backgroundColor: `color-mix(in srgb, var(--c-${TONES[tone % TONES.length]}) 16%, transparent)`, color: `color-mix(in srgb, var(--c-${TONES[tone % TONES.length]}) 70%, var(--fg))` });
 
 export default async function BankReportsPage({ searchParams }: { searchParams: Promise<SP> }) {
@@ -59,6 +60,7 @@ export default async function BankReportsPage({ searchParams }: { searchParams: 
 
 async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }: { sp: SP; canWrite: boolean; tenantId: string; currency: string; dateFormat: string }) {
   const tb = await getTranslations("bank");
+  const tr = await getTranslations("reports");
   const locale = await getLocale();
   const cats = await listBankCategories(tenantId, locale);
   const labels = categoryLabels(cats);
@@ -79,6 +81,13 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
     const s = u.toString();
     return `/reports/bank${s ? `?${s}` : ""}`;
   };
+  const pdfHref = (extra = "") => {
+    const u = new URLSearchParams();
+    for (const [k, v] of Object.entries({ q: sp.q, type, category: sp.category, month: sp.month, sort: sp.sort })) if (v) u.set(k, v);
+    if (extra) u.set("download", "1");
+    const qs = u.toString();
+    return `/reports/bank/pdf${qs ? `?${qs}` : ""}`;
+  };
   const here = params({ page: page > 1 ? String(page) : undefined });
   const monthLabel = (ym: string) => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
   const filtered = Boolean(sp.q || type || sp.category || sp.month);
@@ -94,6 +103,10 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
         <div className="space-y-4 px-5 py-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="text-xl font-semibold">{tb("title", { count: total })}</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <a href={pdfHref()} target="_blank" rel="noopener" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2"><Eye className="mr-2 h-4 w-4" aria-hidden />{tr("previewPdf")}</a>
+              <a href={pdfHref("download=1")} className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:opacity-90"><FileText className="mr-2 h-4 w-4" aria-hidden />{tr("downloadPdf")}</a>
+            </div>
             <p className="text-sm text-muted">
               <span className="font-medium text-success">{m(sums.deposits)}</span> {tb("cols.deposits").toLowerCase()} · <span className="font-medium text-danger">{m(sums.withdrawals)}</span> {tb("cols.withdrawals").toLowerCase()}
             </p>
@@ -127,15 +140,18 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             <input type="hidden" name="back" value={here} />
             <button type="submit" hidden tabIndex={-1} aria-hidden formAction={canWrite && sp.edit ? updateTransaction.bind(null, sp.edit) : refreshBank} />
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[56rem] text-sm">
+              <table className="w-full min-w-[44rem] table-fixed text-sm">
+                <colgroup>
+                  {canWrite && <col className="w-10" />}<col className="w-28" /><col /><col className="w-44" /><col className="w-32" /><col className="w-32" /><col className="w-28" />{canWrite && <col className="w-20" />}
+                </colgroup>
                 <thead>
                   <tr className="border-b border-line text-left text-sm text-muted">
-                    {canWrite && <th className="w-10 px-4 py-3"><span className="sr-only">{tb("select")}</span></th>}
+                    {canWrite && <th className="px-4 py-3"><span className="sr-only">{tb("select")}</span></th>}
                     <th className="px-3 py-3 font-semibold">{tb("cols.date")}</th><th className="px-3 py-3 font-semibold">{tb("cols.description")}</th>
                     <th className="px-3 py-3 font-semibold">{tb("cols.category")}</th>
-                    <th className="px-3 py-3 text-right font-semibold">{tb("cols.deposits")}</th><th className="px-3 py-3 text-right font-semibold">{tb("cols.withdrawals")}</th>
+                    <th className="px-3 py-3 text-right font-semibold">{breakable(tb("cols.deposits"))}</th><th className="px-3 py-3 text-right font-semibold">{breakable(tb("cols.withdrawals"))}</th>
                     <th className="px-3 py-3 text-right font-semibold">{tb("cols.balance")}</th>
-                    {canWrite && <th className="w-24 px-3 py-3"><span className="sr-only">{tb("actions")}</span></th>}
+                    {canWrite && <th className="px-3 py-3"><span className="sr-only">{tb("actions")}</span></th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
@@ -160,9 +176,9 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
                         ) : (
                           <>
                             <td className="whitespace-nowrap px-3 py-3">{formatDateOnly(r.tx_date, dateFormat)}</td>
-                            <td className="max-w-[28rem] px-3 py-3"><ExpandableText text={r.description} /></td>
+                            <td className="px-3 py-3"><ExpandableText text={r.description} /></td>
                             <td className="px-3 py-3">
-                              {cat ? <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" style={chip(cat.tone)} title={cat.parent ?? undefined}>{cat.label}</span> : <span className="text-xs text-muted">{tb("uncategorized")}</span>}
+                              {cat ? <span className="inline-block max-w-full truncate rounded-full px-2.5 py-1 align-middle text-xs font-medium" style={chip(cat.tone)} title={cat.parent ?? undefined}>{cat.label}</span> : <span className="text-xs text-muted">{tb("uncategorized")}</span>}
                             </td>
                             <td className="px-3 py-3 text-right font-medium tabular-nums text-success">{r.amount_cents > 0 ? m(r.amount_cents) : ""}</td>
                             <td className="px-3 py-3 text-right font-medium tabular-nums text-danger">{r.amount_cents < 0 ? m(-r.amount_cents) : ""}</td>
@@ -186,7 +202,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             {canWrite && (
               <div className="flex flex-wrap items-center gap-2 border-t border-line bg-surface-2 px-5 py-3">
                 <span className="text-sm text-muted">{tb("bulk.label")}</span>
-                <CategoryPicker choices={choices} name="bulk_category" ariaLabel={tb("bulk.category")} placeholder={tb("bulk.choose")} className="w-56" extras={[{ value: "none", label: tb("uncategorized") }]} />
+                <div className="w-60"><CategoryPicker choices={choices} name="bulk_category" ariaLabel={tb("bulk.category")} placeholder={tb("bulk.choose")} extras={[{ value: "none", label: tb("uncategorized") }]} /></div>
                 <Button type="submit" variant="secondary" formAction={bulkCategorize}>{tb("bulk.apply")}</Button>
                 <ConfirmSubmit message={tb("bulk.confirmDelete")} formAction={bulkDelete} className="inline-flex h-10 items-center rounded-lg px-4 text-sm font-medium text-danger hover:bg-surface">{tb("bulk.delete")}</ConfirmSubmit>
               </div>
