@@ -931,7 +931,9 @@
       "saving": "Saving…",
       "error": "Check the customer, dates and items, then try again.",
       "logoAlt": "Company logo",
-      "saveFirst": "Save your changes before sending: the email and PDF use the saved invoice."
+      "saveFirst": "Save your changes before sending: the email and PDF use the saved invoice.",
+      "editDetails": "Edit details",
+      "hideDetails": "Hide details"
     },
     "search": {
       "placeholder": "Search by name, email, phone or address",

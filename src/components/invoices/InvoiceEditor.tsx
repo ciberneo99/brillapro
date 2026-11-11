@@ -9,11 +9,12 @@ import { computeTotals, moveItem, textToCents, textToQty } from "@/lib/invoice-m
 import { formatMoney } from "@/lib/money";
 import { formatMoneyFinal, formatMoneyTyping } from "@/lib/numbers";
 import { CustomerSearch, type CustomerOption } from "./CustomerSearch";
+import { BillToDetails } from "./BillToDetails";
 import { SheetHeader, type SheetCompany } from "./SheetHeader";
 
 export type EditorLine = { description: string; quantity: string; price: string };
 export type EditorInvoice = {
-  customerId: string | null; customerName: string; customerEmail: string; billingAddress: string;
+  customerId: string | null; customerName: string; customerEmail: string; customerPhone: string; billingAddress: string;
   issueDate: string; dueDate: string; discount: string; taxRate: string; notes: string; terms: string; lines: EditorLine[];
 };
 
@@ -36,6 +37,7 @@ export function InvoiceEditor({
   const [name, setName] = useState(initial.customerName);
   const [email, setEmail] = useState(initial.customerEmail);
   const [address, setAddress] = useState(initial.billingAddress);
+  const [editing, setEditing] = useState(!initial.customerName.trim());
   const [discount, setDiscount] = useState(initial.discount);
   const [taxRate, setTaxRate] = useState(initial.taxRate);
   const [dragFrom, setDragFrom] = useState<number | null>(null);
@@ -81,14 +83,17 @@ export function InvoiceEditor({
       {error && <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">{t("error")}</p>}
 
       {/* Bill to */}
-      <section className="grid gap-4 border-b border-line py-6 md:grid-cols-[minmax(0,22rem)_1fr]" aria-labelledby="bill-to">
-        <div className="space-y-2">
-          <h2 id="bill-to" className="text-sm font-semibold">{t("billTo")}</h2>
-          <label htmlFor="customer_search" className="sr-only">{t("searchLabel")}</label>
-          <CustomerSearch id="customer_search" customers={customers} selectedId={customerId} onSelect={pick} />
-          <p className="text-xs text-muted">{t("searchHelp")}</p>
+      <section className="border-b border-line py-6" aria-labelledby="bill-to">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,22rem)_1fr]">
+          <div className="space-y-2">
+            <h2 id="bill-to" className="text-base font-bold uppercase tracking-tight">{t("billTo")}</h2>
+            <label htmlFor="customer_search" className="sr-only">{t("searchLabel")}</label>
+            <CustomerSearch id="customer_search" customers={customers} selectedId={customerId} onSelect={pick} />
+            <button type="button" onClick={() => setEditing((v) => !v)} aria-expanded={editing} className="text-xs text-primary hover:underline">{editing ? t("hideDetails") : t("editDetails")}</button>
+          </div>
+          <BillToDetails name={name} address={address} email={email} phone={customers.find((c) => c.id === customerId)?.phone ?? initial.customerPhone} />
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div hidden={!editing} className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="space-y-1"><label htmlFor="customer_name" className="text-xs font-medium text-muted">{t("customerName")}</label>
             <Input id="customer_name" name="customer_name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={160} /></div>
           <div className="space-y-1"><label htmlFor="customer_email" className="text-xs font-medium text-muted">{t("customerEmail")}</label>
