@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { parseTime } from "@/lib/time";
+import { noteText, sanitizeNoteHtml } from "@/lib/note-html";
 import { normalizeName, normalizeSentences } from "@/lib/text";
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -127,4 +128,24 @@ export async function deleteTask(id: string) {
   await supabase.from("tasks").delete().eq("id", id);
   revalidatePath("/notebook/tasks");
   redirect("/notebook/tasks");
+}
+
+// ───────── notes attached to a customer (shown on the customer page) ─────────
+export async function saveCustomerNote(customerId: string, formData: FormData) {
+  const ctx = await member();
+  if (!UUID.test(customerId)) redirect("/customers");
+  const html = sanitizeNoteHtml(String(formData.get("body") ?? ""));
+  if (!noteText(html) || html.length > 10000) redirect(`/customers/${customerId}?note=invalid`);
+  const supabase = await createClient();
+  const { error } = await supabase.from("user_notes").insert({ title: "", body: html, tenant_id: ctx.tenant.id, user_id: ctx.userId, customer_id: customerId });
+  revalidatePath(`/customers/${customerId}`);
+  redirect(`/customers/${customerId}${error ? "?note=invalid" : ""}`);
+}
+
+export async function deleteCustomerNote(customerId: string, noteId: string) {
+  await member();
+  const supabase = await createClient();
+  await supabase.from("user_notes").delete().eq("id", noteId);
+  revalidatePath(`/customers/${customerId}`);
+  redirect(`/customers/${customerId}`);
 }

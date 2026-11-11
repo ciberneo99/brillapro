@@ -1,10 +1,15 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { normalizePhone } from "@/lib/phone";
 import { isValidEmail } from "@/lib/email";
 import { normalizeAddress } from "@/lib/text";
+import { normalizeWebsite } from "@/lib/business";
+import { normalizeZip } from "@/lib/zip";
+import { checkLogo } from "@/lib/logo";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
@@ -19,6 +24,18 @@ const schema = z.object({
   phone: z.string().trim().max(40).transform((v) => (v === "" ? null : normalizePhone(v))),
   email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
   address: z.string().trim().max(300).transform((v) => (v === "" ? null : normalizeAddress(v))),
+  city: optional(80),
+  state: optional(40),
+  zip_code: z.string().trim().max(12).transform((v, ctx) => {
+    const zip = normalizeZip(v);
+    if (zip === "invalid") { ctx.addIssue({ code: "custom", message: "zip" }); return z.NEVER; }
+    return zip;
+  }),
+  website: z.string().trim().max(200).transform((v, ctx) => {
+    const w = normalizeWebsite(v);
+    if (w === "invalid") { ctx.addIssue({ code: "custom", message: "website" }); return z.NEVER; }
+    return w;
+  }),
   tax_id: optional(60),
   currency: z.string().trim().toUpperCase().length(3),
   timezone: z.string().trim().min(1).max(60).refine((tz) => {
@@ -55,4 +72,36 @@ export async function saveBusinessSettings(_: SettingsState, formData: FormData)
 
   revalidatePath("/", "layout");
   return { saved: true };
+}
+
+/** Uploads the company logo (PNG/JPG, up to 1 MB) to the private bucket and links it. */
+export async function uploadLogo(formData: FormData) {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect("/settings");
+  const file = formData.get("logo");
+  if (!(file instanceof File) || file.size === 0) redirect("/settings?logo=type");
+  const check = checkLogo(file);
+  if ("error" in check) redirect(`/settings?logo=${check.error}`);
+  const supabase = await createClient();
+  const path = `${ctx.tenant.id}/${randomUUID()}.${check.ext}`;
+  const { error } = await supabase.storage.from("logos").upload(path, file, { contentType: file.type, upsert: false });
+  if (error) redirect("/settings?logo=upload");
+  const { error: linkError } = await supabase.from("tenant_settings").update({ logo_path: path }).eq("tenant_id", ctx.tenant.id);
+  if (linkError) {
+    await supabase.storage.from("logos").remove([path]);
+    redirect("/settings?logo=upload");
+  }
+  if (ctx.settings.logo_path) await supabase.storage.from("logos").remove([ctx.settings.logo_path]);
+  revalidatePath("/", "layout");
+  redirect("/settings?logo=saved");
+}
+
+export async function removeLogo() {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect("/settings");
+  const supabase = await createClient();
+  const { error } = await supabase.from("tenant_settings").update({ logo_path: null }).eq("tenant_id", ctx.tenant.id);
+  if (!error && ctx.settings.logo_path) await supabase.storage.from("logos").remove([ctx.settings.logo_path]);
+  revalidatePath("/", "layout");
+  redirect("/settings?logo=removed");
 }

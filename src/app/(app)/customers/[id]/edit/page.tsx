@@ -23,7 +23,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
     square_footage: s(c.square_footage), bedrooms: s(c.bedrooms), bathrooms: s(c.bathrooms),
     cleaning_frequency: s(c.cleaning_frequency), preferred_service: s(c.preferred_service),
     estimated_price: centsToInput(c.estimated_price_cents), access_instructions: s(c.access_instructions),
-    pets: s(c.pets), special_instructions: s(c.special_instructions), notes: s(c.notes), customer_since: s(c.customer_since),
+    pets: s(c.pets), special_instructions: s(c.special_instructions), notes: s(c.notes), customer_since: s(c.customer_since), rating: s(c.rating),
   };
 
   return (

@@ -47,10 +47,10 @@ export async function openEntry(employeeId: string): Promise<TimeEntry | null> {
   return { ...data, employeeName: "", jobTitle: (data.jobs as unknown as { title: string } | null)?.title ?? null };
 }
 
-export type Note = { id: string; title: string; body: string; updated_at: string };
+export type Note = { id: string; title: string; body: string; updated_at: string; customer_id: string | null };
 export async function listNotes(): Promise<Note[]> {
   const supabase = await createClient();
-  const { data } = await supabase.from("user_notes").select("id,title,body,updated_at").order("updated_at", { ascending: false }).limit(200);
+  const { data } = await supabase.from("user_notes").select("id,title,body,updated_at,customer_id").order("updated_at", { ascending: false }).limit(200);
   return data ?? [];
 }
 
@@ -77,4 +77,11 @@ export async function listMembers(tenantId: string) {
     const p = m.profiles as unknown as { full_name: string | null; email: string } | null;
     return { user_id: m.user_id as string, role: m.role as string, label: p ? (p.full_name || p.email) : "" };
   }).sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/** My private notes about one customer, newest first. */
+export async function listCustomerNotes(customerId: string): Promise<{ id: string; body: string; created_at: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("user_notes").select("id,body,created_at").eq("customer_id", customerId).order("created_at", { ascending: false }).limit(50);
+  return data ?? [];
 }

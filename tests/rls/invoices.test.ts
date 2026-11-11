@@ -199,4 +199,90 @@ d("invoices & payments", () => {
       });
     }
   });
+
+  it("save_invoice_draft: saves header + lines in order, drafts only, own company only, roles", async () => {
+    const hdr = (extra = {}) => ({ customer_id: custA, customer_name: " Ann Lee ", customer_email: "", billing_address: "1 Main St", issue_date: "2099-01-01", due_date: "2099-01-31", discount_cents: 100, tax_rate: 5, notes: "", terms: "T", ...extra });
+    const lines = [{ description: "Second", quantity: 1, unit_price_cents: 500 }, { description: "First", quantity: 2, unit_price_cents: 250 }];
+    const src = (await sql`insert into public.invoices (tenant_id, customer_id, due_date) values (${tA}, ${custA}, '2099-01-01') returning id`)[0].id;
+    await as(id.office, async (tx) => {
+      await tx`select public.save_invoice_draft(${src}, ${tx.json(hdr())}, ${tx.json(lines)})`;
+      const rows = await tx`select description, position from public.invoice_lines where invoice_id = ${src} order by position`;
+      expect(rows.map((r) => r.description)).toEqual(["Second", "First"]);
+      const [i] = await tx`select customer_name, customer_email, notes, due_date::text d from public.invoices where id = ${src}`;
+      expect([i.customer_name, i.customer_email, i.notes, i.d]).toEqual(["Ann Lee", null, null, "2099-01-31"]);
+      // saving again replaces the lines (reordered)
+      await tx`select public.save_invoice_draft(${src}, ${tx.json(hdr())}, ${tx.json([...lines].reverse())})`;
+      expect((await tx`select description from public.invoice_lines where invoice_id = ${src} order by position`).map((r) => r.description)).toEqual(["First", "Second"]);
+      // a customer from another company is refused
+      await tx`savepoint x`;
+      await expect(tx`select public.save_invoice_draft(${src}, ${tx.json(hdr({ customer_id: custB }))}, ${tx.json(lines)})`).rejects.toThrow(/customer not found/);
+      await tx`rollback to savepoint x`;
+      // bad dates / bad lines fail as a whole (nothing half-saved)
+      await tx`savepoint y`;
+      await expect(tx`select public.save_invoice_draft(${src}, ${tx.json(hdr({ due_date: "2098-01-01" }))}, ${tx.json(lines)})`).rejects.toThrow();
+      await tx`rollback to savepoint y`;
+      await tx`savepoint z`;
+      await expect(tx`select public.save_invoice_draft(${src}, ${tx.json(hdr())}, ${tx.json([{ description: "", quantity: 1, unit_price_cents: 1 }])})`).rejects.toThrow();
+      await tx`rollback to savepoint z`;
+      // sent invoices are locked
+      await tx`select public.issue_invoice(${src})`;
+      await tx`savepoint w`;
+      await expect(tx`select public.save_invoice_draft(${src}, ${tx.json(hdr())}, ${tx.json(lines)})`).rejects.toThrow(/only drafts/);
+      await tx`rollback to savepoint w`;
+    });
+    const src2 = (await sql`insert into public.invoices (tenant_id, customer_id, due_date) values (${tA}, ${custA}, '2099-01-01') returning id`)[0].id;
+    for (const u of [id.accountant, id.manager, id.employee, id.ownerB]) {
+      await as(u, async (tx) => {
+        await tx`savepoint s`;
+        await expect(tx`select public.save_invoice_draft(${src2}, ${tx.json(hdr())}, ${tx.json(lines)})`).rejects.toThrow();
+        await tx`rollback to savepoint s`;
+      });
+    }
+  });
+
+  it("logos bucket: members read their company folder, only owner/admin write, other companies see nothing", async () => {
+    const path = `${tA}/${randomUUID()}.png`;
+    await as(id.ownerA, async (tx) => {
+      await tx`insert into storage.objects (bucket_id, name, owner_id) values ('logos', ${path}, ${id.ownerA})`;
+      expect((await tx`select 1 from storage.objects where bucket_id = 'logos' and name = ${path}`).length).toBe(1);
+      await tx`savepoint a`;
+      await expect(tx`insert into storage.objects (bucket_id, name, owner_id) values ('logos', ${tB + "/x.png"}, ${id.ownerA})`).rejects.toThrow();
+      await tx`rollback to savepoint a`;
+    });
+    // Same transaction, switching who is asking (rolled back at the end).
+    await as(id.ownerA, async (tx) => {
+      await tx`insert into storage.objects (bucket_id, name, owner_id) values ('logos', ${path}, ${id.ownerA})`;
+      const asUser = (uid: string) => tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: uid, role: "authenticated" })}, true)`;
+      const seen = async () => (await tx`select 1 from storage.objects where bucket_id = 'logos' and name = ${path}`).length;
+      await asUser(id.office);
+      expect(await seen()).toBe(1); // members may read
+      await tx`savepoint b`;
+      await expect(tx`insert into storage.objects (bucket_id, name, owner_id) values ('logos', ${tA + "/y.png"}, ${id.office})`).rejects.toThrow(); // but not write
+      await tx`rollback to savepoint b`;
+      await asUser(id.ownerB);
+      expect(await seen()).toBe(0);
+    });
+  });
+
+  it("update_payment: owner/admin only, keeps the paid total within the invoice total, sent invoices only", async () => {
+    const inv = (await sql`insert into public.invoices (tenant_id, customer_id, due_date, status) values (${tA}, ${custA}, '2099-01-01', 'draft') returning id`)[0].id;
+    await sql`insert into public.invoice_lines (tenant_id, invoice_id, description, quantity, unit_price_cents) values (${tA}, ${inv}, 'Clean', 1, 10000)`;
+    await as(id.ownerA, async (tx) => {
+      await tx`select public.issue_invoice(${inv})`;
+      const p1 = (await tx`select public.record_payment(${inv}, 4000, current_date, 'cash', null, null) as id`)[0].id;
+      const p2 = (await tx`select public.record_payment(${inv}, 6000, current_date, 'check', '#1', null) as id`)[0].id;
+      await tx`select public.update_payment(${p1}, 3000, current_date, 'zelle', 'ref', 'fixed')`;
+      const [row] = await tx`select amount_cents, method, reference, notes from public.payments where id = ${p1}`;
+      expect([row.amount_cents, row.method, row.reference, row.notes]).toEqual([3000, "zelle", "ref", "fixed"]);
+      await tx`savepoint a`;
+      await expect(tx`select public.update_payment(${p1}, 4001, current_date, 'cash', null, null)`).rejects.toThrow(/exceeds/);
+      await tx`rollback to savepoint a`;
+      await tx`select public.update_payment(${p2}, 6000, current_date, 'cash', null, null)`; // unchanged amount is fine
+      // office staff can record payments but not edit them
+      await tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: id.office, role: "authenticated" })}, true)`;
+      await tx`savepoint b`;
+      await expect(tx`select public.update_payment(${p1}, 100, current_date, 'cash', null, null)`).rejects.toThrow();
+      await tx`rollback to savepoint b`;
+    });
+  });
 });

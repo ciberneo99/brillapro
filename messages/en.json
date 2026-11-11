@@ -154,7 +154,11 @@
       "email": "Business email",
       "address": "Address",
       "taxId": "Tax ID",
-      "readOnly": "Only the owner or an admin can edit these details."
+      "readOnly": "Only the owner or an admin can edit these details.",
+      "website": "Website",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code"
     },
     "regional": {
       "title": "Currency & regional",
@@ -168,6 +172,22 @@
       "title": "My preferences",
       "languageHelp": "Interface language for your account.",
       "themeHelp": "Applies instantly and is remembered on every device."
+    },
+    "logo": {
+      "title": "Company logo",
+      "alt": "Company logo",
+      "none": "No logo yet",
+      "choose": "Choose a logo file",
+      "upload": "Upload logo",
+      "remove": "Remove logo",
+      "help": "PNG or JPG, up to 1 MB. Shown at the top of your invoices.",
+      "status": {
+        "saved": "Logo saved.",
+        "removed": "Logo removed.",
+        "type": "Use a PNG or JPG image.",
+        "size": "The image is larger than 1 MB.",
+        "upload": "The logo couldn't be uploaded. Try again."
+      }
     }
   },
   "errors": {
@@ -201,10 +221,16 @@
     "prev": "Previous",
     "next": "Next",
     "columns": {
-      "name": "Name",
+      "name": "Client",
       "contact": "Contact",
       "status": "Status",
-      "added": "Added"
+      "added": "Added",
+      "property": "Property",
+      "time": "Time",
+      "frequency": "Frequency",
+      "rating": "Rating",
+      "outstanding": "Outstanding",
+      "actions": "Actions"
     },
     "empty": {
       "title": "No customers yet",
@@ -243,7 +269,9 @@
       "status": "Status",
       "choose": "Select…",
       "create": "Create customer",
-      "identityHint": "Enter a name or a company name."
+      "identityHint": "Enter a name or a company name.",
+      "rating": "Rating",
+      "ratingHint": "Your own 1 to 5 stars for this customer"
     },
     "propertyType": {
       "house": "House",
@@ -300,13 +328,78 @@
       "noJobs": "No jobs for this customer yet.",
       "newInvoice": "New invoice",
       "noInvoices": "No invoices for this customer yet.",
-      "repeatLast": "Repeat last invoice"
+      "repeatLast": "Repeat last invoice",
+      "contact": "Contact",
+      "clientNotes": "Client notes",
+      "noNotes": "No client notes yet.",
+      "clientSince": "Client since",
+      "ytd": "{year} revenue",
+      "outstanding": "Outstanding",
+      "actions": "Actions",
+      "backShort": "Back",
+      "bd": "{n}bd",
+      "ba": "{n}ba",
+      "sqft": "{n} sqft"
     },
     "errors": {
       "identityRequired": "Enter a name or a company name.",
       "invalid": "Some fields are not valid. Check them and try again.",
       "saveFailed": "The customer could not be saved.",
       "notFound": "Customer not found."
+    },
+    "summary": {
+      "overdue": "Overdue amount",
+      "outstanding": "Total outstanding",
+      "drafts": "Draft quotes",
+      "viewInvoices": "View invoices",
+      "viewQuotes": "View quotes"
+    },
+    "list": {
+      "newClient": "New client",
+      "advanced": "Advanced",
+      "status": "Status",
+      "sort": "Sort by",
+      "apply": "Apply",
+      "clear": "Clear",
+      "menu": "Actions",
+      "view": "View profile",
+      "edit": "Edit",
+      "newQuote": "New quote",
+      "newJob": "New job",
+      "sqft": "sqft",
+      "beds": "Bedrooms",
+      "baths": "Bathrooms",
+      "area": "Square feet",
+      "pet": "Pets",
+      "noRating": "Not rated",
+      "stars": "{count} of 5 stars",
+      "openMap": "Open in Google Maps"
+    },
+    "time": {
+      "none": "No visits yet",
+      "of": "of {planned}",
+      "noPlan": "No scheduled time",
+      "crew": "{count, plural, one {# person} other {# people}}",
+      "running": "In progress",
+      "over": "Over the planned time",
+      "last": "Last visit {date}"
+    },
+    "notes": {
+      "title": "My Notes",
+      "viewAll": "View all",
+      "placeholder": "Add a new note…",
+      "save": "Save note",
+      "delete": "Delete note",
+      "empty": "No notes about this customer yet.",
+      "invalid": "Write something before saving.",
+      "private": "Only you can see your notes, not even the owner.",
+      "toolbar": "Text formatting",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "numbered": "Numbered list",
+      "bullets": "Bulleted list",
+      "clear": "Clear formatting"
     }
   },
   "request": {
@@ -681,7 +774,8 @@
     "save": "Save",
     "delete": "Delete",
     "empty": "No notes yet.",
-    "updated": "Updated {date}"
+    "updated": "Updated {date}",
+    "aboutCustomer": "About a customer"
   },
   "tasks": {
     "title": "Tasks",
@@ -799,7 +893,66 @@
     "dueDays": "Due after (days)",
     "defaultTerms": "Default terms and conditions",
     "settingsReadOnly": "Only the owner or an admin can change these.",
-    "duplicate": "Duplicate"
+    "duplicate": "Duplicate",
+    "editor": {
+      "invoice": "INVOICE",
+      "draft": "Draft",
+      "date": "Date",
+      "dueDate": "Due date",
+      "billTo": "Bill to",
+      "searchLabel": "Search customers",
+      "searchHelp": "Pick a customer to fill in the details below. You can still edit them for this invoice.",
+      "customerName": "Name",
+      "customerEmail": "Email",
+      "customerAddress": "Address",
+      "items": "Items",
+      "description": "Description",
+      "descriptionPlaceholder": "What was done",
+      "qty": "Qty",
+      "rate": "Rate",
+      "amount": "Amount",
+      "addItem": "Add item",
+      "drag": "Drag to reorder",
+      "dragHelp": "Drag the handle to reorder items, or use the arrows.",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "removeItem": "Remove item",
+      "moved": "Item moved to position {position} of {total}",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "taxRate": "Tax rate (%)",
+      "tax": "Tax",
+      "total": "Total",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything the customer should know",
+      "terms": "Terms and conditions",
+      "thanks": "Thank you for your business!",
+      "save": "Save invoice",
+      "saving": "Saving…",
+      "error": "Check the customer, dates and items, then try again.",
+      "logoAlt": "Company logo",
+      "saveFirst": "Save your changes before sending: the email and PDF use the saved invoice."
+    },
+    "search": {
+      "placeholder": "Search by name, email, phone or address",
+      "clear": "Clear customer",
+      "none": "No customers match."
+    },
+    "toolbar": {
+      "addPayment": "Add payment",
+      "actions": "Actions",
+      "save": "Save invoice",
+      "print": "Print",
+      "download": "Download PDF",
+      "delete": "Delete",
+      "paymentHistory": "Payment history",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete this draft invoice? This can't be undone.",
+      "confirmVoid": "Void this invoice? It will stay in your records as void.",
+      "confirmDeletePayment": "Delete this payment?",
+      "paymentNotAvailable": "Payments can be added once the invoice has been sent and has a balance."
+    }
   },
   "expenses": {
     "title": "Expenses",

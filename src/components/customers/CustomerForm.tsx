@@ -117,6 +117,12 @@ export function CustomerForm({
           {input("preferred_service", t("form.preferredService"), { smart: "sentence" })}
           {input("estimated_price", t("form.estimatedPrice"), { kind: "money" })}
           {input("pets", t("form.pets"), { smart: "sentence" })}
+          <Field label={t("form.rating")} htmlFor="rating" hint={t("form.ratingHint")}>
+            <Select id="rating" name="rating" defaultValue={v("rating")}>
+              <option value="">{t("form.choose")}</option>
+              {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{"★".repeat(n)}{"☆".repeat(5 - n)}</option>)}
+            </Select>
+          </Field>
           <div className="sm:col-span-2">{area("access_instructions", t("form.accessInstructions"))}</div>
           <div className="sm:col-span-2">{area("special_instructions", t("form.specialInstructions"))}</div>
         </div>

@@ -84,3 +84,13 @@ erDiagram
 - Solo `submit_quote_request` y `public_company_name` son funciones privilegiadas que visitantes pueden ejecutar (a propósito); las demás que ven son triggers o helpers sin privilegios.
 - Todas las funciones SECURITY DEFINER fijan `search_path`. Las vistas usan `security_invoker`. El bucket `receipts` es privado.
 - Formulario público: honeypot, tiempo mínimo, límite por empresa en la base y Turnstile opcional (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`).
+
+### Lista de clientes (migración 0020)
+
+- `customers.rating` (1 a 5, la pone el usuario a mano; editable desde el formulario del cliente).
+- `customer_list_extras(ids)`: por cliente, saldo pendiente y vencido, y el último trabajo iniciado con horas reales (entradas/salidas) contra horas planeadas (ventana programada × personas asignadas). Corre con los permisos de quien consulta: sin acceso a facturas ve ceros.
+- `customers_summary()`: monto vencido, total pendiente y cotizaciones en borrador.
+
+### Editor de facturas (migración 0021)
+- **Logo de la empresa**: bucket privado `logos` (PNG/JPG, máx. 1 MB), archivos en `<tenant_id>/<archivo>`. Lo leen todos los miembros de la empresa; solo owner/admin suben o borran. `tenant_settings.logo_path` apunta al archivo. La pantalla usa una URL firmada de 1 hora; el PDF descarga los bytes.
+- **`save_invoice_draft(p_id, p_header jsonb, p_lines jsonb)`**: guarda encabezado + todos los conceptos en una sola transacción, con `position` según el orden recibido. Solo borradores; roles owner/admin/office_staff; el cliente debe ser de la misma empresa; máx. 100 conceptos. Si algo falla, no se guarda nada.
