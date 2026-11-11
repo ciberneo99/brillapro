@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { FileSpreadsheet, UploadCloud } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Card, cn } from "@/components/ui";
 import { formatDateOnly } from "@/lib/dates";
@@ -16,6 +17,7 @@ export function VenmoUploader({ currency, dateFormat }: { currency: string; date
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const [downloading, setDownloading] = useState(false);
+  const [over, setOver] = useState(false);
   const m = (c: number) => formatMoney(c, currency);
   const d = (v: string | null) => (v ? formatDateOnly(v, dateFormat) : "");
 
@@ -56,10 +58,22 @@ export function VenmoUploader({ currency, dateFormat }: { currency: string; date
       <Card accent="blue" className="space-y-3">
         <h2 className="text-base font-semibold">{t("upload")}</h2>
         <p className="text-sm text-muted">{t("uploadHelp")}</p>
-        <div className="flex flex-wrap items-center gap-3">
-          <input ref={input} type="file" accept=".csv,text/csv" onChange={(e) => choose(e.target.files?.[0] ?? null)} className="block text-sm" />
-          {file && <Button type="button" variant="ghost" onClick={() => { if (input.current) input.current.value = ""; choose(null); }}>{t("clear")}</Button>}
-        </div>
+        <input ref={input} id="venmo-file" type="file" accept=".csv,text/csv" onChange={(e) => choose(e.target.files?.[0] ?? null)} className="sr-only" />
+        <label
+          htmlFor="venmo-file"
+          onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files?.[0]; if (f) choose(f); }}
+          className={cn(
+            "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-8 text-center transition-colors focus-within:ring-2 focus-within:ring-primary",
+            over ? "border-primary bg-primary-soft" : "border-line bg-surface-2 hover:border-primary hover:bg-primary-soft",
+          )}
+        >
+          {file ? <FileSpreadsheet className="h-10 w-10 text-primary" aria-hidden /> : <UploadCloud className="h-10 w-10 text-primary" aria-hidden />}
+          <span className="text-sm font-semibold">{file ? file.name : t("dropTitle")}</span>
+          <span className="text-xs text-muted">{file ? t("dropChange") : t("dropHint")}</span>
+        </label>
+        {file && <div><Button type="button" variant="ghost" onClick={() => { if (input.current) input.current.value = ""; choose(null); }}>{t("clear")}</Button></div>}
         <p className="text-xs text-muted">{t("privacy")}</p>
       </Card>
 

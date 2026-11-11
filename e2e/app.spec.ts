@@ -242,3 +242,18 @@ test("customer form: second phone with a label, referred by, and the new Address
   await expect(page.getByText("512-555-0199")).toBeVisible();
   await expect(page.getByText("A friend from church")).toBeVisible();
 });
+
+test("Venmo report generator lives at the bottom of Reports, with a visible upload area", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page.getByRole("link", { name: /venmo/i })).toHaveCount(0); // gone from the sidebar
+  await page.goto("/venmo");
+  await expect(page).toHaveURL(/\/reports#venmo/);
+  const zone = page.locator("label[for=venmo-file]");
+  await expect(zone).toContainText(/click to choose|haz clic/i);
+  await page.locator("#venmo-file").setInputFiles({ name: "statement.csv", mimeType: "text/csv", buffer: Buffer.from("not,a,venmo,file\n") });
+  await expect(zone).toContainText("statement.csv");
+});

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
+import { VenmoUploader } from "@/components/venmo/VenmoUploader";
 import { addDays, addMonths, todayIso } from "@/lib/calendar";
 import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -18,6 +19,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   if (!can(ctx.role, "reports:read")) redirect("/dashboard");
   const sp = await searchParams;
   const t = await getTranslations("reports");
+  const tv = await getTranslations("venmo");
   const ts = await getTranslations("jobs");
   const cur = ctx.settings.currency;
   const today = todayIso(ctx.settings.timezone);
@@ -129,6 +131,16 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
             </ul>
           )}
         </Card>
+      )}
+
+      {can(ctx.role, "venmo:read") && (
+        <section id="venmo" className="scroll-mt-6 space-y-4 border-t border-line pt-8" aria-labelledby="venmo-title">
+          <div>
+            <h2 id="venmo-title" className="text-xl font-semibold tracking-tight">{tv("title")}</h2>
+            <p className="mt-1 text-sm text-muted">{tv("intro")}</p>
+          </div>
+          <VenmoUploader currency={ctx.settings.currency} dateFormat={ctx.settings.date_format} />
+        </section>
       )}
     </div>
   );

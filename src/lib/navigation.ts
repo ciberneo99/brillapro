@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, Briefcase, FileText, Receipt, Wallet, CalendarDays,
-  Boxes, NotebookPen, BarChart3, FileSpreadsheet, Settings, type LucideIcon,
+  Boxes, NotebookPen, BarChart3, Settings, type LucideIcon,
 } from "lucide-react";
 import type { Resource } from "@/lib/permissions";
 
@@ -18,6 +18,5 @@ export const NAV: NavItem[] = [
   { key: "inventory", href: "/inventory", icon: Boxes, resource: "inventory", phase: 6 },
   { key: "notebook", href: "/notebook", icon: NotebookPen, resource: "notebook", phase: 4 },
   { key: "reports", href: "/reports", icon: BarChart3, resource: "reports", phase: 6 },
-  { key: "venmo", href: "/venmo", icon: FileSpreadsheet, resource: "venmo", phase: 7 },
   { key: "settings", href: "/settings", icon: Settings, resource: "settings", phase: 1 },
 ];

@@ -1137,7 +1137,10 @@
       "tooBig": "The file is too large.",
       "denied": "You don't have access to this.",
       "pdf": "The PDF could not be created. Try again."
-    }
+    },
+    "dropTitle": "Click to choose your Venmo CSV file",
+    "dropHint": "or drag the file here",
+    "dropChange": "Click to choose a different file"
   },
   "landing": {
     "nav": {
