@@ -155,3 +155,33 @@ body {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   border-top: 4px solid var(--accent);
 }
+
+/* Hover effect for buttons and menus: a soft coloured glow, a small lift, a tinted outline and a short bar that grows under the label. */
+.bp-fx {
+  --fx: var(--primary);
+  position: relative;
+  transition: transform 160ms ease, box-shadow 200ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.bp-fx::after {
+  content: ""; position: absolute; left: 50%; bottom: 3px; width: 1.5rem; height: 3px; border-radius: 3px;
+  background: var(--fx); transform: translateX(-50%) scaleX(0); opacity: 0; pointer-events: none;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+.bp-fx:is(:hover, :focus-visible):not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fx) 55%, transparent), 0 10px 24px -8px color-mix(in srgb, var(--fx) 60%, transparent), 0 0 18px -4px color-mix(in srgb, var(--fx) 35%, transparent);
+}
+.bp-fx:is(:hover, :focus-visible):not(:disabled):not([aria-disabled="true"])::after { transform: translateX(-50%) scaleX(1); opacity: 1; }
+.bp-fx:active:not(:disabled) { transform: translateY(0); }
+.bp-fx-danger { --fx: var(--danger); }
+.bp-fx-light { --fx: #ffffff; }
+.bp-fx-light::after { background: #ffffff; }
+.bp-fx-solid::after { background: currentColor; }
+.bp-fx-nobar::after { display: none; }
+/* Rows inside open menus: tinted fill and glow, no lift. */
+.bp-fx-item { transition: background-color 120ms ease, box-shadow 160ms ease; }
+.bp-fx-item:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent), 0 0 14px -4px color-mix(in srgb, var(--primary) 45%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .bp-fx, .bp-fx::after, .bp-fx-item { transition: none; }
+  .bp-fx:is(:hover, :focus-visible):not(:disabled) { transform: none; }
+}

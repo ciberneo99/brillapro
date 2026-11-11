@@ -97,7 +97,7 @@ export function CategoryPicker({
         ref={trigger} type="button" role="combobox" aria-label={ariaLabel} aria-expanded={open} aria-haspopup="listbox" aria-controls={open ? listId : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={(e) => { if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); show(); } }}
-        className={cn("flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary", open && "border-primary ring-2 ring-primary/30", className)}
+        className={cn("bp-fx bp-fx-nobar flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary", open && "border-primary ring-2 ring-primary/30", className)}
       >
         <span className={cn("truncate", !selected && "text-muted")}>{selected?.label ?? placeholder}</span>
         <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted transition-transform duration-150", open && "rotate-180 text-primary")} aria-hidden />

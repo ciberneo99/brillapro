@@ -84,7 +84,7 @@ export function SelectMenu({
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={(e) => { if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); show(); } }}
         className={cn(
-          "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60",
+          "bp-fx bp-fx-nobar flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60",
           open && "border-primary ring-2 ring-primary/30",
           className,
         )}
@@ -103,7 +103,7 @@ export function SelectMenu({
               key={o.value || `empty-${i}`} role="option" aria-selected={o.value === current} aria-disabled={o.disabled} data-idx={i}
               onMouseEnter={() => setActive(i)} onMouseDown={(e) => e.preventDefault()} onClick={() => { if (!o.disabled) pick(o.value); }}
               className={cn(
-                "flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                "bp-fx-item flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm",
                 i === active && "bg-primary-soft text-primary",
                 o.value === current && "font-medium",
                 o.disabled && "cursor-not-allowed opacity-50",

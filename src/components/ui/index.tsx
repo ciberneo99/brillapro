@@ -10,11 +10,11 @@ export function Button({ variant = "primary", className, ...props }: ButtonProps
     <button
       {...props}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-        variant === "primary" && "bg-primary text-primary-fg hover:bg-primary-hover",
-        variant === "secondary" && "border border-line bg-surface text-fg hover:bg-surface-2",
-        variant === "ghost" && "text-muted hover:bg-surface-2 hover:text-fg",
-        variant === "danger" && "bg-danger text-primary-fg hover:opacity-90",
+        "bp-fx inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60",
+        variant === "primary" && "bp-fx-solid bg-primary text-primary-fg hover:bg-primary-hover",
+        variant === "secondary" && "border border-line bg-surface text-fg hover:border-primary hover:bg-primary-soft",
+        variant === "ghost" && "text-muted hover:bg-primary-soft hover:text-primary",
+        variant === "danger" && "bp-fx-danger bp-fx-solid bg-danger text-primary-fg hover:opacity-90",
         className,
       )}
     />
