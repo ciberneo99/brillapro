@@ -73,3 +73,10 @@ export async function requireContext(): Promise<AppContext> {
   if (data.user && (await supabase.rpc("my_company_suspended")).data === true) redirect("/suspended");
   redirect(data.user ? "/onboarding" : "/login");
 }
+
+/** True when the signed-in user is platform staff (listed in platform_admins). Decided by the database, never by the browser. */
+export const isPlatformAdmin = cache(async (): Promise<boolean> => {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("is_platform_admin");
+  return data === true;
+});

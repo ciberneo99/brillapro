@@ -4,16 +4,16 @@ import { Sidebar } from "@/components/Sidebar";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { NAV } from "@/lib/navigation";
 import { can } from "@/lib/permissions";
-import { requireContext } from "@/lib/session";
+import { isPlatformAdmin, requireContext } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const ctx = await requireContext();
-  const t = await getTranslations("common");
-  const theme = await getTheme();
+  const [ctx, platformAdmin, t, theme] = await Promise.all([requireContext(), isPlatformAdmin(), getTranslations("common"), getTheme()]);
 
   // Menu only shows what this role may read (server-side filter; routes re-check on their own).
   const items = NAV.filter((n) => can(ctx.role, `${n.resource}:read`)).map(({ key, href }) => ({ key, href }));
+  // Only platform staff see the link to the company admin panel (the page itself re-checks).
+  if (platformAdmin) items.push({ key: "platformAdmin", href: "/admin" });
 
   return (
     <div className="min-h-screen lg:pl-64">

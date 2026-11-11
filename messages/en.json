@@ -32,6 +32,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "platformAdmin": "Platform admin",
     "customers": "Customers",
     "jobs": "Jobs",
     "quotes": "Quotes",
@@ -206,7 +207,6 @@
     "searchPlaceholder": "Name, company, email or phone",
     "all": "All",
     "sortLabel": "Sort by",
-    "sort": {
     "more": {
       "label": "More Actions",
       "import": "Import customers",
@@ -260,6 +260,7 @@
         "failed": "The file could not be imported. Try again."
       }
     },
+    "sort": {
       "newest": "Newest first",
       "oldest": "Oldest first",
       "name": "Name A–Z"
@@ -418,13 +419,13 @@
       "newClient": "New client",
       "advanced": "Advanced",
       "status": "Status",
-      "sort": "Sort by",
       "propertyType": "Property Type",
       "frequency": "Frequency",
       "rating": "Rating",
       "sqftFilter": "Sq. Footage",
       "unrated": "Not rated",
       "starsOption": "{count, plural, one {# star} other {# stars}}",
+      "sort": "Sort by",
       "apply": "Apply",
       "clear": "Clear",
       "menu": "Actions",

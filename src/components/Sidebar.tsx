@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, ShieldCheck, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/components/ui";
 import { NAV } from "@/lib/navigation";
@@ -16,7 +16,7 @@ export function Sidebar({ items, companyName, footer }: { items: Item[]; company
   const t = useTranslations();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const icons = Object.fromEntries(NAV.map((n) => [n.key, n.icon]));
+  const icons: Record<string, (typeof NAV)[number]["icon"]> = { ...Object.fromEntries(NAV.map((n) => [n.key, n.icon])), platformAdmin: ShieldCheck };
 
   const content = (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-fg">

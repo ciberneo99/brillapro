@@ -32,6 +32,7 @@
   },
   "nav": {
     "dashboard": "Panel",
+    "platformAdmin": "Administración",
     "customers": "Clientes",
     "jobs": "Trabajos",
     "quotes": "Cotizaciones",
@@ -205,7 +206,6 @@
     "search": "Buscar",
     "searchPlaceholder": "Nombre, empresa, correo o teléfono",
     "all": "Todos",
-    "sortLabel": "Ordenar por",
     "more": {
       "label": "Más acciones",
       "import": "Importar clientes",
@@ -259,6 +259,7 @@
         "failed": "No se pudo importar el archivo. Intenta de nuevo."
       }
     },
+    "sortLabel": "Ordenar por",
     "sort": {
       "newest": "Más recientes primero",
       "oldest": "Más antiguos primero",
@@ -418,13 +419,13 @@
       "newClient": "Nuevo cliente",
       "advanced": "Avanzado",
       "status": "Estado",
-      "sort": "Ordenar por",
       "propertyType": "Tipo de propiedad",
       "frequency": "Frecuencia",
       "rating": "Calificación",
       "sqftFilter": "Pies cuadrados",
       "unrated": "Sin calificar",
       "starsOption": "{count, plural, one {# estrella} other {# estrellas}}",
+      "sort": "Ordenar por",
       "apply": "Aplicar",
       "clear": "Limpiar",
       "menu": "Acciones",
