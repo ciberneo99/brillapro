@@ -97,3 +97,8 @@ erDiagram
 
 ### Editor de cotizaciones (migración 0026)
 - **`save_quote_draft(p_id, p_header jsonb, p_options jsonb, p_lines jsonb)`**: guarda encabezado (cliente, servicio, título, fechas, descuento, impuesto, notas, términos), opciones y conceptos adicionales en una sola transacción, con `position` según el orden recibido. Solo borradores; roles owner/admin/manager/office_staff; cliente y servicio deben ser de la misma empresa; máx. 12 opciones y 100 conceptos. Si algo falla, no se guarda nada.
+
+### Centro de reportes (migración 0028)
+- **`report_favorites`** (tenant_id, user_id, report_key): reportes marcados con estrella, privados de cada persona (RLS: solo sus filas y solo en su empresa).
+- **`report_sales_tax(p_from, p_to)`**: impuesto por factura enviada en el periodo (base gravable, tasa, impuesto, total). `security invoker`: aplica RLS.
+- Reportes disponibles: detalle de facturas, ventas por concepto, ingresos por cliente, antigüedad de saldos, pagos cobrados, ganancias y pérdidas (base efectivo), impuesto sobre ventas, gastos, resumen del negocio y reportes bancarios (Venmo). No posibles aún: cuentas por pagar (no hay facturas de proveedores) y saldo a favor (no hay créditos de clientes).

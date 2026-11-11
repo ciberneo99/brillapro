@@ -243,7 +243,7 @@ test("customer form: second phone with a label, referred by, and the new Address
   await expect(page.getByText("A friend from church")).toBeVisible();
 });
 
-test("Venmo report generator lives at the bottom of Reports, with a visible upload area", async ({ page }) => {
+test("Venmo report generator lives under Reports > Bank Reports, with a visible upload area", async ({ page }) => {
   await page.goto("/login");
   await page.locator("input[name=email]").fill(email);
   await page.locator("input[name=password]").fill(password);
@@ -251,7 +251,7 @@ test("Venmo report generator lives at the bottom of Reports, with a visible uplo
   await expect(page).toHaveURL(/\/dashboard/);
   await expect(page.getByRole("link", { name: /venmo/i })).toHaveCount(0); // gone from the sidebar
   await page.goto("/venmo");
-  await expect(page).toHaveURL(/\/reports#venmo/);
+  await expect(page).toHaveURL(/\/reports\/bank/);
   const zone = page.locator("label[for=venmo-file]");
   await expect(zone).toContainText(/click to choose|haz clic/i);
   await page.locator("#venmo-file").setInputFiles({ name: "statement.csv", mimeType: "text/csv", buffer: Buffer.from("not,a,venmo,file\n") });
@@ -306,4 +306,52 @@ test("quote editor: company first in Prepared for, options and items reorder by 
   // Actions menu has the same entries as the invoice.
   await page.getByRole("button", { name: /^(actions|acciones)/i }).click();
   for (const n of [/save quote|guardar/i, /duplicate|duplicar/i, /print|imprimir/i, /download pdf|descargar pdf/i]) await expect(page.getByRole("menuitem", { name: n })).toBeVisible();
+});
+
+test("reports hub: sections, favorites, real reports and CSV", async ({ page }) => {
+  const cust = (await sql`insert into public.customers (tenant_id, first_name, last_name, company_name, status, created_by)
+    values (${tenantId}, 'Rita', 'Lopez', 'Lopez Dental', 'active', ${uid}) returning id`)[0].id;
+  const inv = (await sql`insert into public.invoices (tenant_id, customer_id, customer_name, status, issue_date, due_date, tax_rate, created_by)
+    values (${tenantId}, ${cust}, 'Rita Lopez', 'sent', current_date, current_date + 15, 10, ${uid}) returning id`)[0].id;
+  await sql`insert into public.invoice_lines (tenant_id, invoice_id, description, quantity, unit_price_cents, position) values (${tenantId}, ${inv}, 'Office cleaning', 2, 5000, 0)`;
+  await sql`insert into public.payments (tenant_id, invoice_id, amount_cents, paid_on, method) values (${tenantId}, ${inv}, 4000, current_date, 'zelle')`;
+  const cat = (await sql`select id from public.expense_categories where tenant_id = ${tenantId} limit 1`)[0].id;
+  await sql`insert into public.expenses (tenant_id, category_id, vendor, amount_cents, expense_date, created_by) values (${tenantId}, ${cat}, 'Supply Co', 1500, current_date, ${uid})`;
+
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  await page.goto("/reports");
+  for (const h of [/sales reports/i, /payments reports/i, /accounting reports/i, /banking/i]) await expect(page.getByRole("heading", { name: h })).toBeVisible();
+  for (const gone of [/balance sheet/i, /general ledger/i, /trial balance/i, /reconciliation/i]) await expect(page.getByText(gone)).toHaveCount(0);
+  await expect(page.getByText(/star a report to pin it here/i)).toBeVisible();
+
+  // Star "Revenue by Client": it shows up under Favorites at the top.
+  await page.getByRole("button", { name: /add revenue by client to favorites/i }).click();
+  await expect(page.locator("section[aria-labelledby=favorites]").getByRole("heading", { name: "Revenue by Client" })).toBeVisible();
+
+  // Invoice details: 2 x 50.00 = 100.00 + 10% tax = 110.00; 40.00 paid; 70.00 balance.
+  await page.goto("/reports/invoice_details");
+  const row = page.getByRole("row", { name: /rita lopez/i });
+  await expect(row).toContainText("$110.00");
+  await expect(row).toContainText("$40.00");
+  await expect(row).toContainText("$70.00");
+
+  await page.goto("/reports/sales_tax");
+  await expect(page.getByRole("row", { name: /rita lopez/i })).toContainText("$10.00");
+  await page.goto("/reports/profit_loss");
+  await expect(page.getByRole("row", { name: /net profit/i })).toContainText("$25.00"); // 40.00 collected - 15.00 expenses
+  await page.goto("/reports/accounts_aging");
+  await expect(page.getByRole("row", { name: /rita lopez/i })).toContainText("$70.00");
+  expect((await page.request.get("/reports/accounts_payable_aging")).status()).toBe(404); // not possible yet
+
+  // CSV download: plain decimals, totals last.
+  const res = await page.request.get("/reports/item_sales/csv");
+  expect(res.headers()["content-type"]).toContain("text/csv");
+  const text = await res.text();
+  expect(text).toContain("Office cleaning");
+  expect(text).toContain("100.00");
 });

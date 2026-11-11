@@ -1155,7 +1155,127 @@
     "jobs": "Jobs by status",
     "hours": "Hours worked",
     "lowStock": "Low stock",
-    "stockOk": "Everything is above its minimum."
+    "stockOk": "Everything is above its minimum.",
+    "favorites": "Favorites",
+    "favoritesHelp": "Your starred reports, one click away.",
+    "favoritesEmpty": "Star a report to pin it here.",
+    "star": "Add {name} to favorites",
+    "unstar": "Remove {name} from favorites",
+    "starAction": "Add to favorites",
+    "starred": "In favorites",
+    "view": "View",
+    "notYet": "Not available yet",
+    "downloadCsv": "Download {name} as CSV",
+    "csv": "Download CSV",
+    "backToReports": "Back to reports",
+    "from": "From",
+    "to": "To",
+    "applyRange": "Apply range",
+    "asOf": "As of {date}",
+    "sections": {
+      "sales": {
+        "title": "Sales Reports",
+        "desc": "Track invoices, item sales, and revenue by client"
+      },
+      "payments": {
+        "title": "Payments Reports",
+        "desc": "Monitor accounts aging, payments collected, and credit balances"
+      },
+      "accounting": {
+        "title": "Accounting Reports",
+        "desc": "View profit and loss, sales tax, and expenses"
+      },
+      "banking": {
+        "title": "Banking",
+        "desc": "Manage your bank statements and transactions."
+      }
+    },
+    "items": {
+      "invoice_details": {
+        "title": "Invoice Details",
+        "desc": "A comprehensive summary of all invoices sent over time with status and amounts."
+      },
+      "item_sales": {
+        "title": "Item Sales",
+        "desc": "View revenue generated per item or service sold, with quantities."
+      },
+      "revenue_by_client": {
+        "title": "Revenue by Client",
+        "desc": "Analyze income distribution across all your clients to identify top performers."
+      },
+      "accounts_aging": {
+        "title": "Accounts Aging",
+        "desc": "Identify clients who are late on payments, with aging buckets."
+      },
+      "payments_collected": {
+        "title": "Payments Collected",
+        "desc": "Summarize all payments received over time with payment method breakdowns."
+      },
+      "accounts_payable_aging": {
+        "title": "Accounts Payable Aging",
+        "desc": "Track how much is owed to vendors and suppliers with aging details.",
+        "why": "Needs vendor bills, which BrillaPro doesn't record yet."
+      },
+      "credit_balance": {
+        "title": "Credit Balance",
+        "desc": "View all client credit balances and available credits in one place.",
+        "why": "Needs customer credits, which BrillaPro doesn't record yet."
+      },
+      "profit_loss": {
+        "title": "Profit and Loss",
+        "desc": "Compare payments collected against expenses to understand your business performance."
+      },
+      "sales_tax": {
+        "title": "Sales Tax Summary",
+        "desc": "Calculate sales tax charged on your invoices, with detail per invoice."
+      },
+      "expense_report": {
+        "title": "Expense Report",
+        "desc": "Detailed breakdown of all business expenses by category and date."
+      },
+      "overview": {
+        "title": "Business Summary",
+        "desc": "Invoiced, collected and spent, plus jobs by status, hours worked and low stock."
+      },
+      "bank_reports": {
+        "title": "Bank Reports",
+        "desc": "Upload your Venmo statement and get an organized report you can download as a PDF."
+      }
+    },
+    "cols": {
+      "invoice": "Invoice",
+      "date": "Date",
+      "due": "Due",
+      "customer": "Customer",
+      "status": "Status",
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance",
+      "totalRow": "Total",
+      "item": "Item",
+      "invoices": "Invoices",
+      "qty": "Qty",
+      "revenue": "Revenue",
+      "invoiced": "Invoiced",
+      "share": "Share",
+      "notDue": "Not due",
+      "method": "Method",
+      "reference": "Reference",
+      "amount": "Amount",
+      "category": "Category",
+      "vendor": "Vendor",
+      "description": "Description",
+      "income": "Income",
+      "paymentsCollected": "Payments collected",
+      "totalIncome": "Total income",
+      "expensesTitle": "Expenses",
+      "totalExpenses": "Total expenses",
+      "netProfit": "Net profit",
+      "account": "Account",
+      "taxable": "Taxable amount",
+      "rate": "Rate",
+      "tax": "Tax"
+    }
   },
   "venmo": {
     "title": "Venmo Report Generator",

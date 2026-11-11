@@ -1155,7 +1155,127 @@
     "jobs": "Trabajos por estado",
     "hours": "Horas trabajadas",
     "lowStock": "Poco stock",
-    "stockOk": "Todo está por encima de su mínimo."
+    "stockOk": "Todo está por encima de su mínimo.",
+    "favorites": "Favoritos",
+    "favoritesHelp": "Tus reportes marcados, a un clic.",
+    "favoritesEmpty": "Marca un reporte con la estrella para fijarlo aquí.",
+    "star": "Agregar {name} a favoritos",
+    "unstar": "Quitar {name} de favoritos",
+    "starAction": "Agregar a favoritos",
+    "starred": "En favoritos",
+    "view": "Ver",
+    "notYet": "Aún no disponible",
+    "downloadCsv": "Descargar {name} en CSV",
+    "csv": "Descargar CSV",
+    "backToReports": "Volver a reportes",
+    "from": "Desde",
+    "to": "Hasta",
+    "applyRange": "Aplicar rango",
+    "asOf": "Al {date}",
+    "sections": {
+      "sales": {
+        "title": "Reportes de ventas",
+        "desc": "Sigue tus facturas, ventas por concepto e ingresos por cliente"
+      },
+      "payments": {
+        "title": "Reportes de pagos",
+        "desc": "Controla antigüedad de saldos, pagos cobrados y saldos a favor"
+      },
+      "accounting": {
+        "title": "Reportes contables",
+        "desc": "Consulta ganancias y pérdidas, impuesto sobre ventas y gastos"
+      },
+      "banking": {
+        "title": "Bancos",
+        "desc": "Administra tus estados de cuenta y movimientos."
+      }
+    },
+    "items": {
+      "invoice_details": {
+        "title": "Detalle de facturas",
+        "desc": "Resumen completo de todas las facturas emitidas, con estado e importes."
+      },
+      "item_sales": {
+        "title": "Ventas por concepto",
+        "desc": "Consulta los ingresos por concepto o servicio vendido, con cantidades."
+      },
+      "revenue_by_client": {
+        "title": "Ingresos por cliente",
+        "desc": "Analiza cómo se reparten tus ingresos entre clientes para identificar a los principales."
+      },
+      "accounts_aging": {
+        "title": "Antigüedad de saldos",
+        "desc": "Identifica clientes con pagos atrasados, por rangos de antigüedad."
+      },
+      "payments_collected": {
+        "title": "Pagos cobrados",
+        "desc": "Resume todos los pagos recibidos con desglose por método de pago."
+      },
+      "accounts_payable_aging": {
+        "title": "Antigüedad de cuentas por pagar",
+        "desc": "Controla cuánto debes a proveedores, con detalle de antigüedad.",
+        "why": "Requiere facturas de proveedores, que BrillaPro aún no registra."
+      },
+      "credit_balance": {
+        "title": "Saldo a favor",
+        "desc": "Consulta los saldos a favor de tus clientes en un solo lugar.",
+        "why": "Requiere créditos de clientes, que BrillaPro aún no registra."
+      },
+      "profit_loss": {
+        "title": "Ganancias y pérdidas",
+        "desc": "Compara los pagos cobrados contra los gastos para entender el desempeño de tu negocio."
+      },
+      "sales_tax": {
+        "title": "Resumen de impuesto sobre ventas",
+        "desc": "Calcula el impuesto cobrado en tus facturas, con detalle por factura."
+      },
+      "expense_report": {
+        "title": "Reporte de gastos",
+        "desc": "Desglose detallado de todos los gastos del negocio por categoría y fecha."
+      },
+      "overview": {
+        "title": "Resumen del negocio",
+        "desc": "Facturado, cobrado y gastado, más trabajos por estado, horas trabajadas e inventario bajo."
+      },
+      "bank_reports": {
+        "title": "Reportes bancarios",
+        "desc": "Sube tu estado de cuenta de Venmo y obtén un reporte organizado que puedes descargar en PDF."
+      }
+    },
+    "cols": {
+      "invoice": "Factura",
+      "date": "Fecha",
+      "due": "Vence",
+      "customer": "Cliente",
+      "status": "Estado",
+      "total": "Total",
+      "paid": "Pagado",
+      "balance": "Saldo",
+      "totalRow": "Total",
+      "item": "Concepto",
+      "invoices": "Facturas",
+      "qty": "Cant.",
+      "revenue": "Ingresos",
+      "invoiced": "Facturado",
+      "share": "Participación",
+      "notDue": "No vencido",
+      "method": "Método",
+      "reference": "Referencia",
+      "amount": "Importe",
+      "category": "Categoría",
+      "vendor": "Proveedor",
+      "description": "Descripción",
+      "income": "Ingresos",
+      "paymentsCollected": "Pagos cobrados",
+      "totalIncome": "Total de ingresos",
+      "expensesTitle": "Gastos",
+      "totalExpenses": "Total de gastos",
+      "netProfit": "Ganancia neta",
+      "account": "Cuenta",
+      "taxable": "Base gravable",
+      "rate": "Tasa",
+      "tax": "Impuesto"
+    }
   },
   "venmo": {
     "title": "Generador de reporte de Venmo",
