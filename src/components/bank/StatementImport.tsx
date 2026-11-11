@@ -4,12 +4,13 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, UploadCloud } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Card, cn } from "@/components/ui";
+import { Alert, Button, Card, Input, cn } from "@/components/ui";
 import { CategoryPicker, type CategoryChoice } from "./CategoryPicker";
 import { ExpandableText } from "./ExpandableText";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { importTransactions, previewStatement, type PreviewRow } from "@/modules/bank/actions";
+import { parseMoney } from "@/modules/bank/parse";
 
 export function StatementImport({ categories, currency, dateFormat }: { categories: CategoryChoice[]; currency: string; dateFormat: string }) {
   const t = useTranslations("bank");
@@ -19,6 +20,9 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
   const [name, setName] = useState("");
   const [rows, setRows] = useState<(PreviewRow & { on: boolean })[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<{ start: string; end: string } | null>(null);
+  const [prev, setPrev] = useState("");
+  const [bankEnd, setBankEnd] = useState("");
   const [done, setDone] = useState<{ added: number; skipped: number } | null>(null);
   const [pending, start] = useTransition();
 
@@ -29,7 +33,12 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
     body.set("file", file);
     start(async () => {
       const res = await previewStatement(body);
-      if (res.ok) { setName(res.fileName); setRows(res.rows.map((r) => ({ ...r, on: !r.duplicate }))); }
+      if (res.ok) {
+        setName(res.fileName); setRows(res.rows.map((r) => ({ ...r, on: !r.duplicate })));
+        const plain = (c: number | null) => (c === null ? "" : (c / 100).toFixed(2));
+        setPrev(plain(res.summary.beginningCents)); setBankEnd(plain(res.summary.endingCents));
+        setPeriod(res.summary.periodStart && res.summary.periodEnd ? { start: res.summary.periodStart, end: res.summary.periodEnd } : null);
+      }
       else setError(res.error);
       if (input.current) input.current.value = "";
     });
@@ -41,6 +50,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
     start(async () => {
       const res = await importTransactions({
         source: name,
+        statement: period && (prevCents !== null || endCents !== null) ? { beginningCents: prevCents, endingCents: endCents, periodStart: period.start, periodEnd: period.end } : null,
         rows: chosen.map((r) => ({ date: r.date, description: r.description, amountCents: r.amountCents, balanceCents: r.balanceCents, categoryId: r.categoryId, n: r.n })),
       });
       if (res.ok) { setDone({ added: res.added, skipped: res.skipped }); setRows(null); router.refresh(); }
@@ -50,6 +60,11 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
 
   const set = (i: number, patch: Partial<PreviewRow & { on: boolean }>) => setRows((cur) => cur && cur.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   const chosenCount = rows?.filter((r) => r.on).length ?? 0;
+  const prevCents = prev.trim() === "" ? null : parseMoney(prev);
+  const endCents = bankEnd.trim() === "" ? null : parseMoney(bankEnd);
+  const net = (rows ?? []).filter((r) => r.on).reduce((a, r) => a + r.amountCents, 0);
+  const expectedEnd = prevCents === null ? null : prevCents + net;
+  const gap = expectedEnd !== null && endCents !== null ? endCents - expectedEnd : null;
 
   return (
     <Card accent="blue" className="space-y-4">
@@ -77,6 +92,20 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
       {rows && (
         <div className="space-y-3">
           <p className="text-sm">{t("import.found", { count: rows.length, name })}</p>
+          <div className="space-y-2 rounded-lg border border-line bg-surface-2 p-3">
+            <p className="text-sm font-medium">{t("import.balances")}{period && <span className="ml-2 font-normal text-muted">{formatDateOnly(period.start, dateFormat)} – {formatDateOnly(period.end, dateFormat)}</span>}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-sm">{t("import.previousBalance")}
+                <Input inputMode="decimal" value={prev} onChange={(e) => setPrev(e.target.value)} className="mt-1" aria-label={t("import.previousBalance")} />
+              </label>
+              <label className="block text-sm">{t("import.endingBalance")}
+                <Input inputMode="decimal" value={bankEnd} onChange={(e) => setBankEnd(e.target.value)} className="mt-1" aria-label={t("import.endingBalance")} />
+              </label>
+            </div>
+            {gap === null ? <p className="text-xs text-muted">{t("import.balanceHint")}</p>
+              : gap === 0 ? <p className="text-sm font-medium text-success">{t("import.matches")}</p>
+              : <p className="text-sm font-medium text-danger">{t("import.differs", { amount: formatMoney(Math.abs(gap), currency) })}</p>}
+          </div>
           <div className="max-h-[28rem] overflow-auto rounded-lg border border-line">
             <table className="w-full min-w-[40rem] table-fixed text-sm">
               <colgroup><col className="w-10" /><col className="w-28" /><col /><col className="w-56" /><col className="w-28" /></colgroup>

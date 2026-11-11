@@ -389,9 +389,17 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await page.locator("#bank-file").setInputFiles("e2e/fixtures/statement.pdf");
   await expect(page.getByText(/4 transactions found/i)).toBeVisible({ timeout: 20000 });
   await expect(page.locator("tbody").getByRole("combobox").first()).toContainText("Zelle payment"); // suggested from its keyword
+  // The bank's balances are read from the statement and checked against the transactions.
+  await expect(page.getByLabel("Previous balance")).toHaveValue("1000.00");
+  await expect(page.getByLabel("Ending balance")).toHaveValue("792.80");
+  await expect(page.getByText(/matches the bank/i)).toBeVisible();
   await page.getByRole("button", { name: /import 4 transactions/i }).click();
   await expect(page.getByText(/4 transactions imported/i)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Transactions (4)" })).toBeVisible();
+
+  // The report starts from the bank's previous balance and agrees with its ending balance.
+  await expect(page.getByText("$1,000.00").first()).toBeVisible();
+  await expect(page.getByText("Matches the bank statement.")).toBeVisible();
 
   const zelle = page.getByRole("row", { name: /zelle payment from rita lopez/i });
   await expect(zelle).toContainText("$150.00");

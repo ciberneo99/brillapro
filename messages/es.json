@@ -1797,7 +1797,13 @@
         "denied": "No tienes permiso para importar estados de cuenta.",
         "failed": "No se pudieron guardar los movimientos. Inténtalo de nuevo.",
         "invalid": "Los datos no eran válidos. Vuelve a leer el estado de cuenta."
-      }
+      },
+      "balances": "Saldos del banco",
+      "previousBalance": "Saldo anterior",
+      "endingBalance": "Saldo final",
+      "balanceHint": "Cópialos de tu estado de cuenta si están vacíos, para que el reporte parta del saldo del banco y pueda compararse con él.",
+      "matches": "Coincide con el banco: el saldo anterior más estos movimientos es igual al saldo final.",
+      "differs": "No coincide con el banco por {amount}. Pueden faltar movimientos, o un depósito o retiro se leyó con el signo equivocado."
     },
     "cats": {
       "help": "Las categorías tienen dos niveles: una categoría principal y sus subcategorías. Agrega las tuyas cuando quieras. Las categorías ocultas se conservan en movimientos pasados, pero ya no se ofrecen para nuevos.",
@@ -1820,6 +1826,15 @@
       "empty": "Ninguna categoría coincide."
     },
     "pdfTitle": "Movimientos bancarios",
-    "pdfCount": "Movimientos"
+    "pdfCount": "Movimientos",
+    "summary": {
+      "previous": "Saldo anterior",
+      "ending": "Saldo final",
+      "fromBank": "Del estado de cuenta",
+      "matches": "Coincide con el estado de cuenta del banco.",
+      "differs": "Tu estado de cuenta termina en {bank}. Diferencia con estos movimientos: {diff}.",
+      "matchesShort": "Coincide con el banco",
+      "differsShort": "El banco difiere por {diff}"
+    }
   }
 }

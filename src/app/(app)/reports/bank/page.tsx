@@ -13,7 +13,8 @@ import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { addBankCategory, bulkCategorize, bulkDelete, deleteTransaction, refreshBank, toggleBankCategory, updateBankCategory, updateTransaction } from "@/modules/bank/actions";
-import { BANK_PAGE_SIZE, categoryLabels, listBankCategories, listBankMonths, listTransactions, sumTransactions, type BankCategory } from "@/modules/bank/queries";
+import { BANK_PAGE_SIZE, categoryLabels, listBankCategories, listBankMonths, listStatements, listTransactions, sumTransactions, type BankCategory } from "@/modules/bank/queries";
+import { balanceSummary } from "@/modules/bank/summary";
 
 export const metadata = { title: "Bank reports" };
 
@@ -74,6 +75,8 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
     listTransactions({ ...filters, page: Number(sp.page) || 1 }, filterIds), listBankMonths(), sumTransactions(filters, filterIds),
   ]);
   const pages = Math.max(1, Math.ceil(total / BANK_PAGE_SIZE));
+  // The bank's balances only make sense for the whole period, not for a search or category.
+  const summary = sp.q || type || sp.category ? null : balanceSummary(await listStatements(), sp.month, sums.deposits, sums.withdrawals);
   const m = (c: number) => formatMoney(c, currency);
   const params = (over: Record<string, string | undefined>) => {
     const u = new URLSearchParams();
@@ -133,6 +136,29 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
           </form>
         </div>
 
+        {summary && (
+          <div className="border-t border-line">
+            <dl className="grid divide-y divide-line sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+              {[
+                { label: tb("summary.previous"), value: summary.previousCents, tone: "" },
+                { label: tb("cols.deposits"), value: summary.depositsCents, tone: "text-success" },
+                { label: tb("cols.withdrawals"), value: summary.withdrawalsCents, tone: "text-danger" },
+                { label: tb("summary.ending"), value: summary.endingCents, tone: "" },
+              ].map((x) => (
+                <div key={x.label} className="px-5 py-4">
+                  <dt className="text-sm text-muted">{x.label}</dt>
+                  <dd className={cn("mt-1 text-2xl font-semibold tabular-nums", x.tone)}>{m(x.value)}</dd>
+                </div>
+              ))}
+            </dl>
+            {summary.differenceCents !== null && (
+              <p className={cn("border-t border-line px-5 py-3 text-sm font-medium", summary.differenceCents === 0 ? "text-success" : "text-danger")}>
+                {summary.differenceCents === 0 ? tb("summary.matches") : tb("summary.differs", { bank: m(summary.bankEndingCents ?? 0), diff: m(Math.abs(summary.differenceCents)) })}
+              </p>
+            )}
+          </div>
+        )}
+
         {rows.length === 0 ? (
           <p className="border-t border-line px-5 py-10 text-center text-sm text-muted">{filtered ? tb("emptyFiltered") : tb("empty")}</p>
         ) : (
@@ -142,7 +168,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             <div className="overflow-x-auto">
               <table className="w-full min-w-[44rem] table-fixed text-sm">
                 <colgroup>
-                  {canWrite && <col className="w-10" />}<col className="w-28" /><col /><col className="w-44" /><col className="w-32" /><col className="w-32" /><col className="w-28" />{canWrite && <col className="w-20" />}
+                  {canWrite && <col className="w-10" />}<col className="w-24" /><col /><col className="w-40" /><col className="w-28" /><col className="w-28" /><col className="w-28" />{canWrite && <col className="w-20" />}
                 </colgroup>
                 <thead>
                   <tr className="border-b border-line text-left text-sm text-muted">

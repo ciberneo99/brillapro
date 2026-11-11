@@ -11,7 +11,7 @@ const RED = "#c62828";
 const INK = "#111827";
 const MUTED = "#6b7280";
 const LINE = "#9ca3af";
-const BORDERS = [TEAL, GREEN, AMBER];
+const BORDERS = [TEAL, GREEN, AMBER, TEAL];
 const TONE: Record<Tone, string> = { default: INK, green: GREEN, accent: TEAL, danger: RED };
 
 const s = StyleSheet.create({
@@ -44,7 +44,7 @@ function Table({ cols, rows, totals, currency, dateFormat }: { cols: Col[]; rows
       <View style={s.th} wrap={false}>{cols.map((c, i) => <Text key={c.key} style={[s.thText, style(c, i)]}>{c.label}</Text>)}</View>
       {rows.map((r, i) => (
         <View key={i} style={[s.tr, r._bold ? { fontFamily: "Helvetica-Bold", backgroundColor: "#f3f4f6" } : {}, i % 2 === 1 && !r._bold ? { backgroundColor: "#f9fafb" } : {}]} wrap={false}>
-          {cols.map((c, ci) => <Text key={c.key} style={[style(c, ci), c.positive ? { color: GREEN } : {}, c.negative ? { color: RED } : {}]}>{cellText(c, r)}</Text>)}
+          {cols.map((c, ci) => <Text key={c.key} style={[style(c, ci), c.positive ? { color: GREEN } : {}, c.negative ? { color: RED } : {}, c.wide ? { maxLines: 1, textOverflow: "ellipsis", paddingRight: 10 } : {}]}>{cellText(c, r)}</Text>)}
         </View>
       ))}
       {totals && <View style={s.total} wrap={false}>{cols.map((c, i) => <Text key={c.key} style={style(c, i)}>{cellText(c, totals)}</Text>)}</View>}
@@ -67,7 +67,7 @@ export function ReportPdf({
 
         <View style={s.stats} wrap={false}>
           {result.stats.map((x, i) => (
-            <View key={x.label} style={[s.stat, { borderColor: BORDERS[i % 3] }]}>
+            <View key={x.label} style={[s.stat, { borderColor: BORDERS[i % 4] }]}>
               <Text style={s.statLabel}>{x.label}</Text>
               <Text style={[s.statValue, { color: TONE[x.tone] }]}>{x.kind === "money" ? formatCell({ key: "", label: "", kind: "money" }, x.value, currency, dateFormat) : x.value.toLocaleString("en-US")}</Text>
               <Text style={s.statHint}>{x.hint}</Text>

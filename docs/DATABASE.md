@@ -109,3 +109,7 @@ erDiagram
 - RLS (migración 0030): owner y admin leen y escriben; accountant solo lee (el contador es de solo lectura en todo el sistema); siempre dentro de su empresa.
 - **`ensure_bank_categories(p_tenant, p_locale)`**: crea una sola vez el juego inicial de la empresa (migración 0031: Publicidad, Vehículo, Oficina, Renta, Insumos, Ingresos, etc., con sus subcategorías y palabras clave; nombres en inglés). Solo owner/admin. Las empresas que tenían el juego genérico de 0029 reciben el nuevo y el anterior queda oculto, no borrado.
 - El PDF se lee en el servidor (`unpdf`, sin servicios externos) y **no se guarda**; la persona revisa los movimientos antes de importarlos.
+
+### Saldos del banco (migración 0032)
+- **`bank_statements`** (tenant_id, period_start, period_end, beginning_balance_cents, ending_balance_cents, source): el saldo anterior y el saldo final que imprime el banco en cada estado de cuenta importado. Un estado por periodo (`unique (tenant_id, period_start, period_end)`); al reimportar con saldos corregidos se actualizan. RLS: owner/admin escriben, accountant solo lee.
+- El reporte de movimientos (pantalla y PDF) parte del saldo anterior del banco: saldo anterior + depósitos − retiros = saldo final, y lo compara con el saldo final del banco (coincide / diferencia). Solo aparece sin búsqueda ni filtro de tipo o categoría; con filtro de mes usa los estados que terminan en ese mes, sin él encadena todos.

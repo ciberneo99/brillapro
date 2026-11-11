@@ -3,7 +3,8 @@
 // and the person reviews the result before anything is saved.
 
 export type ParsedTx = { date: string; description: string; amountCents: number; balanceCents: number | null };
-export type ParsedStatement = { transactions: ParsedTx[]; year: number };
+export type StatementSummary = { beginningCents: number | null; endingCents: number | null; periodStart: string | null; periodEnd: string | null };
+export type ParsedStatement = { transactions: ParsedTx[]; year: number; summary: StatementSummary };
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 const MONEY = /(?:^|\s)(-?\(?\$?\s?-?\d{1,3}(?:,\d{3})*\.\d{2}\)?-?)\s*(?:CR|DR)?$/i;
@@ -61,6 +62,23 @@ const sectionOf = (line: string): Section | null => {
   return null;
 };
 
+const BEGIN = /(?:beginning|opening|previous) balance.*?(-?\$?\s?\d[\d,]*\.\d{2})/i;
+const END = /(?:ending|closing|new) balance.*?(-?\$?\s?\d[\d,]*\.\d{2})/i;
+const DATE_TEXT = String.raw`(?:(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2},?\s+\d{4}|\d{1,2}/\d{1,2}/\d{2,4})`;
+const RANGE = new RegExp(`(${DATE_TEXT})\\s*(?:through|thru|to|-|–)\\s*(${DATE_TEXT})`, "i");
+
+/** The statement's own period, from a header like "January 1, 2026 through January 31, 2026". */
+export function detectPeriod(lines: string[], year: number): { start: string; end: string } | null {
+  for (const line of lines.slice(0, 80)) {
+    const m = RANGE.exec(line);
+    if (!m) continue;
+    const a = readDate(m[1].replace(/,/g, ""), year);
+    const b = readDate(m[2].replace(/,/g, ""), year);
+    if (a && b && a.date <= b.date) return { start: a.date, end: b.date };
+  }
+  return null;
+}
+
 const INCOME_WORDS = /\b(deposit|credit|refund|interest|zelle (payment )?from|payment from|venmo cashout|transfer from|received)\b/i;
 
 export function parseStatement(text: string, fallbackYear = new Date().getFullYear()): ParsedStatement {
@@ -70,6 +88,8 @@ export function parseStatement(text: string, fallbackYear = new Date().getFullYe
   let section: Section = "auto";
   let prevBalance: number | null = null;
   let pending: { date: string; description: string } | null = null;
+  let beginning: number | null = null;
+  let ending: number | null = null;
 
   const finish = (date: string, description: string, amountToken: string, balanceToken: string | null) => {
     const raw = parseMoney(amountToken);
@@ -87,8 +107,10 @@ export function parseStatement(text: string, fallbackYear = new Date().getFullYe
   };
 
   for (const line of lines) {
-    const begin = /(?:beginning|opening|previous) balance.*?(-?\$?\d[\d,]*\.\d{2})/i.exec(line);
-    if (begin) { prevBalance = parseMoney(begin[1]); continue; }
+    const begin = BEGIN.exec(line);
+    if (begin) { prevBalance = parseMoney(begin[1]); if (beginning === null) beginning = prevBalance; continue; }
+    const end = END.exec(line);
+    if (end && !/^daily/i.test(line)) { if (ending === null) ending = parseMoney(end[1]); continue; }
 
     const dated = readDate(line, year);
     if (!dated) {
@@ -124,7 +146,8 @@ export function parseStatement(text: string, fallbackYear = new Date().getFullYe
     if (section === "skip") continue;
     finish(dated.date, description, second ? second[1] : last[1], second ? last[1] : null);
   }
-  return { transactions: out, year };
+  const period = detectPeriod(lines, year);
+  return { transactions: out, year, summary: { beginningCents: beginning, endingCents: ending, periodStart: period?.start ?? null, periodEnd: period?.end ?? null } };
 }
 
 /** Picks the subcategory whose keywords appear in the description (the longest match wins). */

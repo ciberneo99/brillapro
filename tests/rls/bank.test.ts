@@ -126,4 +126,25 @@ d("bank statements", () => {
       await tx`rollback to savepoint a`;
     });
   });
+
+  it("keeps the bank's balances per company: one statement per period, owner writes, accountant reads", async () => {
+    await as(id.ownerA, async (tx) => {
+      await tx`insert into public.bank_statements (tenant_id, period_start, period_end, beginning_balance_cents, ending_balance_cents, created_by) values (${tA}, '2099-01-01', '2099-01-31', 100000, 79280, ${id.ownerA})`;
+      await tx`savepoint a`;
+      await expect(tx`insert into public.bank_statements (tenant_id, period_start, period_end, beginning_balance_cents, created_by) values (${tA}, '2099-01-01', '2099-01-31', 5, ${id.ownerA})`).rejects.toThrow();
+      await tx`rollback to savepoint a`;
+      await tx`savepoint b`;
+      await expect(tx`insert into public.bank_statements (tenant_id, period_start, period_end, created_by) values (${tA}, '2099-02-01', '2099-02-28', ${id.ownerA})`).rejects.toThrow(); // needs at least one balance
+      await tx`rollback to savepoint b`;
+    });
+    await sql`insert into public.bank_statements (tenant_id, period_start, period_end, beginning_balance_cents) values (${tA}, '2099-03-01', '2099-03-31', 1)`;
+    await as(id.accountant, async (tx) => {
+      expect(await tx`select 1 from public.bank_statements`).toHaveLength(1);
+      await tx`savepoint a`;
+      await expect(tx`insert into public.bank_statements (tenant_id, period_start, period_end, beginning_balance_cents, created_by) values (${tA}, '2099-04-01', '2099-04-30', 1, ${id.accountant})`).rejects.toThrow();
+      await tx`rollback to savepoint a`;
+    });
+    await as(id.ownerB, async (tx) => expect(await tx`select 1 from public.bank_statements`).toHaveLength(0));
+    await as(id.office, async (tx) => expect(await tx`select 1 from public.bank_statements`).toHaveLength(0));
+  });
 });

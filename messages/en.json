@@ -1797,7 +1797,13 @@
         "denied": "You do not have permission to import statements.",
         "failed": "Could not save the transactions. Try again.",
         "invalid": "The data was not valid. Read the statement again."
-      }
+      },
+      "balances": "Bank balances",
+      "previousBalance": "Previous balance",
+      "endingBalance": "Ending balance",
+      "balanceHint": "Copy these from your statement if they are empty, so the report starts from the bank's figure and can be checked against it.",
+      "matches": "Matches the bank: previous balance plus these transactions equals the ending balance.",
+      "differs": "Does not match the bank by {amount}. Some transactions may be missing, or a deposit or withdrawal was read with the wrong sign."
     },
     "cats": {
       "help": "Categories have two levels: a main category and its subcategories. Add your own at any time. Hidden categories stay on past transactions but are not offered for new ones.",
@@ -1820,6 +1826,15 @@
       "empty": "No categories match."
     },
     "pdfTitle": "Bank Transactions",
-    "pdfCount": "Transactions"
+    "pdfCount": "Transactions",
+    "summary": {
+      "previous": "Previous balance",
+      "ending": "Ending balance",
+      "fromBank": "From your bank statement",
+      "matches": "Matches the bank statement.",
+      "differs": "Your bank statement ends at {bank}. Difference with these transactions: {diff}.",
+      "matchesShort": "Matches the bank statement",
+      "differsShort": "Bank differs by {diff}"
+    }
   }
 }

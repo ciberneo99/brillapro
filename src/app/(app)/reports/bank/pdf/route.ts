@@ -3,9 +3,11 @@ import { createElement } from "react";
 import { getTranslations } from "next-intl/server";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
+import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { getAppContext } from "@/lib/session";
-import { categoryLabels, listBankCategories, listTransactions, type TxRow } from "@/modules/bank/queries";
+import { categoryLabels, listBankCategories, listStatements, listTransactions, type TxRow } from "@/modules/bank/queries";
+import { balanceSummary } from "@/modules/bank/summary";
 import { ReportPdf } from "@/modules/reports/pdf";
 import type { ReportResult } from "@/modules/reports/run";
 
@@ -35,6 +37,8 @@ export async function GET(req: Request) {
   }
   const deposits = all.reduce((a, r) => a + (r.amount_cents > 0 ? r.amount_cents : 0), 0);
   const withdrawals = all.reduce((a, r) => a + (r.amount_cents < 0 ? -r.amount_cents : 0), 0);
+  const plain = !q.get("q") && !type && !category;
+  const summary = plain ? balanceSummary(await listStatements(), month, deposits, withdrawals) : null;
   const result: ReportResult = {
     cols: [
       { key: "date", label: tb("cols.date"), kind: "date" },
@@ -48,11 +52,21 @@ export async function GET(req: Request) {
       date: r.tx_date, description: r.description, category: r.category_id ? labels.get(r.category_id)?.label ?? "" : tb("uncategorized"),
       deposits: r.amount_cents > 0 ? r.amount_cents : null, withdrawals: r.amount_cents < 0 ? -r.amount_cents : null, balance: r.balance_cents,
     })),
-    stats: [
-      { label: tb("cols.deposits"), value: deposits, kind: "money", hint: "", tone: "green" },
-      { label: tb("cols.withdrawals"), value: withdrawals, kind: "money", hint: "", tone: "danger" },
-      { label: tb("pdfCount"), value: all.length, kind: "int", hint: "", tone: "default" },
-    ],
+    stats: summary
+      ? [
+          { label: tb("summary.previous"), value: summary.previousCents, kind: "money", hint: tb("summary.fromBank"), tone: "default" },
+          { label: tb("cols.deposits"), value: deposits, kind: "money", hint: "", tone: "green" },
+          { label: tb("cols.withdrawals"), value: withdrawals, kind: "money", hint: "", tone: "danger" },
+          {
+            label: tb("summary.ending"), value: summary.endingCents, kind: "money", tone: "default",
+            hint: summary.differenceCents === null ? "" : summary.differenceCents === 0 ? tb("summary.matchesShort") : tb("summary.differsShort", { diff: formatMoney(Math.abs(summary.differenceCents), ctx.settings.currency) }),
+          },
+        ]
+      : [
+          { label: tb("cols.deposits"), value: deposits, kind: "money", hint: "", tone: "green" },
+          { label: tb("cols.withdrawals"), value: withdrawals, kind: "money", hint: "", tone: "danger" },
+          { label: tb("pdfCount"), value: all.length, kind: "int", hint: "", tone: "default" },
+        ],
     tableTitle: tb("title", { count: all.length }),
   };
 

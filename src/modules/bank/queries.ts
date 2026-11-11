@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import type { StatementBalances } from "./summary";
 
 export const BANK_PAGE_SIZE = 50;
 
@@ -83,4 +84,11 @@ export async function sumTransactions(f: TxFilters, categoryIds?: string[]) {
     if ((data?.length ?? 0) < 1000) break;
   }
   return { deposits, withdrawals };
+}
+
+/** The bank's previous and ending balances for every imported statement. */
+export async function listStatements(): Promise<StatementBalances[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("bank_statements").select("period_start,period_end,beginning_balance_cents,ending_balance_cents").order("period_start");
+  return (data ?? []).map((r) => ({ ...r, beginning_balance_cents: r.beginning_balance_cents === null ? null : Number(r.beginning_balance_cents), ending_balance_cents: r.ending_balance_cents === null ? null : Number(r.ending_balance_cents) }));
 }

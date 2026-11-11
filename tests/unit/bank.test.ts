@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { balanceSummary } from "@/modules/bank/summary";
 import { dedupeInput, detectYear, parseMoney, parseStatement, suggestCategory } from "@/modules/bank/parse";
 
 describe("bank statement parsing", () => {
@@ -60,5 +61,31 @@ describe("bank statement parsing", () => {
     expect(suggestCategory("Random store", cats)).toBeNull();
     const t = { date: "2026-01-02", description: "A", amountCents: 100, balanceCents: null };
     expect(dedupeInput(t, 0)).not.toBe(dedupeInput(t, 1));
+  });
+});
+
+describe("statement balances", () => {
+  const jan = { period_start: "2026-01-01", period_end: "2026-01-31", beginning_balance_cents: 100000, ending_balance_cents: 79280 };
+  const feb = { period_start: "2026-02-01", period_end: "2026-02-28", beginning_balance_cents: 79280, ending_balance_cents: 90000 };
+
+  it("reads the bank's previous and ending balance and the period", () => {
+    const text = ["Statement period January 1, 2026 through January 31, 2026", "Beginning balance $1,000.00", "01/02 Zelle payment from Rita 150.00 1,150.00", "Ending balance $1,150.00"].join("\n");
+    const { summary } = parseStatement(text, 2020);
+    expect(summary).toEqual({ beginningCents: 100000, endingCents: 115000, periodStart: "2026-01-01", periodEnd: "2026-01-31" });
+  });
+
+  it("starts from the bank's previous balance and matches its ending balance", () => {
+    const s = balanceSummary([jan], "2026-01", 15000, 35720);
+    expect(s).toMatchObject({ previousCents: 100000, endingCents: 79280, bankEndingCents: 79280, differenceCents: 0 });
+  });
+
+  it("shows the difference when transactions are missing", () => {
+    expect(balanceSummary([jan], "2026-01", 15000, 0)?.differenceCents).toBe(79280 - 115000);
+  });
+
+  it("chains statements when no month is chosen, and finds nothing for other months", () => {
+    expect(balanceSummary([feb, jan], undefined, 25720, 35720)).toMatchObject({ previousCents: 100000, bankEndingCents: 90000, differenceCents: 0 });
+    expect(balanceSummary([jan], "2026-03", 0, 0)).toBeNull();
+    expect(balanceSummary([{ ...jan, beginning_balance_cents: null }], undefined, 0, 0)).toBeNull();
   });
 });

@@ -11,8 +11,9 @@ const lines = [
   "01/02 Zelle payment from Rita Lopez 150.00 1,150.00",
   "01/03 SHELL OIL 57444 45.20 1,104.80",
   "01/05 Monthly service fee 12.00 1,092.80",
-  "01/09 Owner draw transfer 300.00 792.80",
+  "01/09 Owner draw transfer to personal savings account ending 4821 for January living expenses 300.00 792.80",
   "Total deposits and additions $150.00",
+  "Ending balance $792.80",
 ];
 const buf = await renderToBuffer(h(Document, null, h(Page, { size: "LETTER", style: { padding: 40, fontSize: 10 } }, h(View, null, lines.map((l, i) => h(Text, { key: i, style: { marginBottom: 6 } }, l))))));
 fs.mkdirSync("e2e/fixtures", { recursive: true });

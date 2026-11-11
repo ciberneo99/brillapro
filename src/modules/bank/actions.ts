@@ -8,7 +8,7 @@ import { todayIso } from "@/lib/calendar";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { getAppContext, requireContext } from "@/lib/session";
-import { dedupeInput, parseStatement, suggestCategory, type ParsedTx } from "./parse";
+import { dedupeInput, parseStatement, suggestCategory, type ParsedTx, type StatementSummary } from "./parse";
 import { categorySchema, editSchema, importSchema, MAX_PDF_BYTES } from "./schema";
 
 const BASE = "/reports/bank";
@@ -28,7 +28,7 @@ async function guard() {
 }
 
 export type PreviewRow = ParsedTx & { n: number; categoryId: string | null; duplicate: boolean };
-export type PreviewResult = { ok: true; fileName: string; rows: PreviewRow[] } | { ok: false; error: "file" | "type" | "tooBig" | "unreadable" | "empty" | "denied" };
+export type PreviewResult = { ok: true; fileName: string; rows: PreviewRow[]; summary: StatementSummary } | { ok: false; error: "file" | "type" | "tooBig" | "unreadable" | "empty" | "denied" };
 
 /** Reads a bank statement PDF and returns the transactions found, for review. Nothing is saved yet. */
 export async function previewStatement(formData: FormData): Promise<PreviewResult> {
@@ -48,7 +48,7 @@ export async function previewStatement(formData: FormData): Promise<PreviewResul
   } catch {
     return { ok: false, error: "unreadable" };
   }
-  const { transactions } = parseStatement(text, Number(todayIso(ctx.settings.timezone).slice(0, 4)));
+  const { transactions, summary: found } = parseStatement(text, Number(todayIso(ctx.settings.timezone).slice(0, 4)));
   if (!transactions.length) return { ok: false, error: "empty" };
 
   const supabase = await createClient();
@@ -67,7 +67,15 @@ export async function previewStatement(formData: FormData): Promise<PreviewResul
     const { data } = await supabase.from("bank_transactions").select("dedupe_key").in("dedupe_key", keys.slice(i, i + 200));
     for (const r of data ?? []) existing.add(r.dedupe_key);
   }
-  return { ok: true, fileName: file.name.slice(0, 200), rows: rows.map((r, i) => ({ ...r, duplicate: existing.has(keys[i]) })) };
+  // Fill in what the statement did not print: the period from the dates, and either balance from the other one.
+  const dates = transactions.map((t) => t.date).sort();
+  const net = transactions.reduce((a, t) => a + t.amountCents, 0);
+  const summary: StatementSummary = {
+    ...found, periodStart: found.periodStart ?? dates[0], periodEnd: found.periodEnd ?? dates[dates.length - 1],
+    beginningCents: found.beginningCents ?? (found.endingCents !== null ? found.endingCents - net : null),
+    endingCents: found.endingCents ?? (found.beginningCents !== null ? found.beginningCents + net : null),
+  };
+  return { ok: true, fileName: file.name.slice(0, 200), rows: rows.map((r, i) => ({ ...r, duplicate: existing.has(keys[i]) })), summary };
 }
 
 export type ImportResult = { ok: true; added: number; skipped: number } | { ok: false; error: "invalid" | "denied" | "failed" };
@@ -88,6 +96,14 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
     const { data, error } = await supabase.from("bank_transactions").upsert(records.slice(i, i + 200), { onConflict: "tenant_id,dedupe_key", ignoreDuplicates: true }).select("id");
     if (error) return { ok: false, error: "failed" };
     added += data?.length ?? 0;
+  }
+  const st = p.data.statement;
+  if (st) {
+    // One statement per period: importing it again with corrected balances updates the figures.
+    await supabase.from("bank_statements").upsert(
+      { tenant_id: ctx.tenant.id, period_start: st.periodStart, period_end: st.periodEnd, beginning_balance_cents: st.beginningCents, ending_balance_cents: st.endingCents, source: p.data.source || null, created_by: ctx.userId },
+      { onConflict: "tenant_id,period_start,period_end" },
+    );
   }
   revalidatePath(BASE);
   return { ok: true, added, skipped: records.length - added };

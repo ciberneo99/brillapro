@@ -20,7 +20,15 @@ export const importRowSchema = z.object({
   categoryId: id.nullable(),
   n: z.number().int().min(0).max(5000),
 });
-export const importSchema = z.object({ source: z.string().trim().max(200).default(""), rows: z.array(importRowSchema).min(1).max(MAX_IMPORT_ROWS) });
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const cents = z.number().int().refine((n) => Math.abs(n) < 100_000_000_000);
+export const statementSchema = z.object({ beginningCents: cents.nullable(), endingCents: cents.nullable(), periodStart: isoDate, periodEnd: isoDate })
+  .refine((s) => s.periodEnd >= s.periodStart && (s.beginningCents !== null || s.endingCents !== null));
+export const importSchema = z.object({
+  source: z.string().trim().max(200).default(""),
+  rows: z.array(importRowSchema).min(1).max(MAX_IMPORT_ROWS),
+  statement: statementSchema.nullable().default(null),
+});
 export type ImportRow = z.infer<typeof importRowSchema>;
 
 export const editSchema = z.object({
