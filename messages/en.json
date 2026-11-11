@@ -1193,23 +1193,28 @@
     "items": {
       "invoice_details": {
         "title": "Invoice Details",
-        "desc": "A comprehensive summary of all invoices sent over time with status and amounts."
+        "desc": "A comprehensive summary of all invoices sent over time with status and amounts.",
+        "subtitle": "Every invoice sent, with its status and amounts."
       },
       "item_sales": {
         "title": "Item Sales",
-        "desc": "View revenue generated per item or service sold, with quantities."
+        "desc": "View revenue generated per item or service sold, with quantities.",
+        "subtitle": "Revenue per item or service sold."
       },
       "revenue_by_client": {
         "title": "Revenue by Client",
-        "desc": "Analyze income distribution across all your clients to identify top performers."
+        "desc": "Analyze income distribution across all your clients to identify top performers.",
+        "subtitle": "Income by client, to spot your top ones."
       },
       "accounts_aging": {
         "title": "Accounts Aging",
-        "desc": "Identify clients who are late on payments, with aging buckets."
+        "desc": "Identify clients who are late on payments, with aging buckets.",
+        "subtitle": "Unpaid invoices by how late they are."
       },
       "payments_collected": {
         "title": "Payments Collected",
-        "desc": "Summarize all payments received over time with payment method breakdowns."
+        "desc": "Summarize all payments received over time with payment method breakdowns.",
+        "subtitle": "View all payments received from clients."
       },
       "accounts_payable_aging": {
         "title": "Accounts Payable Aging",
@@ -1223,15 +1228,18 @@
       },
       "profit_loss": {
         "title": "Profit and Loss",
-        "desc": "Compare payments collected against expenses to understand your business performance."
+        "desc": "Compare payments collected against expenses to understand your business performance.",
+        "subtitle": "Payments collected against expenses."
       },
       "sales_tax": {
         "title": "Sales Tax Summary",
-        "desc": "Calculate sales tax charged on your invoices, with detail per invoice."
+        "desc": "Calculate sales tax charged on your invoices, with detail per invoice.",
+        "subtitle": "Sales tax charged on each invoice."
       },
       "expense_report": {
         "title": "Expense Report",
-        "desc": "Detailed breakdown of all business expenses by category and date."
+        "desc": "Detailed breakdown of all business expenses by category and date.",
+        "subtitle": "All business expenses by category and date."
       },
       "overview": {
         "title": "Business Summary",
@@ -1274,7 +1282,81 @@
       "account": "Account",
       "taxable": "Taxable amount",
       "rate": "Rate",
-      "tax": "Tax"
+      "tax": "Tax",
+      "invoiceList": "Invoice List",
+      "itemList": "Items Sold",
+      "clientList": "Clients",
+      "agingList": "Open Balances by Client",
+      "paymentHistory": "Payment History",
+      "expenseList": "Expense History",
+      "statement": "Profit and Loss Statement",
+      "taxList": "Tax by Invoice",
+      "totalInvoiced": "Total Invoiced",
+      "balanceDue": "Balance Due",
+      "items": "Items",
+      "unitsSold": "Units Sold",
+      "totalRevenue": "Total Revenue",
+      "clients": "Clients",
+      "averagePerClient": "Average per Client",
+      "openInvoices": "Open Invoices",
+      "outstanding": "Total Outstanding",
+      "overdue": "Overdue",
+      "totalPayments": "Total Payments",
+      "totalCollected": "Total Collected",
+      "averagePayment": "Average Payment",
+      "expensesCount": "Total Expenses",
+      "totalSpent": "Total Spent",
+      "averageExpense": "Average Expense",
+      "taxableSales": "Taxable Sales",
+      "taxCollected": "Tax Collected",
+      "client": "Client",
+      "invoiceNo": "Invoice #",
+      "notes": "Notes",
+      "transactions": "Transactions",
+      "totalAmount": "Total Amount",
+      "methodSummary": "Payment Method Summary",
+      "byCategory": "Expenses by Category",
+      "hintInvoices": "Invoices",
+      "hintInvoiced": "Billed to clients",
+      "hintOpen": "Still to collect",
+      "hintItems": "Different items",
+      "hintUnits": "Total quantity",
+      "hintRevenue": "Before discounts and tax",
+      "hintClients": "With invoices",
+      "hintPerClient": "Per client",
+      "hintOpenInvoices": "With a balance",
+      "hintOutstanding": "Owed by clients",
+      "hintOverdue": "Past the due date",
+      "hintTransactions": "Transactions",
+      "hintCollected": "Revenue received",
+      "hintPerTransaction": "Per transaction",
+      "hintSpent": "Money spent",
+      "hintNet": "Collected minus expenses",
+      "hintTaxable": "After discounts",
+      "hintTax": "To report and pay"
+    },
+    "refresh": "Refresh",
+    "exportCsv": "Export CSV",
+    "previewPdf": "Preview PDF",
+    "downloadPdf": "Download PDF",
+    "back": "Back",
+    "period": "Period",
+    "methodFilter": "Payment method",
+    "allMethods": "All Methods",
+    "inThisPeriod": "All records in this period",
+    "sortByDate": "Sort by date",
+    "transactionsCount": "{count, plural, one {# transaction} other {# transactions}}",
+    "range": {
+      "all": "All Time",
+      "this_month": "This Month",
+      "last_month": "Last Month",
+      "this_year": "This Year",
+      "last_year": "Last Year",
+      "custom": "Custom Range"
+    },
+    "pdf": {
+      "period": "Period",
+      "generated": "Generated on"
     }
   },
   "venmo": {

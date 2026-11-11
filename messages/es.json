@@ -1193,23 +1193,28 @@
     "items": {
       "invoice_details": {
         "title": "Detalle de facturas",
-        "desc": "Resumen completo de todas las facturas emitidas, con estado e importes."
+        "desc": "Resumen completo de todas las facturas emitidas, con estado e importes.",
+        "subtitle": "Todas las facturas emitidas, con su estado e importes."
       },
       "item_sales": {
         "title": "Ventas por concepto",
-        "desc": "Consulta los ingresos por concepto o servicio vendido, con cantidades."
+        "desc": "Consulta los ingresos por concepto o servicio vendido, con cantidades.",
+        "subtitle": "Ingresos por concepto o servicio vendido."
       },
       "revenue_by_client": {
         "title": "Ingresos por cliente",
-        "desc": "Analiza cómo se reparten tus ingresos entre clientes para identificar a los principales."
+        "desc": "Analiza cómo se reparten tus ingresos entre clientes para identificar a los principales.",
+        "subtitle": "Ingresos por cliente, para ubicar a los principales."
       },
       "accounts_aging": {
         "title": "Antigüedad de saldos",
-        "desc": "Identifica clientes con pagos atrasados, por rangos de antigüedad."
+        "desc": "Identifica clientes con pagos atrasados, por rangos de antigüedad.",
+        "subtitle": "Facturas sin pagar según su atraso."
       },
       "payments_collected": {
         "title": "Pagos cobrados",
-        "desc": "Resume todos los pagos recibidos con desglose por método de pago."
+        "desc": "Resume todos los pagos recibidos con desglose por método de pago.",
+        "subtitle": "Consulta todos los pagos recibidos de tus clientes."
       },
       "accounts_payable_aging": {
         "title": "Antigüedad de cuentas por pagar",
@@ -1223,15 +1228,18 @@
       },
       "profit_loss": {
         "title": "Ganancias y pérdidas",
-        "desc": "Compara los pagos cobrados contra los gastos para entender el desempeño de tu negocio."
+        "desc": "Compara los pagos cobrados contra los gastos para entender el desempeño de tu negocio.",
+        "subtitle": "Pagos cobrados contra gastos."
       },
       "sales_tax": {
         "title": "Resumen de impuesto sobre ventas",
-        "desc": "Calcula el impuesto cobrado en tus facturas, con detalle por factura."
+        "desc": "Calcula el impuesto cobrado en tus facturas, con detalle por factura.",
+        "subtitle": "Impuesto sobre ventas cobrado en cada factura."
       },
       "expense_report": {
         "title": "Reporte de gastos",
-        "desc": "Desglose detallado de todos los gastos del negocio por categoría y fecha."
+        "desc": "Desglose detallado de todos los gastos del negocio por categoría y fecha.",
+        "subtitle": "Todos los gastos del negocio por categoría y fecha."
       },
       "overview": {
         "title": "Resumen del negocio",
@@ -1274,7 +1282,81 @@
       "account": "Cuenta",
       "taxable": "Base gravable",
       "rate": "Tasa",
-      "tax": "Impuesto"
+      "tax": "Impuesto",
+      "invoiceList": "Lista de facturas",
+      "itemList": "Conceptos vendidos",
+      "clientList": "Clientes",
+      "agingList": "Saldos abiertos por cliente",
+      "paymentHistory": "Historial de pagos",
+      "expenseList": "Historial de gastos",
+      "statement": "Estado de ganancias y pérdidas",
+      "taxList": "Impuesto por factura",
+      "totalInvoiced": "Total facturado",
+      "balanceDue": "Saldo pendiente",
+      "items": "Conceptos",
+      "unitsSold": "Unidades vendidas",
+      "totalRevenue": "Ingresos totales",
+      "clients": "Clientes",
+      "averagePerClient": "Promedio por cliente",
+      "openInvoices": "Facturas abiertas",
+      "outstanding": "Total pendiente",
+      "overdue": "Vencido",
+      "totalPayments": "Total de pagos",
+      "totalCollected": "Total cobrado",
+      "averagePayment": "Pago promedio",
+      "expensesCount": "Total de gastos",
+      "totalSpent": "Total gastado",
+      "averageExpense": "Gasto promedio",
+      "taxableSales": "Ventas gravables",
+      "taxCollected": "Impuesto cobrado",
+      "client": "Cliente",
+      "invoiceNo": "Factura #",
+      "notes": "Notas",
+      "transactions": "Transacciones",
+      "totalAmount": "Importe total",
+      "methodSummary": "Resumen por método de pago",
+      "byCategory": "Gastos por categoría",
+      "hintInvoices": "Facturas",
+      "hintInvoiced": "Facturado a clientes",
+      "hintOpen": "Por cobrar",
+      "hintItems": "Conceptos distintos",
+      "hintUnits": "Cantidad total",
+      "hintRevenue": "Antes de descuentos e impuesto",
+      "hintClients": "Con facturas",
+      "hintPerClient": "Por cliente",
+      "hintOpenInvoices": "Con saldo",
+      "hintOutstanding": "Que te deben los clientes",
+      "hintOverdue": "Pasado su vencimiento",
+      "hintTransactions": "Transacciones",
+      "hintCollected": "Ingresos recibidos",
+      "hintPerTransaction": "Por transacción",
+      "hintSpent": "Dinero gastado",
+      "hintNet": "Cobrado menos gastos",
+      "hintTaxable": "Después de descuentos",
+      "hintTax": "Para reportar y pagar"
+    },
+    "refresh": "Actualizar",
+    "exportCsv": "Exportar CSV",
+    "previewPdf": "Vista previa PDF",
+    "downloadPdf": "Descargar PDF",
+    "back": "Volver",
+    "period": "Periodo",
+    "methodFilter": "Método de pago",
+    "allMethods": "Todos los métodos",
+    "inThisPeriod": "Todos los registros de este periodo",
+    "sortByDate": "Ordenar por fecha",
+    "transactionsCount": "{count, plural, one {# transacción} other {# transacciones}}",
+    "range": {
+      "all": "Todo el tiempo",
+      "this_month": "Este mes",
+      "last_month": "Mes pasado",
+      "this_year": "Este año",
+      "last_year": "Año pasado",
+      "custom": "Rango personalizado"
+    },
+    "pdf": {
+      "period": "Periodo",
+      "generated": "Generado el"
     }
   },
   "venmo": {

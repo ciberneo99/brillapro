@@ -342,6 +342,26 @@ test("reports hub: sections, favorites, real reports and CSV", async ({ page }) 
 
   await page.goto("/reports/sales_tax");
   await expect(page.getByRole("row", { name: /rita lopez/i })).toContainText("$10.00");
+  // Payments Collected: company header, three figures, grouped history and the report buttons.
+  await page.goto("/reports/payments_collected");
+  await expect(page.getByText("E2E Cleaning Co").first()).toBeVisible();
+  await expect(page.getByText("All Time").first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /refresh/i })).toBeVisible();
+  for (const b of [/export csv/i, /preview pdf/i, /download pdf/i]) await expect(page.getByRole("link", { name: b })).toBeVisible();
+  const figs = page.locator("dl");
+  await expect(figs).toContainText("Total Payments");
+  await expect(figs).toContainText("$40.00"); // collected and average (one payment)
+  await expect(page.getByRole("cell", { name: /zelle/i }).first()).toBeVisible();
+  await expect(page.getByText(/1 transaction/i).first()).toBeVisible();
+  await page.getByRole("combobox", { name: /payment method/i }).selectOption("cash");
+  await expect(page).toHaveURL(/method=cash/);
+  await expect(page.getByText("No data for this period.")).toBeVisible();
+  const pdf = await page.request.get("/reports/payments_collected/pdf");
+  expect(pdf.headers()["content-type"]).toContain("application/pdf");
+  expect((await pdf.body()).subarray(0, 4).toString()).toBe("%PDF");
+  const dl = await page.request.get("/reports/payments_collected/pdf?download=1");
+  expect(dl.headers()["content-disposition"]).toContain("attachment");
+
   await page.goto("/reports/profit_loss");
   await expect(page.getByRole("row", { name: /net profit/i })).toContainText("$25.00"); // 40.00 collected - 15.00 expenses
   await page.goto("/reports/accounts_aging");
