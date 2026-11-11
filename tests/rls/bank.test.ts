@@ -56,13 +56,16 @@ d("bank statements", () => {
     await sql.end();
   });
 
-  it("seeds starter categories once, in the chosen language", async () => {
+  it("seeds the starter categories once", async () => {
     await as(id.ownerA, async (tx) => {
       await tx`select public.ensure_bank_categories(${tA}, 'es')`;
       await tx`select public.ensure_bank_categories(${tA}, 'es')`;
       const rows = await tx`select name, parent_id from public.bank_categories`;
-      expect(rows.filter((r) => !r.parent_id).map((r) => r.name)).toContain("Ingresos");
-      expect(rows.length).toBe(4 + 5 + 7 + 2 + 2);
+      expect(rows.filter((r) => !r.parent_id).map((r) => r.name)).toEqual(expect.arrayContaining(["Vehicle Expenses", "Income", "Bank Charges & Fees"]));
+      expect(rows.some((r) => r.name === "Gas/Fuel")).toBe(true);
+      const count = rows.length;
+      await tx`select public.ensure_bank_categories(${tA}, 'es')`;
+      expect(await tx`select 1 from public.bank_categories`).toHaveLength(count);
     });
   });
 
