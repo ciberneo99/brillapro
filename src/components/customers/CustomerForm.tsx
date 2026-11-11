@@ -78,6 +78,7 @@ export function CustomerForm({
     state?.error === "notAllowed" ? tc("notAllowed")
     : state?.error === "identityRequired" ? t("errors.identityRequired")
     : state?.error === "invalid" ? t("errors.invalid")
+    : state?.error === "customerLimit" ? t("errors.customerLimit")
     : state?.error ? t("errors.saveFailed") : null;
 
   return (

@@ -11,6 +11,7 @@ export async function PlanCard({ tenantId, dateFormat, daysLeft }: { tenantId: s
   const o = await getPlanOverview(tenantId);
   if (!o) return null;
   const seatsFull = o.maxUsers !== null && o.users >= o.maxUsers;
+  const customersFull = o.maxCustomers !== null && o.customers >= o.maxCustomers;
   const trialEnded = o.status === "trialing" && daysLeft === 0;
 
   return (
@@ -37,14 +38,24 @@ export async function PlanCard({ tenantId, dateFormat, daysLeft }: { tenantId: s
         {seatsFull && <p className="mt-2 text-xs text-danger">{t("seatsFull")}</p>}
       </div>
 
+      {o.maxCustomers !== null && (
+        <div>
+          <p className="text-sm">{t("customers")}: <strong>{o.customers} / {o.maxCustomers}</strong></p>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuenow={o.customers} aria-valuemin={0} aria-valuemax={o.maxCustomers} aria-label={t("customers")}>
+            <div className={`h-full ${customersFull ? "bg-danger" : "bg-primary"}`} style={{ width: `${Math.min(100, Math.round((o.customers / o.maxCustomers) * 100))}%` }} />
+          </div>
+          {customersFull && <p className="mt-2 text-xs text-danger">{t("customersFull")}</p>}
+        </div>
+      )}
+
       <div className="border-t border-line pt-3">
         <p className="mb-2 text-xs font-medium uppercase text-muted">{t("available")}</p>
-        <ul className="grid gap-2 text-sm sm:grid-cols-3">
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
           {PLANS.map((p) => (
             <li key={p.id} className="rounded-lg border border-line p-3">
               <p className="font-medium">{t(`names.${p.id}`)}</p>
               <p className="text-muted">{formatMoney(p.monthlyCents, "USD").replace(".00", "")} {t("perMonth")}</p>
-              <p className="text-xs text-muted">{t("upTo", { count: p.maxUsers })}</p>
+              <p className="text-xs text-muted">{t("upTo", { count: p.maxUsers })} · {p.maxCustomers === null ? t("unlimitedCustomers") : t("customersUpTo", { count: p.maxCustomers })}</p>
             </li>
           ))}
         </ul>

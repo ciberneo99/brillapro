@@ -145,10 +145,12 @@ d("team invitations", () => {
   });
 
   it("pending invitations reserve seats against the plan limit", async () => {
-    await sql`update public.subscriptions set plan_id = 'starter', status = 'active' where tenant_id = ${tid}`;
+    // Throwaway plan: Starter is now one person, which can't show a reserved seat next to the owner, admin and employee.
+    await sql`insert into public.plans (id, name, price_monthly_cents, price_yearly_cents, limits) values ('zz_team', 'Test', 0, 0, '{"max_users": 3}') on conflict (id) do nothing`;
+    await sql`update public.subscriptions set plan_id = 'zz_team', status = 'active' where tenant_id = ${tid}`;
     try {
       await as(id.owner, async (tx) => {
-        // owner + admin + employee = 3 = the Starter limit, so no seat is free
+        // owner + admin + employee = 3 = the plan's limit, so no seat is free
         await tx`savepoint s`;
         await expect(invite(tx, "seat1@test.local")).rejects.toThrow(/limit/);
         await tx`rollback to savepoint s`;
@@ -160,6 +162,7 @@ d("team invitations", () => {
       });
     } finally {
       await sql`update public.subscriptions set plan_id = 'trial', status = 'trialing' where tenant_id = ${tid}`;
+      await sql`delete from public.plans where id = 'zz_team'`;
     }
   });
 

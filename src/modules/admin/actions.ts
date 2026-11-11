@@ -28,7 +28,7 @@ export async function setCompanyStatus(tenantId: string, status: "active" | "sus
 export async function setCompanyPlan(tenantId: string, formData: FormData) {
   const supabase = await guard();
   const p = z.object({
-    plan: z.enum(["trial", "starter", "pro", "business"]),
+    plan: z.enum(["trial", "starter", "pro"]),
     status: z.enum(["trialing", "active", "past_due", "canceled", "suspended"]),
   }).safeParse({ plan: formData.get("plan"), status: formData.get("status") });
   if (!p.success || !id.safeParse(tenantId).success) redirect(`${BACK}?error=1`);

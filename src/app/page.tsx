@@ -106,7 +106,7 @@ export default async function Home() {
         <section id="pricing" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16">
           <h2 className="text-center text-3xl font-semibold tracking-tight">{t("pricing.title")}</h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-muted">{t("pricing.subtitle")}</p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-3xl gap-4 md:grid-cols-2">
             {PLANS.map((p) => (
               <div key={p.id} className={cn("flex flex-col rounded-xl border bg-surface p-6 shadow-card", p.highlight ? "border-primary ring-2 ring-primary" : "border-line")}>
                 {p.highlight && <span className="mb-2 w-fit rounded-full bg-primary px-3 py-0.5 text-xs font-medium text-primary-fg">{t("pricing.popular")}</span>}
@@ -116,6 +116,8 @@ export default async function Home() {
                 <p className="mt-1 text-sm text-muted">{t("pricing.yearly", { price: formatMoney(p.yearlyCents, "USD").replace(".00", "") })}</p>
                 <ul className="mt-5 flex-1 space-y-2 text-sm">
                   <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />{t("pricing.users", { count: p.maxUsers })}</li>
+                  <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />{p.maxCustomers === null ? t("pricing.customersUnlimited") : t("pricing.customers", { count: p.maxCustomers })}</li>
+                  <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />{t(p.reports === "full" ? "pricing.reportsFull" : "pricing.reportsBasic")}</li>
                   <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />{t("pricing.everything")}</li>
                   <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />{t("pricing.bilingual")}</li>
                 </ul>

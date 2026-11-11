@@ -58,7 +58,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <div className="grid gap-3 lg:grid-cols-3">
             <form action={setCompanyPlan.bind(null, c.id)} className="flex flex-wrap items-center gap-2">
               <Select name="plan" defaultValue={c.plan_id ?? "trial"} aria-label={t("plan")} className="w-32">
-                {["trial", "starter", "pro", "business"].map((p) => <option key={p} value={p}>{p}</option>)}
+                {["trial", "starter", "pro"].map((p) => <option key={p} value={p}>{p}</option>)}
               </Select>
               <Select name="status" defaultValue={c.sub_status ?? "trialing"} aria-label={t("subStatus")} className="w-32">
                 {["trialing", "active", "past_due", "canceled", "suspended"].map((s) => <option key={s} value={s}>{s}</option>)}

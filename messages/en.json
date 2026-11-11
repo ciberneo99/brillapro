@@ -350,7 +350,8 @@
       "identityRequired": "Enter a name or a company name.",
       "invalid": "Some fields are not valid. Check them and try again.",
       "saveFailed": "The customer could not be saved.",
-      "notFound": "Customer not found."
+      "notFound": "Customer not found.",
+      "customerLimit": "You have reached the customer limit for your plan. Archive a customer you no longer need, or move to a bigger plan."
     },
     "summary": {
       "overdue": "Overdue amount",
@@ -1273,28 +1274,28 @@
     },
     "pricing": {
       "title": "Simple pricing",
-      "subtitle": "Every plan includes every feature. Choose by how many people on your team need to sign in.",
+      "subtitle": "Two plans. Choose by how many people sign in and how many customers you manage.",
       "popular": "Most popular",
       "perMonth": "per month",
       "yearly": "or {price} per year (2 months free)",
-      "users": "Up to {count} people can sign in",
-      "everything": "All features included",
+      "users": "{count, plural, one {# person can sign in} other {Up to # people can sign in}}",
+      "everything": "Quotes, invoices, jobs and calendar",
       "bilingual": "English and Spanish",
       "note": "Subscriptions open soon. Start your {days}-day free trial now and keep your data when you subscribe.",
       "plans": {
         "starter": {
           "name": "Starter",
-          "tagline": "For owner-operators and very small teams."
+          "tagline": "For owner-operators getting organized."
         },
         "pro": {
           "name": "Pro",
           "tagline": "For growing teams with an office and a crew."
-        },
-        "business": {
-          "name": "Business",
-          "tagline": "For larger companies with several teams."
         }
-      }
+      },
+      "customers": "Up to {count} customers",
+      "customersUnlimited": "Unlimited customers",
+      "reportsBasic": "Essential reports",
+      "reportsFull": "All reports"
     },
     "faq": {
       "title": "Questions",
@@ -1329,7 +1330,7 @@
   },
   "plan": {
     "title": "Plan and usage",
-    "trialPlan": "Free trial (all features)",
+    "trialPlan": "Free trial (Pro features)",
     "trialDays": "{days} days left",
     "trialEnded": "Trial ended",
     "trialUntil": "Your trial runs until {date}.",
@@ -1337,7 +1338,7 @@
     "seatsFull": "You have reached the limit of people for this plan.",
     "available": "Plans",
     "perMonth": "per month",
-    "upTo": "Up to {count} people",
+    "upTo": "{count, plural, one {# person} other {Up to # people}}",
     "billingSoon": "Subscriptions open soon. Nothing is blocked while we finish payments, and your data is kept.",
     "status": {
       "active": "Active",
@@ -1347,9 +1348,12 @@
     },
     "names": {
       "starter": "Starter",
-      "pro": "Pro",
-      "business": "Business"
-    }
+      "pro": "Pro"
+    },
+    "customers": "Customers",
+    "customersFull": "You have reached the customer limit for this plan. Archive a customer or move to a bigger plan.",
+    "customersUpTo": "up to {count} customers",
+    "unlimitedCustomers": "unlimited customers"
   },
   "team": {
     "title": "Team and access",

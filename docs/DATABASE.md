@@ -34,7 +34,7 @@ Implementado hasta la Fase 4 (migraciones `db/migrations/0001`–`0011`). Lo de 
 - Funciones de reportes (security invoker, la RLS decide qué ve cada rol): `report_jobs`, `report_hours` (solo entradas cerradas, en la zona horaria de la empresa), `report_money` (facturado, cobrado y gastos).
 
 ## Fase 9 (en curso)
-- plans: starter, pro y business (más trial) con `limits.max_users`; `tenant_usage(tenant)` (personas activas y límite, solo miembros) y un trigger en memberships que impide pasar el límite del plan (bloquea la fila del tenant para evitar carreras). La prueba gratis permite 10 personas.
+- plans: **starter** ($39/mes: 1 persona, 50 clientes, reportes esenciales) y **pro** ($79/mes: 10 personas, clientes sin tope, todos los reportes), más trial (10 personas, sin tope de clientes). La fila `business` anterior se conserva pero ya no se ofrece. `limits.max_users` y `limits.max_customers`; `tenant_usage(tenant)` devuelve personas y clientes (no archivados) con sus límites (solo miembros); triggers en memberships y customers impiden pasar el límite (bloquean la fila del tenant para evitar carreras; restaurar un cliente archivado también cuenta). Migración 0027. Pendiente: limitar reportes del Starter.
 
 ## Convenciones
 UUID, `created_at`, `updated_at`, `archived_at`; `tenant_id NOT NULL` con FK; dinero en centavos enteros;

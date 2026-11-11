@@ -8,7 +8,7 @@ import { requireContext } from "@/lib/session";
 import { customerFormSchema, restoredStatus, type CustomerStatus } from "./schema";
 import { getCustomer } from "./queries";
 
-export type CustomerFormState = { error?: "identityRequired" | "invalid" | "saveFailed" | "notAllowed"; fields?: string[] } | undefined;
+export type CustomerFormState = { error?: "identityRequired" | "invalid" | "saveFailed" | "notAllowed" | "customerLimit"; fields?: string[] } | undefined;
 
 function parse(formData: FormData) {
   const raw = Object.fromEntries([...formData.entries()].filter(([, v]) => typeof v === "string"));
@@ -34,6 +34,7 @@ export async function createCustomer(_: CustomerFormState, formData: FormData): 
     .insert({ ...p.data, tenant_id: ctx.tenant.id, created_by: ctx.userId, status: "prospect", source: "manual" })
     .select("id")
     .single();
+  if (error?.message.includes("limit")) return { error: "customerLimit" };
   if (error || !data) return { error: "saveFailed" };
   revalidatePath("/customers");
   redirect(`/customers/${data.id}`);
@@ -71,7 +72,7 @@ export async function changeCustomerStatus(id: string, action: "archive" | "inac
 
   const next: CustomerStatus = action === "archive" ? "archived" : action === "inactive" ? "inactive" : restoredStatus(c);
   const supabase = await createClient();
-  await supabase.from("customers").update({ status: next }).eq("id", id);
+  const { error } = await supabase.from("customers").update({ status: next }).eq("id", id);
   revalidatePath("/customers");
-  redirect(`/customers/${id}`);
+  redirect(`/customers/${id}${error?.message.includes("limit") ? "?error=limit" : ""}`);
 }

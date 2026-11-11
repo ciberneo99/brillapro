@@ -25,7 +25,7 @@ import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
 import { duplicateInvoice } from "@/modules/invoices/actions";
 import { getInvoiceSettings, listInvoices } from "@/modules/invoices/queries";
 
-export default async function CustomerProfilePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ note?: string }> }) {
+export default async function CustomerProfilePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ note?: string; error?: string }> }) {
   const { id } = await params;
   const sp = await searchParams;
   const ctx = await requireContext();
@@ -186,6 +186,7 @@ export default async function CustomerProfilePage({ params, searchParams }: { pa
         </div>
       </header>
 
+      {sp.error === "limit" && <Alert>{t("errors.customerLimit")}</Alert>}
       {duplicate && <Alert>{t("profile.duplicate")}</Alert>}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
