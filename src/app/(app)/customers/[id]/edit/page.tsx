@@ -18,7 +18,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
   const s = (v: string | number | null) => (v == null ? "" : String(v));
   const values = {
     first_name: c.first_name, last_name: c.last_name, company_name: c.company_name, email: s(c.email), phone: s(c.phone),
-    secondary_phone: s(c.secondary_phone), service_address: s(c.service_address), billing_address: s(c.billing_address),
+    secondary_phone: s(c.secondary_phone), phone_label: c.phone_label, secondary_phone_label: c.secondary_phone_label, referred_by: s(c.referred_by), service_address: s(c.service_address), billing_address: s(c.billing_address),
     city: s(c.city), state: s(c.state), zip_code: s(c.zip_code), property_type: s(c.property_type),
     square_footage: s(c.square_footage), bedrooms: s(c.bedrooms), bathrooms: s(c.bathrooms),
     cleaning_frequency: s(c.cleaning_frequency), preferred_service: s(c.preferred_service),

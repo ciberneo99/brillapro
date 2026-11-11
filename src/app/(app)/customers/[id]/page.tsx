@@ -66,7 +66,7 @@ export default async function CustomerProfilePage({ params, searchParams }: { pa
   const noteRows: [string, string | null][] = [
     [t("form.preferredService"), c.preferred_service],
     [t("form.estimatedPrice"), c.estimated_price_cents != null ? format.number(Number(centsToInput(c.estimated_price_cents)), { style: "currency", currency: cur }) : null],
-    [t("form.pets"), c.pets], [t("form.accessInstructions"), c.access_instructions],
+    [t("form.referredBy"), c.referred_by], [t("form.pets"), c.pets], [t("form.accessInstructions"), c.access_instructions],
     [t("form.specialInstructions"), c.special_instructions], [t("form.notes"), c.notes],
   ];
   const hasNotes = noteRows.some(([, v]) => v);
@@ -196,8 +196,8 @@ export default async function CustomerProfilePage({ params, searchParams }: { pa
           </div>
           <dl className="space-y-3 text-sm">
             {c.email && <div className="flex gap-3"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /><div className="min-w-0"><dt className="text-xs text-muted">{t("form.email")}</dt><dd className="break-words">{c.email}</dd></div></div>}
-            {c.phone && <div className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /><div><dt className="text-xs text-muted">{t("form.phone")}</dt><dd>{c.phone}</dd></div></div>}
-            {c.secondary_phone && <div className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /><div><dt className="text-xs text-muted">{t("form.secondaryPhone")}</dt><dd>{c.secondary_phone}</dd></div></div>}
+            {c.phone && <div className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /><div><dt className="text-xs text-muted">{t(`phoneLabel.${c.phone_label}` as never)}</dt><dd>{c.phone}</dd></div></div>}
+            {c.secondary_phone && <div className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /><div><dt className="text-xs text-muted">{t(`phoneLabel.${c.secondary_phone_label}` as never)}</dt><dd>{c.secondary_phone}</dd></div></div>}
             {serviceAddress && (
               <div className="flex gap-3 rounded-lg bg-surface-2 p-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden />
                 <div className="min-w-0"><dt className="text-xs text-muted">{t("form.serviceAddress")}</dt>

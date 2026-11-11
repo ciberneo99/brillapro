@@ -271,7 +271,12 @@
       "create": "Create customer",
       "identityHint": "Enter a name or a company name.",
       "rating": "Rating",
-      "ratingHint": "Your own 1 to 5 stars for this customer"
+      "ratingHint": "Your own 1 to 5 stars for this customer",
+      "phoneType": "Phone type",
+      "addPhone": "Add another phone number",
+      "removePhone": "Remove this phone number",
+      "referredBy": "Referred by",
+      "openMap": "Open"
     },
     "propertyType": {
       "house": "House",
@@ -400,6 +405,12 @@
       "numbered": "Numbered list",
       "bullets": "Bulleted list",
       "clear": "Clear formatting"
+    },
+    "phoneLabel": {
+      "cell": "Cell",
+      "work": "Work",
+      "spouse": "Spouse",
+      "other": "Other"
     }
   },
   "request": {

@@ -213,3 +213,32 @@ test("customer page: compact layout, My Notes with formatting, history at the bo
   const last = await page.locator("main section, main > div > *").last().getAttribute("aria-labelledby");
   expect(last).toBe("history-title");
 });
+
+test("customer form: second phone with a label, referred by, and the new Address & Property layout", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto("/customers/new");
+  await page.locator("input[name=first_name]").fill("rosa");
+  await page.locator("input[name=last_name]").fill("diaz");
+  await expect(async () => {
+    await page.locator("#phone").fill("5125550100");
+    await expect(page.locator("#phone")).toHaveValue("512-555-0100",{ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await page.locator("select[name=phone_label]").selectOption("work");
+  await page.getByRole("button", { name: /add another phone|agregar otro/i }).click();
+  await page.locator("#secondary_phone").fill("5125550199");
+  await page.locator("select[name=secondary_phone_label]").selectOption("spouse");
+  await page.locator("input[name=referred_by]").fill("a friend from church");
+  await page.locator("#service_address").fill("9 Elm Rd");
+  await page.locator("#city").fill("Austin");
+  await page.getByRole("button", { name: /save|guardar|create|crear/i }).first().click();
+  await expect(page).toHaveURL(/\/customers\/[0-9a-f-]{36}/);
+  await expect(page.getByText("Rosa Diaz").first()).toBeVisible();
+  await expect(page.getByText("Work", { exact: true })).toBeVisible();
+  await expect(page.getByText("Spouse", { exact: true })).toBeVisible();
+  await expect(page.getByText("512-555-0199")).toBeVisible();
+  await expect(page.getByText("A friend from church")).toBeVisible();
+});

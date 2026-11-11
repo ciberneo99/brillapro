@@ -7,6 +7,7 @@ import { normalizeZip } from "@/lib/zip";
 export const STATUSES = ["prospect", "active", "inactive", "archived"] as const;
 export type CustomerStatus = (typeof STATUSES)[number];
 export const PROPERTY_TYPES = ["house", "apartment", "condo", "townhouse", "office", "commercial", "other"] as const;
+export const PHONE_LABELS = ["cell", "work", "spouse", "other"] as const;
 export const FREQUENCIES = ["one_time", "weekly", "biweekly", "monthly", "every_four_weeks", "custom"] as const;
 
 /** Phone numbers are stored as xxx-xxx-xxxx when they are complete US numbers. */
@@ -76,6 +77,12 @@ const date = z.string().trim().transform((v, ctx) => {
   return v;
 });
 
+const phoneLabel = z.string().trim().transform((v, ctx) => {
+  if (v === "") return "cell" as const;
+  if (!(PHONE_LABELS as readonly string[]).includes(v)) { ctx.addIssue({ code: "custom", message: "invalid" }); return z.NEVER; }
+  return v as (typeof PHONE_LABELS)[number];
+});
+
 const fields = z
   .object({
     first_name: personName(100),
@@ -84,6 +91,9 @@ const fields = z
     email: z.union([z.literal(""), z.string().trim().toLowerCase().refine(isValidEmail)]).transform((v) => (v === "" ? null : v)),
     phone,
     secondary_phone: phone,
+    phone_label: phoneLabel,
+    secondary_phone_label: phoneLabel,
+    referred_by: sentence(150),
     service_address: address(300),
     billing_address: address(300),
     city: address(100),
@@ -107,7 +117,7 @@ const fields = z
   .transform(({ estimated_price, ...rest }) => ({ ...rest, estimated_price_cents: estimated_price }));
 
 const FORM_KEYS = [
-  "first_name", "last_name", "company_name", "email", "phone", "secondary_phone", "service_address", "billing_address",
+  "first_name", "last_name", "company_name", "email", "phone", "secondary_phone", "phone_label", "secondary_phone_label", "referred_by", "service_address", "billing_address",
   "city", "state", "zip_code", "property_type", "square_footage", "bedrooms", "bathrooms", "cleaning_frequency",
   "preferred_service", "estimated_price", "access_instructions", "pets", "special_instructions", "notes", "customer_since", "rating",
 ] as const;
@@ -127,6 +137,7 @@ export type CustomerRow = {
   id: string; status: CustomerStatus; source: "manual" | "web_form";
   first_name: string; last_name: string; company_name: string;
   email: string | null; phone: string | null; secondary_phone: string | null;
+  phone_label: string; secondary_phone_label: string; referred_by: string | null;
   service_address: string | null; billing_address: string | null; city: string | null; state: string | null; zip_code: string | null;
   property_type: string | null; square_footage: number | null; bedrooms: number | null; bathrooms: number | null;
   cleaning_frequency: string | null; preferred_service: string | null; estimated_price_cents: number | null;

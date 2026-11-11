@@ -271,7 +271,12 @@
       "create": "Crear cliente",
       "identityHint": "Ingresa un nombre o el nombre de una empresa.",
       "rating": "Calificación",
-      "ratingHint": "Tus propias estrellas de 1 a 5 para este cliente"
+      "ratingHint": "Tus propias estrellas de 1 a 5 para este cliente",
+      "phoneType": "Tipo de teléfono",
+      "addPhone": "Agregar otro número",
+      "removePhone": "Quitar este número",
+      "referredBy": "Referido por",
+      "openMap": "Abrir"
     },
     "propertyType": {
       "house": "Casa",
@@ -400,6 +405,12 @@
       "numbered": "Lista numerada",
       "bullets": "Lista con viñetas",
       "clear": "Quitar formato"
+    },
+    "phoneLabel": {
+      "cell": "Celular",
+      "work": "Trabajo",
+      "spouse": "Esposa",
+      "other": "Otro"
     }
   },
   "request": {
