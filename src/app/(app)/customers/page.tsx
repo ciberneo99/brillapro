@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import {
   AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, MoreVertical, PawPrint, Phone, Plus, Ruler, Search,
 } from "lucide-react";
+import { MoreActions } from "@/components/customers/MoreActions";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { Stars } from "@/components/customers/Stars";
 import { TimeBar } from "@/components/customers/TimeBar";
@@ -12,13 +13,13 @@ import { formatMoney } from "@/lib/money";
 import { mapsUrl } from "@/lib/maps";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
-import { listCustomers, SORTS } from "@/modules/customers/queries";
+import { listCustomers, RATINGS, SORTS, SQFT_RANGES } from "@/modules/customers/queries";
 import { getCustomerExtras, getCustomersSummary, type CustomerExtras } from "@/modules/customers/list-extras";
-import { displayName, STATUSES, type CustomerRow } from "@/modules/customers/schema";
+import { displayName, FREQUENCIES, PROPERTY_TYPES, STATUSES, type CustomerRow } from "@/modules/customers/schema";
 
 export const metadata = { title: "Customers" };
 
-type SP = { q?: string; status?: string; sort?: string; page?: string };
+type SP = { q?: string; status?: string; sort?: string; page?: string; type?: string; freq?: string; rating?: string; sqft?: string };
 
 const addressLine = (c: CustomerRow) => [c.service_address, [c.city, [c.state, c.zip_code].filter(Boolean).join(" ")].filter(Boolean).join(", ")].filter(Boolean).join(", ");
 
@@ -29,7 +30,10 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   const t = await getTranslations("customers");
   const tf = await getTranslations("customers.frequency");
   const tp = await getTranslations("customers.propertyType");
-  const { rows, total, page, pages, sort, status, q } = await listCustomers({ ...sp, page: Number(sp.page) || 1 });
+  const { rows, total, page, pages, sort, status, q, type, freq, rating, sqft } = await listCustomers({ ...sp, page: Number(sp.page) || 1 });
+  const hasAdv = Boolean(status || type || freq || rating || sqft || sort !== "newest");
+  const filtered = Boolean(q || status || type || freq || rating || sqft);
+  const sqftLabel = (k: string) => (k.endsWith("+") ? `${k.slice(0, -1).replace(/\B(?=(\d{3})+$)/g, ",")}+` : k.split("-").map((n) => Number(n).toLocaleString("en-US")).join("–")) + ` ${t("list.sqft")}`;
 
   const canMoney = can(ctx.role, "invoices:read");
   const canWrite = can(ctx.role, "customers:write");
@@ -40,7 +44,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
 
   const href = (over: Partial<SP>) => {
     const p = new URLSearchParams();
-    const merged = { q: q || undefined, status: status ?? undefined, sort: sort !== "newest" ? sort : undefined, ...over };
+    const merged = { q: q || undefined, status: status ?? undefined, sort: sort !== "newest" ? sort : undefined, type: type ?? undefined, freq: freq ?? undefined, rating: rating ?? undefined, sqft: sqft ?? undefined, ...over };
     for (const [k, v] of Object.entries(merged)) if (v) p.set(k, String(v));
     const s = p.toString();
     return s ? `/customers?${s}` : "/customers";
@@ -77,10 +81,15 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="mx-auto min-w-0 max-w-7xl space-y-5">
-      <div className="flex flex-wrap items-center gap-3">
+      <input id="adv-toggle" type="checkbox" defaultChecked={hasAdv} aria-label={t("list.advanced")} className="peer sr-only" />
+      <div className="flex flex-wrap items-center gap-3" style={{ marginTop: 0 }}>
         <form method="get" role="search" className="relative min-w-56 flex-1">
           {status && <input type="hidden" name="status" value={status} />}
           {sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
+          {type && <input type="hidden" name="type" value={type} />}
+          {freq && <input type="hidden" name="freq" value={freq} />}
+          {rating && <input type="hidden" name="rating" value={rating} />}
+          {sqft && <input type="hidden" name="sqft" value={sqft} />}
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
           <input id="q" name="q" type="search" defaultValue={q} placeholder={t("searchPlaceholder")} aria-label={t("search")} maxLength={80}
             className="h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm placeholder:text-muted" />
@@ -90,31 +99,10 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
             <Plus className="h-4 w-4" aria-hidden /> {t("list.newClient")}
           </Link>
         )}
-        <details className="relative">
-          <summary className="flex h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">
-            <Filter className="h-4 w-4" aria-hidden /> {t("list.advanced")}{(status || sort !== "newest") && <span aria-hidden className="h-2 w-2 rounded-full bg-primary" />}
-          </summary>
-          <form method="get" className="absolute right-0 z-20 mt-2 w-72 space-y-3 rounded-xl border border-line bg-surface p-4 shadow-card">
-            {q && <input type="hidden" name="q" value={q} />}
-            <div className="space-y-1.5">
-              <label htmlFor="adv-status" className="block text-sm font-medium">{t("list.status")}</label>
-              <Select id="adv-status" name="status" defaultValue={status ?? ""}>
-                <option value="">{t("all")}</option>
-                {STATUSES.map((s) => <option key={s} value={s}>{t(`status.${s}`)}</option>)}
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="adv-sort" className="block text-sm font-medium">{t("list.sort")}</label>
-              <Select id="adv-sort" name="sort" defaultValue={sort}>
-                {SORTS.map((s) => <option key={s} value={s}>{t(`sort.${s}`)}</option>)}
-              </Select>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button type="submit">{t("list.apply")}</Button>
-              <Link href="/customers" className="text-sm text-muted hover:text-fg">{t("list.clear")}</Link>
-            </div>
-          </form>
-        </details>
+        <label htmlFor="adv-toggle" className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">
+          <Filter className="h-4 w-4" aria-hidden /> {t("list.advanced")}{hasAdv && <span aria-hidden className="h-2 w-2 rounded-full bg-primary" />}
+        </label>
+        <MoreActions canImport={canWrite} />
       </div>
 
       {summary && (
@@ -143,10 +131,61 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         </section>
       )}
 
+        <form method="get" className="hidden space-y-4 rounded-2xl border border-line bg-surface p-4 shadow-card peer-checked:block">
+          {q && <input type="hidden" name="q" value={q} />}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="space-y-1.5">
+              <label htmlFor="adv-status" className="block text-sm font-medium">{t("list.status")}</label>
+              <Select id="adv-status" name="status" defaultValue={status ?? ""}>
+                <option value="">{t("all")}</option>
+                {STATUSES.map((s) => <option key={s} value={s}>{t(`status.${s}`)}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="adv-type" className="block text-sm font-medium">{t("list.propertyType")}</label>
+              <Select id="adv-type" name="type" defaultValue={type ?? ""}>
+                <option value="">{t("all")}</option>
+                {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{tp(p)}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="adv-freq" className="block text-sm font-medium">{t("list.frequency")}</label>
+              <Select id="adv-freq" name="freq" defaultValue={freq ?? ""}>
+                <option value="">{t("all")}</option>
+                {FREQUENCIES.map((f) => <option key={f} value={f}>{tf(f)}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="adv-rating" className="block text-sm font-medium">{t("list.rating")}</label>
+              <Select id="adv-rating" name="rating" defaultValue={rating ?? ""}>
+                <option value="">{t("all")}</option>
+                {RATINGS.map((r) => <option key={r} value={r}>{r === "none" ? t("list.unrated") : t("list.starsOption", { count: Number(r) })}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="adv-sqft" className="block text-sm font-medium">{t("list.sqftFilter")}</label>
+              <Select id="adv-sqft" name="sqft" defaultValue={sqft ?? ""}>
+                <option value="">{t("all")}</option>
+                {Object.keys(SQFT_RANGES).map((k) => <option key={k} value={k}>{sqftLabel(k)}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="adv-sort" className="block text-sm font-medium">{t("list.sort")}</label>
+              <Select id="adv-sort" name="sort" defaultValue={sort}>
+                {SORTS.map((s) => <option key={s} value={s}>{t(`sort.${s}`)}</option>)}
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button type="submit">{t("list.apply")}</Button>
+            <Link href="/customers" className="text-sm text-muted hover:text-fg">{t("list.clear")}</Link>
+          </div>
+        </form>
+
       {rows.length === 0 ? (
         <div className="rounded-2xl border border-line bg-surface p-8 text-center shadow-card">
-          <p className="font-medium">{q || status ? t("empty.filtered") : t("empty.title")}</p>
-          {!q && !status && <p className="mx-auto mt-1 max-w-md text-sm text-muted">{t("empty.body")}</p>}
+          <p className="font-medium">{filtered ? t("empty.filtered") : t("empty.title")}</p>
+          {!filtered && <p className="mx-auto mt-1 max-w-md text-sm text-muted">{t("empty.body")}</p>}
         </div>
       ) : (
         <>

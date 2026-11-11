@@ -7,6 +7,14 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { customerFormSchema, restoredStatus, type CustomerStatus } from "./schema";
 import { getCustomer } from "./queries";
+import { readCustomersCsv } from "./csv";
+
+export type ImportSkip = { row: number; reason: "identityRequired" | "invalid" | "duplicate" | "limit" | "saveFailed"; fields?: string[] };
+export type ImportResult =
+  | { ok: true; imported: number; skipped: ImportSkip[]; skippedTotal: number }
+  | { ok: false; error: "file" | "tooBig" | "empty" | "noHeaders" | "tooMany" | "notAllowed" };
+
+const IMPORT_MAX_BYTES = 2 * 1024 * 1024;
 
 export type CustomerFormState = { error?: "identityRequired" | "invalid" | "saveFailed" | "notAllowed" | "customerLimit"; fields?: string[] } | undefined;
 
@@ -75,4 +83,68 @@ export async function changeCustomerStatus(id: string, action: "archive" | "inac
   const { error } = await supabase.from("customers").update({ status: next }).eq("id", id);
   revalidatePath("/customers");
   redirect(`/customers/${id}${error?.message.includes("limit") ? "?error=limit" : ""}`);
+}
+
+/** Adds customers from a CSV. Valid rows are saved, the rest are reported one by one; nothing is ever overwritten. */
+export async function importCustomers(formData: FormData): Promise<ImportResult> {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "customers:write")) return { ok: false, error: "notAllowed" };
+  const f = formData.get("file");
+  if (!(f instanceof File) || f.size === 0) return { ok: false, error: "file" };
+  if (f.size > IMPORT_MAX_BYTES) return { ok: false, error: "tooBig" };
+  if (!/\.csv$/i.test(f.name) && !/csv|text\/plain|excel/i.test(f.type)) return { ok: false, error: "file" };
+
+  const read = readCustomersCsv(await f.text());
+  if ("error" in read) return { ok: false, error: read.error };
+
+  const skipped: ImportSkip[] = [];
+  const valid: { line: number; data: NonNullable<ReturnType<typeof parse>["data"]>; status: "prospect" | "active" | "inactive" }[] = [];
+  for (const row of read.rows) {
+    const parsed = customerFormSchema.safeParse(row.values);
+    if (!parsed.success) {
+      const identity = parsed.error.issues.some((i) => i.message === "identityRequired");
+      skipped.push(identity ? { row: row.line, reason: "identityRequired" } : { row: row.line, reason: "invalid", fields: [...new Set(parsed.error.issues.map((i) => String(i.path[0])))] });
+      continue;
+    }
+    valid.push({ line: row.line, data: parsed.data, status: row.status ?? "active" });
+  }
+
+  const supabase = await createClient();
+
+  // Skip e-mails that already belong to a customer, or that repeat earlier in the same file.
+  const emails = [...new Set(valid.map((v) => v.data.email).filter((e): e is string => !!e))];
+  const existing = new Set<string>();
+  for (let i = 0; i < emails.length; i += 200) {
+    const { data } = await supabase.from("customers").select("email").in("email", emails.slice(i, i + 200)).neq("status", "archived");
+    for (const r of data ?? []) if (r.email) existing.add(String(r.email).toLowerCase());
+  }
+  const seen = new Set<string>();
+  const fresh = valid.filter((v) => {
+    const e = v.data.email;
+    if (!e) return true;
+    if (existing.has(e) || seen.has(e)) { skipped.push({ row: v.line, reason: "duplicate" }); return false; }
+    seen.add(e);
+    return true;
+  });
+
+  const now = new Date().toISOString();
+  // tenant_id and created_by come from the verified session, never from the file.
+  const toRow = (v: (typeof fresh)[number]) => ({ ...v.data, tenant_id: ctx.tenant.id, created_by: ctx.userId, status: v.status, source: "manual", converted_at: v.status === "prospect" ? null : now });
+
+  let imported = 0;
+  for (let i = 0; i < fresh.length; i += 100) {
+    const chunk = fresh.slice(i, i + 100);
+    const { error } = await supabase.from("customers").insert(chunk.map(toRow));
+    if (!error) { imported += chunk.length; continue; }
+    // The plan limit (or one bad row) rejects the whole chunk: retry row by row to save what fits.
+    for (const v of chunk) {
+      const res = await supabase.from("customers").insert(toRow(v));
+      if (!res.error) imported++;
+      else skipped.push({ row: v.line, reason: res.error.message.includes("limit") ? "limit" : "saveFailed" });
+    }
+  }
+
+  revalidatePath("/customers");
+  skipped.sort((a, b) => a.row - b.row);
+  return { ok: true, imported, skipped: skipped.slice(0, 200), skippedTotal: skipped.length };
 }

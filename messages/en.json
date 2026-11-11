@@ -207,6 +207,59 @@
     "all": "All",
     "sortLabel": "Sort by",
     "sort": {
+    "more": {
+      "label": "More Actions",
+      "import": "Import customers",
+      "export": "Export as CSV"
+    },
+    "import": {
+      "title": "Import customers",
+      "intro": "Add many customers at once from a CSV file. It works with files saved from Excel or Google Sheets.",
+      "steps": {
+        "1": "Download the template and open it in Excel or Google Sheets.",
+        "2": "Delete the two example rows and add your customers, one per row.",
+        "3": "Save the file as CSV (Comma delimited) and upload it here."
+      },
+      "template": "Download template",
+      "rulesTitle": "Good to know",
+      "rules": {
+        "name": "Each row needs a first name, a last name or a company name.",
+        "headers": "Keep the column titles in the first row. You can leave a column empty or remove it.",
+        "propertyType": "Property Type: House, Apartment, Condo, Townhouse, Office, Commercial or Other.",
+        "frequency": "Frequency: One time, Weekly, Every two weeks, Monthly, Every four weeks or Custom.",
+        "status": "Status: Prospect, Active or Inactive. If left empty, the customer is added as Active.",
+        "format": "Dates as YYYY-MM-DD or MM/DD/YYYY. Rating from 1 to 5. Prices as plain numbers.",
+        "duplicates": "A customer whose email already exists is skipped, and nothing is overwritten. Up to 1,000 rows per file."
+      },
+      "choose": "Choose a CSV file",
+      "dropHint": "or drop it here",
+      "change": "Click to choose another file",
+      "submit": "Import",
+      "importing": "Importing…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": "Done",
+      "imported": "{count, plural, =0 {No customers were imported} one {# customer imported} other {# customers imported}}",
+      "skippedTitle": "{count, plural, one {# row was skipped} other {# rows were skipped}}",
+      "row": "Row {row}",
+      "more": "…and {count} more",
+      "reasons": {
+        "identityRequired": "needs a first name, last name or company",
+        "invalid": "invalid value in {fields}",
+        "duplicate": "a customer with this email already exists",
+        "limit": "your plan's customer limit was reached",
+        "saveFailed": "could not be saved"
+      },
+      "errors": {
+        "file": "Choose a CSV file.",
+        "tooBig": "The file is too big (2 MB maximum).",
+        "empty": "The file has no customers below the column titles.",
+        "noHeaders": "The first row must have the column titles. Download the template to see them.",
+        "tooMany": "Too many rows. The maximum is 1,000 per file.",
+        "notAllowed": "You do not have permission to import customers.",
+        "failed": "The file could not be imported. Try again."
+      }
+    },
       "newest": "Newest first",
       "oldest": "Oldest first",
       "name": "Name A–Z"
@@ -366,6 +419,12 @@
       "advanced": "Advanced",
       "status": "Status",
       "sort": "Sort by",
+      "propertyType": "Property Type",
+      "frequency": "Frequency",
+      "rating": "Rating",
+      "sqftFilter": "Sq. Footage",
+      "unrated": "Not rated",
+      "starsOption": "{count, plural, one {# star} other {# stars}}",
       "apply": "Apply",
       "clear": "Clear",
       "menu": "Actions",

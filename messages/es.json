@@ -206,6 +206,59 @@
     "searchPlaceholder": "Nombre, empresa, correo o teléfono",
     "all": "Todos",
     "sortLabel": "Ordenar por",
+    "more": {
+      "label": "Más acciones",
+      "import": "Importar clientes",
+      "export": "Exportar como CSV"
+    },
+    "import": {
+      "title": "Importar clientes",
+      "intro": "Agrega muchos clientes a la vez desde un archivo CSV. Funciona con archivos guardados desde Excel o Google Sheets.",
+      "steps": {
+        "1": "Descarga la plantilla y ábrela en Excel o Google Sheets.",
+        "2": "Borra las dos filas de ejemplo y agrega tus clientes, uno por fila.",
+        "3": "Guarda el archivo como CSV (delimitado por comas) y súbelo aquí."
+      },
+      "template": "Descargar plantilla",
+      "rulesTitle": "Es bueno saber",
+      "rules": {
+        "name": "Cada fila necesita un nombre, un apellido o el nombre de una empresa.",
+        "headers": "Deja los títulos de las columnas en la primera fila. Puedes dejar una columna vacía o quitarla.",
+        "propertyType": "Property Type: House, Apartment, Condo, Townhouse, Office, Commercial u Other.",
+        "frequency": "Frequency: One time, Weekly, Every two weeks, Monthly, Every four weeks o Custom.",
+        "status": "Status: Prospect, Active o Inactive. Si lo dejas vacío, el cliente se agrega como Active.",
+        "format": "Fechas como YYYY-MM-DD o MM/DD/YYYY. Calificación del 1 al 5. Precios como números simples.",
+        "duplicates": "Si el correo de un cliente ya existe, esa fila se omite y nada se sobrescribe. Hasta 1,000 filas por archivo."
+      },
+      "choose": "Elige un archivo CSV",
+      "dropHint": "o suéltalo aquí",
+      "change": "Haz clic para elegir otro archivo",
+      "submit": "Importar",
+      "importing": "Importando…",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "done": "Listo",
+      "imported": "{count, plural, =0 {No se importó ningún cliente} one {# cliente importado} other {# clientes importados}}",
+      "skippedTitle": "{count, plural, one {Se omitió # fila} other {Se omitieron # filas}}",
+      "row": "Fila {row}",
+      "more": "…y {count} más",
+      "reasons": {
+        "identityRequired": "necesita un nombre, apellido o empresa",
+        "invalid": "valor no válido en {fields}",
+        "duplicate": "ya existe un cliente con este correo",
+        "limit": "se alcanzó el límite de clientes de tu plan",
+        "saveFailed": "no se pudo guardar"
+      },
+      "errors": {
+        "file": "Elige un archivo CSV.",
+        "tooBig": "El archivo es muy grande (máximo 2 MB).",
+        "empty": "El archivo no tiene clientes debajo de los títulos de las columnas.",
+        "noHeaders": "La primera fila debe tener los títulos de las columnas. Descarga la plantilla para verlos.",
+        "tooMany": "Demasiadas filas. El máximo es 1,000 por archivo.",
+        "notAllowed": "No tienes permiso para importar clientes.",
+        "failed": "No se pudo importar el archivo. Intenta de nuevo."
+      }
+    },
     "sort": {
       "newest": "Más recientes primero",
       "oldest": "Más antiguos primero",
@@ -366,6 +419,12 @@
       "advanced": "Avanzado",
       "status": "Estado",
       "sort": "Ordenar por",
+      "propertyType": "Tipo de propiedad",
+      "frequency": "Frecuencia",
+      "rating": "Calificación",
+      "sqftFilter": "Pies cuadrados",
+      "unrated": "Sin calificar",
+      "starsOption": "{count, plural, one {# estrella} other {# estrellas}}",
       "apply": "Aplicar",
       "clear": "Limpiar",
       "menu": "Acciones",

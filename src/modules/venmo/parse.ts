@@ -4,7 +4,7 @@ import { startOfWeek, todayIso } from "@/lib/calendar";
 import { normalizeName } from "@/lib/text";
 
 /** Minimal RFC 4180 reader: quoted fields, escaped quotes and line breaks inside quotes. */
-export function parseCsv(input: string): string[][] {
+export function parseCsv(input: string, delimiter = ","): string[][] {
   const text = input.replace(/^﻿/, "");
   const rows: string[][] = [];
   let row: string[] = [];
@@ -17,7 +17,7 @@ export function parseCsv(input: string): string[][] {
         if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false;
       } else field += c;
     } else if (c === '"') quoted = true;
-    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === delimiter) { row.push(field); field = ""; }
     else if (c === "\n" || c === "\r") {
       if (c === "\r" && text[i + 1] === "\n") i++;
       row.push(field); field = "";
