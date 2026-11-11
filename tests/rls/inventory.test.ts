@@ -127,7 +127,7 @@ d("inventory and reports", () => {
   it("report functions respect roles: manager sees jobs, accountant sees money, nobody sees another company", async () => {
     const cust = (await sql`insert into public.customers (tenant_id, first_name) values (${tA}, 'Rep') returning id`)[0].id;
     await sql`insert into public.jobs (tenant_id, customer_id, title, scheduled_date, price_cents, status) values (${tA}, ${cust}, 'J1', '2026-05-10', 10000, 'completed')`;
-    const cat = (await sql`select id from public.expense_categories where tenant_id = ${tA} limit 1`)[0].id;
+    const cat = (await sql`select id from public.bank_categories where tenant_id = ${tA} and parent_id is not null limit 1`)[0].id;
     await sql`insert into public.expenses (tenant_id, category_id, amount_cents, expense_date) values (${tA}, ${cat}, 2500, '2026-05-11')`;
     await as(id.manager, async (tx) => {
       const r = await tx`select * from public.report_jobs('2026-05-01', '2026-05-31')`;

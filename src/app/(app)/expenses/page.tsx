@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Card, cn } from "@/components/ui";
+import { CategoryPicker } from "@/components/bank/CategoryPicker";
+import { Button, Card } from "@/components/ui";
 import { formatDateOnly } from "@/lib/dates";
 import { addDays, addMonths, todayIso } from "@/lib/calendar";
 import { formatMoney } from "@/lib/money";
@@ -25,10 +26,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
   const last = addDays(addMonths(first, 1), -1);
   const categoryId = sp.category && UUID.test(sp.category) ? sp.category : undefined;
 
-  const [{ rows, total, page }, summary, categories] = await Promise.all([
-    listExpenses({ from: first, to: last, categoryId, page: Number(sp.page) || 1 }),
+  const categories = await listCategories();
+  const categoryIds = categoryId ? [categoryId, ...categories.filter((c) => categories.find((p) => p.id === categoryId)?.name === c.parent).map((c) => c.id)] : undefined;
+  const [{ rows, total, page }, summary] = await Promise.all([
+    listExpenses({ from: first, to: last, categoryIds, page: Number(sp.page) || 1 }),
     expenseSummary(first, last),
-    listCategories(),
   ]);
   const monthTotal = summary.reduce((s, r) => s + r.total, 0);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -40,7 +42,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
     if (o.page) p.set("page", o.page);
     return `/expenses?${p.toString()}`;
   };
-  const pill = (on: boolean) => cn("rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:bg-surface-2");
   const btn = "inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2";
 
   return (
@@ -76,10 +77,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
         </Card>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Link href={href({ category: "", page: "" })} className={pill(!categoryId)}>{t("all")}</Link>
-        {categories.map((c) => <Link key={c.id} href={href({ category: c.id, page: "" })} className={pill(categoryId === c.id)}>{c.name}</Link>)}
-      </div>
+      <form key={categoryId ?? "all"} action="/expenses" className="flex flex-wrap items-center gap-2">
+        <input type="hidden" name="month" value={month} />
+        <CategoryPicker name="category" defaultValue={categoryId ?? ""} allowParents choices={categories.map((c) => ({ id: c.id, name: c.name, parent: c.parent }))}
+          extras={[{ value: "", label: t("all") }]} placeholder={t("all")} ariaLabel={t("category")} className="w-72" />
+        <Button type="submit" variant="secondary">{t("apply")}</Button>
+        {categoryId && <Link href={href({ category: "", page: "" })} className={btn}>{t("clear")}</Link>}
+      </form>
 
       {rows.length === 0 ? (
         <Card className="text-center"><p className="font-medium">{t("empty")}</p><p className="mt-1 text-sm text-muted">{t("emptyBody")}</p></Card>

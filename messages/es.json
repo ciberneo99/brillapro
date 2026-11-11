@@ -1034,7 +1034,7 @@
     "detail": "Gasto",
     "back": "Volver a gastos",
     "categories": "Categorías",
-    "categoriesIntro": "Agrupa tus gastos (insumos, gasolina, nómina…). Las categorías se pueden renombrar o desactivar, nunca borrar.",
+    "categoriesIntro": "Las mismas categorías de Reportes bancarios: categorías principales con subcategorías. Si las cambias aquí o allá, se actualizan en ambos lados. Se pueden renombrar u ocultar, nunca borrar.",
     "prevMonth": "Mes anterior",
     "nextMonth": "Mes siguiente",
     "monthTotal": "Total del mes",
@@ -1087,7 +1087,9 @@
     "aiNothing": "La IA no pudo leer este recibo. Llena los campos a mano.",
     "aiFailed": "No se pudo leer el recibo en este momento. Llena los campos a mano.",
     "aiDisabled": "La lectura con IA aún no está configurada.",
-    "aiPrivacy": "La foto se envía a Anthropic para leerla. Este paso no la guarda; nada se llena a menos que presiones el botón."
+    "aiPrivacy": "La foto se envía a Anthropic para leerla. Este paso no la guarda; nada se llena a menos que presiones el botón.",
+    "apply": "Aplicar",
+    "clear": "Limpiar"
   },
   "inventory": {
     "title": "Inventario",
@@ -1810,7 +1812,8 @@
       "keywordsHelp": "Al importar un estado de cuenta, un movimiento cuya descripción contenga una de estas palabras se clasifica solo. Puedes cambiarlo antes de guardar.",
       "addButton": "Agregar",
       "hide": "Ocultar",
-      "show": "Mostrar"
+      "show": "Mostrar",
+      "edit": "Editar"
     },
     "more": "Ver más",
     "less": "Ver menos",

@@ -101,7 +101,7 @@ d("bank statements", () => {
     });
     await as(id.ownerB, async (tx) => {
       expect(await tx`select 1 from public.bank_transactions`).toHaveLength(0);
-      expect(await tx`select 1 from public.bank_categories`).toHaveLength(0);
+      expect(await tx`select 1 from public.bank_categories where tenant_id = ${tA}`).toHaveLength(0);
       await tx`savepoint a`;
       await expect(tx`select public.ensure_bank_categories(${tA}, 'en')`).rejects.toThrow(/not allowed/);
       await tx`rollback to savepoint a`;
@@ -120,7 +120,7 @@ d("bank statements", () => {
       await tx`rollback to savepoint x`;
     });
     await as(id.office, async (tx) => {
-      expect(await tx`select 1 from public.bank_categories`).toHaveLength(0);
+      expect((await tx`select 1 from public.bank_categories`).length).toBeGreaterThan(5); // office staff read the shared category list (for expenses)
       await tx`savepoint a`;
       await expect(tx`insert into public.bank_transactions (tenant_id, tx_date, description, amount_cents, dedupe_key, created_by) values (${tA}, '2099-01-03', 'Fee', -500, 'k8', ${id.office})`).rejects.toThrow();
       await tx`rollback to savepoint a`;

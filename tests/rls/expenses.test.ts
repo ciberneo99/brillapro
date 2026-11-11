@@ -48,8 +48,8 @@ d("expenses", () => {
       await sql`insert into public.profiles (id, email) values (${uid}, ${`${role}-${uid}@test.local`})`;
       await sql`insert into public.memberships (tenant_id, user_id, role) values (${tA}, ${uid}, ${role})`;
     }
-    catA = (await sql`select id from public.expense_categories where tenant_id = ${tA} order by sort_order limit 1`)[0].id;
-    catB = (await sql`select id from public.expense_categories where tenant_id = ${tB} order by sort_order limit 1`)[0].id;
+    catA = (await sql`select id from public.bank_categories where tenant_id = ${tA} and parent_id is not null order by sort_order limit 1`)[0].id;
+    catB = (await sql`select id from public.bank_categories where tenant_id = ${tB} and parent_id is not null order by sort_order limit 1`)[0].id;
   });
 
   afterAll(async () => {
@@ -61,11 +61,10 @@ d("expenses", () => {
   const newExpense = (tx: postgres.TransactionSql, uid: string, extra = {}) =>
     tx`insert into public.expenses ${tx({ tenant_id: tA, category_id: catA, amount_cents: 2500, expense_date: "2026-05-10", created_by: uid, ...extra })} returning id`;
 
-  it("new companies get default categories in their language", async () => {
-    const es = await sql`select name from public.expense_categories where tenant_id = ${tA} order by sort_order`;
-    expect(es).toHaveLength(8);
-    expect(es[0].name).toBe("Insumos de limpieza");
-    expect((await sql`select name from public.expense_categories where tenant_id = ${tB} order by sort_order limit 1`)[0].name).toBe("Cleaning supplies");
+  it("new companies get the shared category list (the same one Bank Reports uses)", async () => {
+    const roots = await sql`select name from public.bank_categories where tenant_id = ${tA} and parent_id is null`;
+    expect(roots.map((r) => r.name)).toEqual(expect.arrayContaining(["Vehicle Expenses", "Supplies", "Income"]));
+    expect(await sql`select 1 from public.expense_categories where tenant_id = ${tA}`).toHaveLength(0);
   });
 
   it("office staff record expenses; accountant reads; summary groups by category", async () => {
@@ -96,21 +95,20 @@ d("expenses", () => {
     await expect(as(id.ownerA, (tx) => newExpense(tx, id.ownerA, { amount_cents: 0 }))).rejects.toThrow();
   });
 
-  it("delete is owner/admin only; categories: owner/admin manage, never deleted", async () => {
+  it("delete is owner/admin only; categories: everyone who records expenses reads them, owner/admin manage", async () => {
     const eid = (await sql`insert into public.expenses (tenant_id, category_id, amount_cents, expense_date) values (${tA}, ${catA}, 100, '2026-05-01') returning id`)[0].id;
     await as(id.office, async (tx) => expect((await tx`delete from public.expenses where id = ${eid}`).count).toBe(0));
     await as(id.ownerA, async (tx) => expect((await tx`delete from public.expenses where id = ${eid}`).count).toBe(1));
     await as(id.office, async (tx) => {
-      await expect(tx`savepoint c`.then(() => tx`insert into public.expense_categories (tenant_id, name) values (${tA}, 'Sneaky')`)).rejects.toThrow();
+      expect((await tx`select 1 from public.bank_categories where tenant_id = ${tA}`).length).toBeGreaterThan(5); // can read the list
+      await expect(tx`insert into public.bank_categories (tenant_id, name) values (${tA}, 'Sneaky')`).rejects.toThrow();
     });
+    await as(id.manager, async (tx) => expect(await tx`select 1 from public.bank_categories where tenant_id = ${tA}`).toHaveLength(0));
     await as(id.ownerA, async (tx) => {
-      await tx`insert into public.expense_categories (tenant_id, name) values (${tA}, 'Parking')`;
-      expect((await tx`update public.expense_categories set is_active = false where id = ${catA}`).count).toBe(1);
-      await tx`savepoint d`;
-      await expect(tx`delete from public.expense_categories where id = ${catA}`).rejects.toThrow();
-      await tx`rollback to savepoint d`;
+      await tx`insert into public.bank_categories (tenant_id, name) values (${tA}, 'Parking lot')`;
+      expect((await tx`update public.bank_categories set is_active = false where id = ${catA}`).count).toBe(1);
       await tx`savepoint e`;
-      await expect(tx`insert into public.expense_categories (tenant_id, name) values (${tA}, 'parking')`).rejects.toThrow(); // duplicate name
+      await expect(tx`insert into public.bank_categories (tenant_id, name) values (${tA}, 'parking LOT')`).rejects.toThrow(); // duplicate name
       await tx`rollback to savepoint e`;
     });
   });

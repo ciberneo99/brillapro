@@ -178,38 +178,47 @@ export async function bulkDelete(formData: FormData) {
   redirect(back(formData));
 }
 
-const CATS = `${BASE}?tab=categories`;
+const CAT_PAGES = ["/reports/bank?tab=categories", "/settings/expense-categories"];
+/** Categories are shared with Expenses, so owner/admin manage them on any plan (no Pro check), and return to the page they came from. */
+async function categoryGuard() {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "bank:write")) redirect("/dashboard");
+  return ctx;
+}
+const catBack = (f: FormData) => { const to = String(f.get("back") ?? ""); return CAT_PAGES.includes(to) ? to : CAT_PAGES[0]; };
+const withQ = (path: string, q: string) => `${path}${path.includes("?") ? "&" : "?"}${q}`;
+function refreshCategories() { revalidatePath(BASE); revalidatePath("/expenses", "layout"); revalidatePath("/settings/expense-categories"); }
 
 export async function addBankCategory(formData: FormData) {
-  const ctx = await guard();
+  const ctx = await categoryGuard();
   const f = raw(formData);
   const p = categorySchema.safeParse({ name: f.name, keywords: f.keywords ?? "", parentId: f.parent_id || null });
-  if (!p.success) redirect(`${CATS}&error=invalid`);
+  if (!p.success) redirect(withQ(catBack(formData), "error=invalid"));
   const supabase = await createClient();
   const { data: last } = await supabase.from("bank_categories").select("sort_order").order("sort_order", { ascending: false }).limit(1).maybeSingle();
   const { error } = await supabase.from("bank_categories").insert({
     tenant_id: ctx.tenant.id, name: p.data.name, keywords: p.data.keywords, parent_id: p.data.parentId, sort_order: (last?.sort_order ?? 0) + 10,
   });
-  revalidatePath(BASE);
-  redirect(error ? `${CATS}&error=${error.code === "23505" ? "duplicate" : "invalid"}` : `${CATS}&saved=1`);
+  refreshCategories();
+  redirect(withQ(catBack(formData), error ? `error=${error.code === "23505" ? "duplicate" : "invalid"}` : "saved=1"));
 }
 
 export async function updateBankCategory(id: string, formData: FormData) {
-  await guard();
+  await categoryGuard();
   const f = raw(formData);
   const p = categorySchema.pick({ name: true, keywords: true }).safeParse({ name: f.name, keywords: f.keywords ?? "" });
-  if (!p.success) redirect(`${CATS}&error=invalid`);
+  if (!p.success) redirect(withQ(catBack(formData), "error=invalid"));
   const supabase = await createClient();
   const { error } = await supabase.from("bank_categories").update(p.data).eq("id", id);
-  revalidatePath(BASE);
-  redirect(error ? `${CATS}&error=${error.code === "23505" ? "duplicate" : "invalid"}` : `${CATS}&saved=1`);
+  refreshCategories();
+  redirect(withQ(catBack(formData), error ? `error=${error.code === "23505" ? "duplicate" : "invalid"}` : "saved=1"));
 }
 
 /** Categories are never deleted (past transactions keep them); they are hidden from new choices instead. */
-export async function toggleBankCategory(id: string, active: boolean) {
-  await guard();
+export async function toggleBankCategory(id: string, active: boolean, formData: FormData) {
+  await categoryGuard();
   const supabase = await createClient();
   await supabase.from("bank_categories").update({ is_active: active }).eq("id", id);
-  revalidatePath(BASE);
-  redirect(CATS);
+  refreshCategories();
+  redirect(catBack(formData));
 }

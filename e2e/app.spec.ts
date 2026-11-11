@@ -315,7 +315,7 @@ test("reports hub: sections, favorites, real reports and CSV", async ({ page }) 
     values (${tenantId}, ${cust}, 'Rita Lopez', 'sent', current_date, current_date + 15, 10, ${uid}) returning id`)[0].id;
   await sql`insert into public.invoice_lines (tenant_id, invoice_id, description, quantity, unit_price_cents, position) values (${tenantId}, ${inv}, 'Office cleaning', 2, 5000, 0)`;
   await sql`insert into public.payments (tenant_id, invoice_id, amount_cents, paid_on, method) values (${tenantId}, ${inv}, 4000, current_date, 'zelle')`;
-  const cat = (await sql`select id from public.expense_categories where tenant_id = ${tenantId} limit 1`)[0].id;
+  const cat = (await sql`select id from public.bank_categories where tenant_id = ${tenantId} and parent_id is not null limit 1`)[0].id;
   await sql`insert into public.expenses (tenant_id, category_id, vendor, amount_cents, expense_date, created_by) values (${tenantId}, ${cat}, 'Supply Co', 1500, current_date, ${uid})`;
 
   await page.goto("/login");
@@ -502,4 +502,28 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   page.once("dialog", (d) => d.accept());
   await page.getByRole("row", { name: /monthly service fee/i }).getByRole("button", { name: "Delete" }).click();
   await expect(page.getByRole("heading", { name: "Transactions (3)" })).toBeVisible();
+});
+
+test("expenses and settings use the same categories as Bank Reports", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  // Settings shows the shared list; a new category added there is offered when recording an expense.
+  await page.goto("/settings/expense-categories");
+  await expect(page.getByText("Vehicle Expenses").first()).toBeVisible();
+  await page.getByPlaceholder("Name", { exact: true }).fill("Shared Category Test");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await expect(page.getByText("Shared Category Test").first()).toBeVisible();
+
+  await page.goto("/expenses/new");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("combobox", { name: "Category", exact: true }).click();
+  await page.getByPlaceholder("Search categories…").fill("Shared Category");
+  await expect(page.locator("ul[role=listbox]").getByRole("option", { name: /Shared Category Test/ })).toBeVisible();
+  await page.getByPlaceholder("Search categories…").fill("Gas");
+  await expect(page.locator("ul[role=listbox]").getByRole("option", { name: /Gas\/Fuel/ })).toBeVisible();
+  await expect(page.locator("ul[role=listbox]").getByRole("option", { name: /Zelle payment/ })).toHaveCount(0); // income is not for expenses
 });

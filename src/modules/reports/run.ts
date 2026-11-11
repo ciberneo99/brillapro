@@ -209,9 +209,10 @@ async function paymentsCollected(c: RunCtx): Promise<ReportResult> {
 async function expensesIn(c: RunCtx) {
   const [{ data: ex }, { data: cats }] = await Promise.all([
     c.supabase.from("expenses").select("expense_date,vendor,description,amount_cents,payment_method,category_id").gte("expense_date", c.from).lte("expense_date", c.to).order("expense_date").limit(LIMIT),
-    c.supabase.from("expense_categories").select("id,name"),
+    c.supabase.from("bank_categories").select("id,name,parent_id").limit(500),
   ]);
-  const names = new Map((cats ?? []).map((k) => [k.id, k.name as string]));
+  const byId = new Map((cats ?? []).map((k) => [k.id, k]));
+  const names = new Map((cats ?? []).map((k) => [k.id, k.parent_id && byId.get(k.parent_id) ? `${byId.get(k.parent_id)!.name}: ${k.name}` : (k.name as string)]));
   return (ex ?? []).map((e) => ({ ...e, amount_cents: n(e.amount_cents), category: names.get(e.category_id) ?? "" }));
 }
 

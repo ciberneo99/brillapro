@@ -118,3 +118,5 @@ erDiagram
 
 - `invoices.customer_phone` (migración 0034): el teléfono del cliente queda guardado en la factura, igual que nombre, correo y dirección. Un borrador sigue al cliente (un trigger lo actualiza en cada guardado); al emitirse queda congelado y ya no cambia aunque se edite el cliente. Las facturas anteriores recibieron el teléfono actual del cliente.
 - Importar un estado de cuenta ya cargado corrige en su lugar los movimientos que quedaron con el signo contrario (mismo día, mismo saldo, misma descripción), sin duplicarlos.
+
+- Categorías compartidas (migración 0036): los gastos ahora usan las mismas categorías de dos niveles que Reportes bancarios (`bank_categories`); `expenses.category_id` apunta a ellas. Los gastos existentes se movieron a la categoría equivalente (o a "Other expenses" con su mismo nombre); `expense_categories` queda sin uso, sin borrarse. Las empresas nuevas reciben la lista al crearse. Quienes registran gastos (office staff incluido) pueden leer la lista; solo owner/admin la cambian. Se administra desde Reportes bancarios > Categories o desde Settings (lista simple), en cualquier plan.

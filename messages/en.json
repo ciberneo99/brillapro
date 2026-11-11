@@ -1034,7 +1034,7 @@
     "detail": "Expense",
     "back": "Back to expenses",
     "categories": "Categories",
-    "categoriesIntro": "Group your expenses (supplies, fuel, payroll…). Categories can be renamed or deactivated, never deleted.",
+    "categoriesIntro": "The same categories as Bank Reports: main categories with subcategories. Change them here or there and both places update. Categories can be renamed or hidden, never deleted.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "monthTotal": "Total this month",
@@ -1087,7 +1087,9 @@
     "aiNothing": "The AI could not read this receipt. Fill in the fields by hand.",
     "aiFailed": "The receipt could not be read right now. Fill in the fields by hand.",
     "aiDisabled": "AI reading is not set up yet.",
-    "aiPrivacy": "The photo is sent to Anthropic to read it. It is not saved by this step; nothing is filled in unless you press the button."
+    "aiPrivacy": "The photo is sent to Anthropic to read it. It is not saved by this step; nothing is filled in unless you press the button.",
+    "apply": "Apply",
+    "clear": "Clear"
   },
   "inventory": {
     "title": "Inventory",
@@ -1810,7 +1812,8 @@
       "keywordsHelp": "When you import a statement, a transaction whose description contains one of these keywords is categorized automatically. You can change it before saving.",
       "addButton": "Add",
       "hide": "Hide",
-      "show": "Show"
+      "show": "Show",
+      "edit": "Edit"
     },
     "more": "See more",
     "less": "See less",

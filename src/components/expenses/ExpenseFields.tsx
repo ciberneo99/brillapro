@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { CategoryPicker } from "@/components/bank/CategoryPicker";
 import { Field, Select } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { MoneyInput, SmartTextarea } from "@/components/ui/fields";
@@ -26,10 +27,7 @@ export async function ExpenseFields({
         <MoneyInput id="amount" name="amount" required defaultValue={value ? centsToMoneyText(value.amount_cents) : ""} currency={currency} />
       </Field>
       <Field label={t("category")} htmlFor="category_id">
-        <Select id="category_id" name="category_id" required defaultValue={value?.category_id ?? ""}>
-          <option value="" disabled>{t("chooseCategory")}</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </Select>
+        <CategoryPicker name="category_id" defaultValue={value?.category_id ?? ""} choices={categories.map((c) => ({ id: c.id, name: c.name, parent: c.parent }))} placeholder={t("chooseCategory")} ariaLabel={t("category")} />
       </Field>
       <Field label={t("vendor")} htmlFor="vendor">
         <SmartTextInput id="vendor" name="vendor" mode="name" maxLength={120} defaultValue={value?.vendor ?? ""} />

@@ -9,7 +9,7 @@ import { requireContext } from "@/lib/session";
 import { todayIso } from "@/lib/calendar";
 import { listCategories } from "./queries";
 import { readReceipt } from "./receipt-ai";
-import { categorySchema, checkReceipt, expenseSchema } from "./schema";
+import { checkReceipt, expenseSchema } from "./schema";
 
 const raw = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === "string"));
 const page = (id: string, q = "") => `/expenses/${id}${q}`;
@@ -107,37 +107,6 @@ export async function deleteExpense(id: string) {
   redirect("/expenses");
 }
 
-// ───────── categories (owner / admin) ─────────
-const CAT = "/settings/expense-categories";
-
-export async function addCategory(formData: FormData) {
-  const ctx = await requireContext();
-  if (!can(ctx.role, "settings:write")) redirect(CAT);
-  const p = categorySchema.safeParse(raw(formData));
-  if (!p.success) redirect(`${CAT}?error=invalid`);
-  const supabase = await createClient();
-  const { data: last } = await supabase.from("expense_categories").select("sort_order").order("sort_order", { ascending: false }).limit(1);
-  const { error } = await supabase.from("expense_categories").insert({ tenant_id: ctx.tenant.id, name: p.data.name, sort_order: (last?.[0]?.sort_order ?? 0) + 1 });
-  revalidatePath(CAT);
-  redirect(error ? `${CAT}?error=${error.code === "23505" ? "taken" : "invalid"}` : `${CAT}?saved=1`);
-}
-
-export async function updateCategory(id: string, formData: FormData) {
-  const ctx = await requireContext();
-  if (!can(ctx.role, "settings:write")) redirect(CAT);
-  const patch: { name?: string; is_active?: boolean } = {};
-  if (formData.has("name")) {
-    const p = categorySchema.safeParse(raw(formData));
-    if (!p.success) redirect(`${CAT}?error=invalid`);
-    patch.name = p.data.name;
-  }
-  if (formData.has("is_active")) patch.is_active = formData.get("is_active") === "true";
-  const supabase = await createClient();
-  const { error } = await supabase.from("expense_categories").update(patch).eq("id", id);
-  revalidatePath(CAT);
-  redirect(error ? `${CAT}?error=${error.code === "23505" ? "taken" : "invalid"}` : `${CAT}?saved=1`);
-}
-
 // ───────── AI receipt reading (suggestions only; nothing is saved) ─────────
 export type ScanResult =
   | { ok: true; suggestion: import("./receipt-reading").ReceiptSuggestion }
@@ -150,7 +119,7 @@ export async function scanReceipt(formData: FormData): Promise<ScanResult> {
   if (!(f instanceof File) || f.size === 0) return { ok: false, error: "type" };
   const check = checkReceipt(f);
   if ("error" in check) return { ok: false, error: check.error };
-  const categories = (await listCategories({ activeOnly: true })).map((c) => ({ id: c.id, name: c.name }));
+  const categories = (await listCategories({ activeOnly: true })).map((c) => ({ id: c.id, name: c.label }));
   const today = todayIso(ctx.settings.timezone);
   return readReceipt({ base64: Buffer.from(await f.arrayBuffer()).toString("base64"), mediaType: f.type }, categories, today);
 }

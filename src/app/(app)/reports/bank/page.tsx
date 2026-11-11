@@ -7,16 +7,17 @@ import { CategoryPicker, type CategoryChoice } from "@/components/bank/CategoryP
 import { EditTransactionDialog } from "@/components/bank/EditTransactionDialog";
 import { ExpandableText } from "@/components/bank/ExpandableText";
 import { StatementImport } from "@/components/bank/StatementImport";
+import { CategoriesManager } from "@/components/bank/CategoriesManager";
 import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
-import { Alert, Button, Card, Input, cn } from "@/components/ui";
+import { Alert, Button, Input, cn } from "@/components/ui";
 import { SelectMenu } from "@/components/ui/SelectMenu";
 import { VenmoUploader } from "@/components/venmo/VenmoUploader";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
-import { addBankCategory, bulkCategorize, bulkDelete, deleteTransaction, refreshBank, toggleBankCategory, updateBankCategory, updateTransaction } from "@/modules/bank/actions";
-import { BANK_PAGE_SIZE, categoryLabels, listBankCategories, listBankMonths, listStatements, listTransactions, sumTransactions, type BankCategory } from "@/modules/bank/queries";
+import { bulkCategorize, bulkDelete, deleteTransaction, refreshBank, updateTransaction } from "@/modules/bank/actions";
+import { BANK_PAGE_SIZE, categoryLabels, listBankCategories, listBankMonths, listStatements, listTransactions, sumTransactions } from "@/modules/bank/queries";
 import { balanceSummary } from "@/modules/bank/summary";
 
 export const metadata = { title: "Bank reports" };
@@ -56,7 +57,7 @@ export default async function BankReportsPage({ searchParams }: { searchParams: 
         ))}
       </nav>
       {tab === "venmo" && (<><p className="text-sm text-muted">{tv("intro")}</p><VenmoUploader currency={ctx.settings.currency} dateFormat={ctx.settings.date_format} /></>)}
-      {tab === "categories" && <CategoriesTab sp={sp} canWrite={canWrite} tenantId={ctx.tenant.id} />}
+      {tab === "categories" && <CategoriesManager sp={sp} canWrite={canWrite} tenantId={ctx.tenant.id} back="/reports/bank?tab=categories" />}
       {tab === "transactions" && <TransactionsTab sp={sp} canWrite={canWrite} tenantId={ctx.tenant.id} currency={ctx.settings.currency} dateFormat={ctx.settings.date_format} />}
     </div>
   );
@@ -228,62 +229,6 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             </div>
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-async function CategoriesTab({ sp, canWrite, tenantId }: { sp: SP; canWrite: boolean; tenantId: string }) {
-  const tb = await getTranslations("bank");
-  const cats = await listBankCategories(tenantId, await getLocale());
-  const roots = cats.filter((c) => !c.parent_id);
-  const labels = categoryLabels(cats);
-  const row = (c: BankCategory, child = false) => (
-    <li key={c.id} className={cn("flex flex-wrap items-center gap-2 py-2", child && "pl-5", !c.is_active && "opacity-60")}>
-      {canWrite ? (
-        <form action={updateBankCategory.bind(null, c.id)} className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <Input name="name" defaultValue={c.name} maxLength={80} aria-label={tb("cats.name")} className="h-9 w-56" />
-          <Input name="keywords" defaultValue={c.keywords} maxLength={500} aria-label={tb("cats.keywords")} placeholder={tb("cats.keywordsPlaceholder")} className="h-9 min-w-48 flex-1" />
-          <Button type="submit" variant="secondary" className="h-9">{tb("save")}</Button>
-        </form>
-      ) : <span className="flex-1">{c.name} <span className="text-xs text-muted">{c.keywords}</span></span>}
-      {canWrite && (
-        <form action={toggleBankCategory.bind(null, c.id, !c.is_active)}>
-          <Button type="submit" variant="ghost" className="h-9">{c.is_active ? tb("cats.hide") : tb("cats.show")}</Button>
-        </form>
-      )}
-    </li>
-  );
-  return (
-    <div className="space-y-6">
-      {sp.error && <Alert>{tb(sp.error === "duplicate" ? "errors.duplicate" : "errors.invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{tb("saved")}</Alert>}
-      <p className="text-sm text-muted">{tb("cats.help")}</p>
-      {canWrite && (
-        <Card accent="green">
-          <h2 className="mb-3 text-base font-semibold">{tb("cats.add")}</h2>
-          <form action={addBankCategory} className="grid gap-2 md:grid-cols-[14rem_14rem_1fr_auto]">
-            <Input name="name" required maxLength={80} placeholder={tb("cats.name")} aria-label={tb("cats.name")} />
-            <SelectMenu name="parent_id" defaultValue="" ariaLabel={tb("cats.parent")} options={[{ value: "", label: tb("cats.topLevel") }, ...roots.filter((c) => c.is_active).map((c) => ({ value: c.id, label: tb("cats.under", { name: c.name }) }))]} />
-            <Input name="keywords" maxLength={500} placeholder={tb("cats.keywordsPlaceholder")} aria-label={tb("cats.keywords")} />
-            <Button type="submit">{tb("cats.addButton")}</Button>
-          </form>
-          <p className="mt-2 text-xs text-muted">{tb("cats.keywordsHelp")}</p>
-        </Card>
-      )}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {roots.map((p) => (
-          <Card key={p.id}>
-            <div className="mb-1 flex items-center gap-2">
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: `var(--c-${TONES[(labels.get(p.id)?.tone ?? 0) % TONES.length]})` }} aria-hidden />
-              <h2 className="text-base font-semibold">{p.name}</h2>
-            </div>
-            <ul className="divide-y divide-line">
-              {row(p)}
-              {cats.filter((c) => c.parent_id === p.id).map((c) => row(c, true))}
-            </ul>
-          </Card>
-        ))}
       </div>
     </div>
   );
