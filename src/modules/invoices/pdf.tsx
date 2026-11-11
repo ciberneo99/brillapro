@@ -65,8 +65,8 @@ export type PdfBusiness = { name: string; phone: string | null; email: string | 
 export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function InvoicePdf({
-  invoice, business, logo, customerPhone, prefix, currency, dateFormat, locale,
-}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; customerPhone?: string | null; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
+  invoice, business, logo, customerPhone, customerCompany, prefix, currency, dateFormat, locale,
+}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; customerPhone?: string | null; customerCompany?: string | null; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
   const t = L[locale];
   const m = (c: number) => formatMoney(c, currency);
   const d = (v: string) => formatDateOnly(v, dateFormat);
@@ -107,7 +107,14 @@ export function InvoicePdf({
         <View style={[s.row, { minHeight: 86 }]}>
           <Text style={s.billLabel}>{t.billTo}</Text>
           <View style={{ maxWidth: 300 }}>
-            <Text style={s.customer}>{invoice.customer_name}</Text>
+            {customerCompany && customerCompany.trim().toLowerCase() !== invoice.customer_name.trim().toLowerCase() ? (
+              <>
+                <Text style={s.customer}>{customerCompany}</Text>
+                <Text style={[s.right, { fontSize: 12, color: "#111" }]}>{invoice.customer_name}</Text>
+              </>
+            ) : (
+              <Text style={s.customer}>{customerCompany || invoice.customer_name}</Text>
+            )}
             {addressLines(invoice.billing_address).map((l) => <Text key={l} style={s.right}>{l}</Text>)}
             {invoice.customer_email && <Text style={s.right}>{invoice.customer_email}</Text>}
             {customerPhone && <Text style={s.right}>{customerPhone}</Text>}

@@ -5,7 +5,7 @@ import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/components/ui";
 
-export type CustomerOption = { id: string; name: string; email: string | null; phone: string | null; address: string | null };
+export type CustomerOption = { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null };
 
 const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 

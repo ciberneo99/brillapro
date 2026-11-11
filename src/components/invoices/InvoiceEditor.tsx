@@ -14,7 +14,7 @@ import { SheetHeader, type SheetCompany } from "./SheetHeader";
 
 export type EditorLine = { description: string; quantity: string; price: string };
 export type EditorInvoice = {
-  customerId: string | null; customerName: string; customerEmail: string; customerPhone: string; billingAddress: string;
+  customerId: string | null; customerName: string; customerEmail: string; customerPhone: string; customerCompany: string; billingAddress: string;
   issueDate: string; dueDate: string; discount: string; taxRate: string; notes: string; terms: string; lines: EditorLine[];
 };
 
@@ -91,7 +91,7 @@ export function InvoiceEditor({
             <CustomerSearch id="customer_search" customers={customers} selectedId={customerId} onSelect={pick} />
             <button type="button" onClick={() => setEditing((v) => !v)} aria-expanded={editing} className="text-xs text-primary hover:underline">{editing ? t("hideDetails") : t("editDetails")}</button>
           </div>
-          <BillToDetails name={name} address={address} email={email} phone={customers.find((c) => c.id === customerId)?.phone ?? initial.customerPhone} />
+          <BillToDetails name={name} company={customers.find((c) => c.id === customerId)?.company ?? initial.customerCompany} address={address} email={email} phone={customers.find((c) => c.id === customerId)?.phone ?? initial.customerPhone} />
         </div>
         <div hidden={!editing} className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="space-y-1"><label htmlFor="customer_name" className="text-xs font-medium text-muted">{t("customerName")}</label>

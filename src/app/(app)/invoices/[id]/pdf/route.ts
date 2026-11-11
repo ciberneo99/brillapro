@@ -19,14 +19,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const invoice = await getInvoice(id); // RLS: only this company's invoices
   if (!invoice) return new Response("Not found", { status: 404 });
   const supabase = await createClient();
-  const { data: cust } = await supabase.from("customers").select("phone").eq("id", invoice.customer_id).maybeSingle();
+  const { data: cust } = await supabase.from("customers").select("phone,company_name").eq("id", invoice.customer_id).maybeSingle();
   const is = await getInvoiceSettings(ctx.tenant.id);
   const s = ctx.settings;
   const logo = await logoForPdf(s.logo_path);
 
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
-      invoice, logo, customerPhone: cust?.phone ?? null, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
+      invoice, logo, customerPhone: cust?.phone ?? null, customerCompany: cust?.company_name || null, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
       business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), website: s.website, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],
   );

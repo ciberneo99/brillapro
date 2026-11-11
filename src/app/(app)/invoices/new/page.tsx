@@ -32,7 +32,7 @@ export default async function NewInvoicePage({ searchParams }: { searchParams: P
       ) : (
         <Card accent="green">
           <NewInvoiceForm initialId={sp.customer ?? null} customers={(customers ?? []).map((c) => ({
-            id: c.id, name: displayName(c), email: c.email, phone: c.phone,
+            id: c.id, name: displayName(c), email: c.email, phone: c.phone, company: c.company_name || null,
             address: [c.billing_address || c.service_address, c.city, [c.state, c.zip_code].filter(Boolean).join(" ")].filter(Boolean).join(", ") || null,
           }))} />
         </Card>

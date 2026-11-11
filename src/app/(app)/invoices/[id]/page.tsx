@@ -48,16 +48,17 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
     logoUrl: await logoUrl(ctx.settings.logo_path),
   };
 
-  const { data: cust } = await (await createClient()).from("customers").select("phone").eq("id", inv.customer_id).maybeSingle();
+  const { data: cust } = await (await createClient()).from("customers").select("phone,company_name").eq("id", inv.customer_id).maybeSingle();
   const customerPhone = cust?.phone ?? null;
-  let customers: { id: string; name: string; email: string | null; phone: string | null; address: string | null }[] = [];
+  const customerCompany = cust?.company_name || null;
+  let customers: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null }[] = [];
   if (editable) {
     const supabase = await createClient();
     const { data } = await supabase
       .from("customers").select("id,first_name,last_name,company_name,email,phone,billing_address,service_address,city,state,zip_code")
       .neq("status", "archived").order("first_name").limit(1000);
     customers = (data ?? []).map((c) => ({
-      id: c.id, name: displayName(c), email: c.email, phone: c.phone,
+      id: c.id, name: displayName(c), email: c.email, phone: c.phone, company: c.company_name || null,
       address: [c.billing_address || c.service_address, c.city, [c.state, c.zip_code].filter(Boolean).join(" ")].filter(Boolean).join(", ") || null,
     }));
   }
@@ -94,7 +95,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           number={num} company={company} customers={customers} currency={cur} dateFormat={fmt} error={sp.error === "invalid"}
           action={saveInvoiceDraft.bind(null, id)}
           initial={{
-            customerId: inv.customer_id, customerName: inv.customer_name, customerEmail: inv.customer_email ?? "", customerPhone: customerPhone ?? "", billingAddress: inv.billing_address ?? "",
+            customerId: inv.customer_id, customerName: inv.customer_name, customerEmail: inv.customer_email ?? "", customerPhone: customerPhone ?? "", customerCompany: customerCompany ?? "", billingAddress: inv.billing_address ?? "",
             issueDate: inv.issue_date, dueDate: inv.due_date, discount: centsToMoneyText(inv.discount_cents), taxRate: String(inv.tax_rate),
             notes: inv.notes ?? "", terms: inv.terms ?? "",
             lines: inv.lines.map((l) => ({ description: l.description, quantity: String(l.quantity), price: centsToMoneyText(l.unit_price_cents) })),
@@ -112,7 +113,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           </SheetHeader>
           <div className="grid gap-4 border-b border-line py-6 md:grid-cols-[minmax(0,22rem)_1fr]">
             <h2 className="text-base font-bold uppercase tracking-tight">{te("billTo")}</h2>
-            <BillToDetails name={inv.customer_name} address={inv.billing_address} email={inv.customer_email} phone={customerPhone} />
+            <BillToDetails name={inv.customer_name} company={customerCompany} address={inv.billing_address} email={inv.customer_email} phone={customerPhone} />
           </div>
           <div className="py-6">
             <div className="hidden grid-cols-[minmax(0,1fr)_5rem_8rem_7rem] gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white md:grid">
