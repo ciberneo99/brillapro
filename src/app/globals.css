@@ -116,33 +116,39 @@ body {
 
 :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
-/* ───────── Date picker (react-day-picker) themed with our tokens; bigger touch targets ───────── */
+/* ───────── Pop-up panels (drop-down lists, calendar): a short fade and rise ───────── */
+@keyframes bp-pop { from { opacity: 0; transform: translateY(-6px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes bp-pop-up { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+.bp-pop { animation: bp-pop 140ms ease-out; transform-origin: top center; }
+.bp-pop.bp-pop-up { animation-name: bp-pop-up; transform-origin: bottom center; }
+@media (prefers-reduced-motion: reduce) { .bp-pop { animation: none; } }
+
+/* ───────── Date picker (react-day-picker) themed with our tokens ───────── */
 .bp-datepicker {
   --rdp-accent-color: var(--primary);
   --rdp-accent-background-color: var(--primary-soft);
-  --rdp-day-height: 46px;
-  --rdp-day-width: 46px;
-  --rdp-day_button-height: 44px;
-  --rdp-day_button-width: 44px;
-  --rdp-nav_button-height: 2.5rem;
-  --rdp-nav_button-width: 2.5rem;
-  font-size: 0.95rem;
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+  --rdp-day_button-height: 38px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-border-radius: 9999px;
+  --rdp-nav_button-height: 2rem;
+  --rdp-nav_button-width: 2rem;
+  font-size: 0.9rem;
   color: var(--fg);
 }
-.bp-datepicker .rdp-weekday { color: var(--fg-muted); font-weight: 500; }
+.bp-datepicker .rdp-month_caption { height: 2.5rem; margin-bottom: 0.25rem; }
+.bp-datepicker .rdp-dropdowns { gap: 0.25rem; }
+.bp-datepicker .rdp-nav button { border-radius: 0.6rem; transition: background 120ms; }
+.bp-datepicker .rdp-nav button:hover { background: var(--primary-soft); }
+.bp-datepicker .rdp-weekday { color: var(--fg-muted); font-weight: 600; font-size: 0.75rem; }
 .bp-datepicker .rdp-chevron { fill: var(--fg-muted); }
-/* clear hover so you can see which day you are about to pick */
-.bp-datepicker .rdp-day:not(.rdp-selected):not(.rdp-disabled) .rdp-day_button:hover {
-  background: var(--primary-soft);
-  color: var(--primary);
-  border-color: var(--primary);
-  font-weight: 600;
-}
-.bp-datepicker .rdp-today:not(.rdp-selected) { color: var(--primary); font-weight: 700; }
-.bp-datepicker .rdp-selected .rdp-day_button { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
-.bp-datepicker .rdp-dropdown_root select,
-.bp-datepicker select { background: var(--surface); color: var(--fg); }
-.bp-datepicker .rdp-dropdown_root { border-radius: 0.5rem; }
+.bp-datepicker .rdp-nav button:hover .rdp-chevron { fill: var(--primary); }
+.bp-datepicker .rdp-day_button { border: 2px solid transparent; border-radius: 9999px; transition: background 120ms, color 120ms, border-color 120ms; }
+.bp-datepicker .rdp-day:not(.rdp-selected):not(.rdp-disabled) .rdp-day_button:hover { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+.bp-datepicker .rdp-outside { opacity: 0.45; }
+.bp-datepicker .rdp-today:not(.rdp-selected) .rdp-day_button { color: var(--primary); font-weight: 700; border-color: var(--primary); }
+.bp-datepicker .rdp-selected .rdp-day_button { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); font-weight: 600; box-shadow: 0 4px 10px color-mix(in srgb, var(--primary) 35%, transparent); }
 
 /* ───────── Accent cards: tinted outline + colored top bar. Color is decoration; text keeps normal contrast. ───────── */
 .accent-card {

@@ -422,7 +422,8 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await page.getByRole("button", { name: /cancel/i }).first().click();
 
   // Filters.
-  await page.getByRole("combobox", { name: "Type" }).selectOption("in");
+  await page.getByRole("combobox", { name: "Type" }).click();
+  await page.getByRole("option", { name: "Deposits/Credits" }).click();
   await page.getByRole("button", { name: "Apply", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Transactions (1)" })).toBeVisible();
   await page.getByRole("link", { name: "Clear" }).click();
@@ -448,7 +449,8 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByText("Saved.")).toBeVisible();
   await page.getByPlaceholder("Name").first().fill("Vacuums");
-  await page.getByRole("combobox", { name: "Belongs to" }).selectOption({ label: "Subcategory of Equipment" });
+  await page.getByRole("combobox", { name: "Belongs to" }).click();
+  await page.getByRole("option", { name: "Subcategory of Equipment" }).click();
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.locator("input[value=Vacuums]")).toBeVisible();
 
@@ -470,7 +472,17 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   const fee = page.getByRole("row", { name: /monthly service fee/i });
   await expect(fee.getByRole("cell").nth(5)).toContainText("$12.00"); // withdrawals column
   await fee.getByRole("button", { name: "Edit" }).click();
-  await win.getByLabel("Type").selectOption("in");
+  await win.getByRole("combobox", { name: "Type" }).click();
+  await page.getByRole("option", { name: "Income" }).click();
+  // The date field opens its calendar on click, takes typed dates as mm/dd/yyyy and picks from the calendar.
+  const when = win.getByRole("combobox", { name: "Date", exact: true });
+  await when.click();
+  await expect(page.getByRole("dialog", { name: "Pick a date" })).toBeVisible();
+  await page.getByRole("dialog", { name: "Pick a date" }).getByRole("button", { name: "Today" }).click();
+  await expect(page.getByRole("dialog", { name: "Pick a date" })).toBeHidden();
+  await when.fill("");
+  await when.pressSequentially("01152026");
+  await expect(when).toHaveValue("01/15/2026");
   await win.getByLabel("Amount").fill("15.50");
   await win.getByLabel("Notes").fill("Refund from the bank");
   await win.getByRole("button", { name: "Save" }).click();

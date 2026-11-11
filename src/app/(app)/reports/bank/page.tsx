@@ -7,7 +7,8 @@ import { EditTransactionDialog } from "@/components/bank/EditTransactionDialog";
 import { ExpandableText } from "@/components/bank/ExpandableText";
 import { StatementImport } from "@/components/bank/StatementImport";
 import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
-import { Alert, Button, Card, Input, Select, cn } from "@/components/ui";
+import { Alert, Button, Card, Input, cn } from "@/components/ui";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 import { VenmoUploader } from "@/components/venmo/VenmoUploader";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
@@ -120,16 +121,10 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
               <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted" aria-hidden />
               <Input name="q" defaultValue={sp.q} placeholder={tb("search")} aria-label={tb("search")} className="pl-9" />
             </div>
-            <Select name="type" defaultValue={type ?? ""} aria-label={tb("filters.type")}>
-              <option value="">{tb("filters.allTypes")}</option><option value="in">{tb("cols.deposits")}</option><option value="out">{tb("cols.withdrawals")}</option>
-            </Select>
-            <Select name="sort" defaultValue={sort} aria-label={tb("filters.sort")}>
-              <option value="desc">{tb("filters.newest")}</option><option value="asc">{tb("filters.oldest")}</option>
-            </Select>
+            <SelectMenu name="type" defaultValue={type ?? ""} ariaLabel={tb("filters.type")} options={[{ value: "", label: tb("filters.allTypes") }, { value: "in", label: tb("cols.deposits") }, { value: "out", label: tb("cols.withdrawals") }]} />
+            <SelectMenu name="sort" defaultValue={sort} ariaLabel={tb("filters.sort")} options={[{ value: "desc", label: tb("filters.newest") }, { value: "asc", label: tb("filters.oldest") }]} />
             <CategoryPicker choices={choices} name="category" defaultValue={sp.category ?? ""} ariaLabel={tb("filters.category")} placeholder={tb("filters.allCategories")} allowParents extras={[{ value: "", label: tb("filters.allCategories") }, { value: "none", label: tb("uncategorized") }]} />
-            <Select name="month" defaultValue={sp.month ?? ""} aria-label={tb("filters.month")}>
-              <option value="">{tb("filters.allMonths")}</option>{months.map((x) => <option key={x} value={x}>{monthLabel(x)}</option>)}
-            </Select>
+            <SelectMenu name="month" defaultValue={sp.month ?? ""} ariaLabel={tb("filters.month")} options={[{ value: "", label: tb("filters.allMonths") }, ...months.map((x) => ({ value: x, label: monthLabel(x) }))]} />
             <div className="flex gap-2">
               <Button type="submit" variant="secondary">{tb("filters.apply")}</Button>
               {filtered && <Link href="/reports/bank" className="inline-flex h-10 items-center rounded-lg px-3 text-sm text-muted hover:bg-surface-2">{tb("filters.clear")}</Link>}
@@ -200,7 +195,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
                             <div className="flex justify-end gap-1">
                               <EditTransactionDialog
                                 tx={{ id: r.id, date: r.tx_date, description: r.description, amountCents: r.amount_cents, categoryId: r.category_id, notes: r.notes }}
-                                choices={choices} action={updateTransaction.bind(null, r.id)} back={here}
+                                choices={choices} action={updateTransaction.bind(null, r.id)} back={here} dateFormat={dateFormat}
                               />
                               <ConfirmSubmit message={tb("confirmDelete")} formAction={deleteTransaction.bind(null, r.id)} className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-danger" aria-label={tb("delete")}><Trash2 className="h-4 w-4" aria-hidden /></ConfirmSubmit>
                             </div>
@@ -268,10 +263,7 @@ async function CategoriesTab({ sp, canWrite, tenantId }: { sp: SP; canWrite: boo
           <h2 className="mb-3 text-base font-semibold">{tb("cats.add")}</h2>
           <form action={addBankCategory} className="grid gap-2 md:grid-cols-[14rem_14rem_1fr_auto]">
             <Input name="name" required maxLength={80} placeholder={tb("cats.name")} aria-label={tb("cats.name")} />
-            <Select name="parent_id" defaultValue="" aria-label={tb("cats.parent")}>
-              <option value="">{tb("cats.topLevel")}</option>
-              {roots.filter((c) => c.is_active).map((c) => <option key={c.id} value={c.id}>{tb("cats.under", { name: c.name })}</option>)}
-            </Select>
+            <SelectMenu name="parent_id" defaultValue="" ariaLabel={tb("cats.parent")} options={[{ value: "", label: tb("cats.topLevel") }, ...roots.filter((c) => c.is_active).map((c) => ({ value: c.id, label: tb("cats.under", { name: c.name }) }))]} />
             <Input name="keywords" maxLength={500} placeholder={tb("cats.keywordsPlaceholder")} aria-label={tb("cats.keywords")} />
             <Button type="submit">{tb("cats.addButton")}</Button>
           </form>

@@ -97,13 +97,13 @@ export function CategoryPicker({
         ref={trigger} type="button" role="combobox" aria-label={ariaLabel} aria-expanded={open} aria-haspopup="listbox" aria-controls={open ? listId : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={(e) => { if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); show(); } }}
-        className={cn("flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg hover:bg-surface-2", className)}
+        className={cn("flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 text-left text-sm text-fg transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary", open && "border-primary ring-2 ring-primary/30", className)}
       >
         <span className={cn("truncate", !selected && "text-muted")}>{selected?.label ?? placeholder}</span>
-        <ChevronDown className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted transition-transform duration-150", open && "rotate-180 text-primary")} aria-hidden />
       </button>
       {open && pos && (
-        <div ref={panel} style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width }} className="z-50 rounded-xl border border-line bg-surface shadow-lg">
+        <div ref={panel} style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width }} className="bp-pop z-[60] rounded-xl border border-line bg-surface shadow-lg">
           <div className="relative border-b border-line p-2">
             <Search className="pointer-events-none absolute left-4 top-4 h-4 w-4 text-muted" aria-hidden />
             <input
@@ -122,7 +122,7 @@ export function CategoryPicker({
                 <li
                   key={`${it.value}:${i}`} role="option" aria-selected={it.value === current} data-idx={n}
                   onMouseEnter={() => setActive(n)} onMouseDown={(e) => e.preventDefault()} onClick={() => pick(it.value)}
-                  className={cn("flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-sm", it.indent && "pl-6", n === active && "bg-surface-2", !it.indent && it.value && "font-medium")}
+                  className={cn("flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-sm", it.indent && "pl-6", n === active && "bg-primary-soft text-primary", !it.indent && it.value && "font-medium")}
                 >
                   <span>{it.label}</span>
                   {it.value === current && <Check className="h-4 w-4 text-primary" aria-hidden />}

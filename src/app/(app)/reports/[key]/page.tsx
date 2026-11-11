@@ -99,7 +99,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
 
         <div className="border-t border-line px-6 py-4">
           <ReportFilters
-            base={base} range={period.range} from={period.from} to={period.to} noRange={!def.ranged}
+            base={base} range={period.range} from={period.from} to={period.to} noRange={!def.ranged} dateFormat={fmt}
             method={method} methods={key === "payments_collected" ? PAYMENT_METHODS.map((m) => ({ id: m, label: ti(`method.${m}`) })) : undefined}
           />
         </div>

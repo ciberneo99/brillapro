@@ -27,7 +27,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "pickDate": "Pick a date",
-    "clearDate": "Clear date"
+    "clearDate": "Clear date",
+    "today": "Today"
   },
   "nav": {
     "dashboard": "Dashboard",

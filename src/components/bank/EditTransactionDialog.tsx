@@ -4,15 +4,17 @@ import { useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { Pencil, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button, Input, Select } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 import { CategoryPicker, type CategoryChoice } from "./CategoryPicker";
 
 export type EditableTx = { id: string; date: string; description: string; amountCents: number; categoryId: string | null; notes: string | null };
 
 /** The pencil button of a row, and the "Edit Transaction" window it opens. Changing Type moves the amount between deposits and withdrawals. */
 export function EditTransactionDialog({
-  tx, choices, action, back,
-}: { tx: EditableTx; choices: CategoryChoice[]; action: (formData: FormData) => Promise<void>; back: string }) {
+  tx, choices, action, back, dateFormat,
+}: { tx: EditableTx; choices: CategoryChoice[]; action: (formData: FormData) => Promise<void>; back: string; dateFormat: string }) {
   const t = useTranslations("bank");
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
@@ -49,9 +51,7 @@ export function EditTransactionDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor={`t-${tx.id}`} className={label}>{t("filters.type")}</label>
-                  <Select id={`t-${tx.id}`} name="type" defaultValue={tx.amountCents >= 0 ? "in" : "out"}>
-                    <option value="in">{t("income")}</option><option value="out">{t("expense")}</option>
-                  </Select>
+                  <SelectMenu id={`t-${tx.id}`} name="type" defaultValue={tx.amountCents >= 0 ? "in" : "out"} ariaLabel={t("filters.type")} options={[{ value: "in", label: t("income") }, { value: "out", label: t("expense") }]} />
                 </div>
                 <div>
                   <label htmlFor={`a-${tx.id}`} className={label}>{t("cols.amount")}</label>
@@ -64,7 +64,7 @@ export function EditTransactionDialog({
               </div>
               <div>
                 <label htmlFor={`n-${tx.id}`} className={label}>{t("cols.date")}</label>
-                <Input id={`n-${tx.id}`} type="date" name="tx_date" defaultValue={tx.date} required />
+                <DatePicker id={`n-${tx.id}`} name="tx_date" defaultValue={tx.date} dateFormat={dateFormat} required />
               </div>
               <div>
                 <label htmlFor={`o-${tx.id}`} className={label}>{t("notes")}</label>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Calendar, CreditCard, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/components/ui";
+import { DatePicker } from "@/components/ui/DatePicker";
 
 /** Reloads the report's data (the server runs it again). */
 export function RefreshButton({ className }: { className?: string }) {
@@ -28,13 +29,15 @@ type Props = {
   method?: string;
   /** Hide the period filter (reports "as of today"). */
   noRange?: boolean;
+  /** The company's date pattern, for the custom range fields. */
+  dateFormat?: string;
 };
 
 const field = "relative flex items-center";
 const select = "h-10 appearance-none rounded-lg border border-line bg-surface pl-9 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
 /** Period and method pickers. Changing one reloads the report; "Custom range" reveals two dates. */
-export function ReportFilters({ base, range, from, to, methods, method, noRange }: Props) {
+export function ReportFilters({ base, range, from, to, methods, method, noRange, dateFormat }: Props) {
   const t = useTranslations("reports");
   const form = useRef<HTMLFormElement>(null);
   const [custom, setCustom] = useState(range === "custom");
@@ -63,8 +66,8 @@ export function ReportFilters({ base, range, from, to, methods, method, noRange 
       )}
       {!noRange && custom && (
         <>
-          <label className="space-y-1 text-xs text-muted">{t("from")}<input type="date" name="from" required defaultValue={from.startsWith("2000") ? "" : from} className="block h-10 rounded-lg border border-line bg-surface px-3 text-sm text-fg" /></label>
-          <label className="space-y-1 text-xs text-muted">{t("to")}<input type="date" name="to" required defaultValue={to.startsWith("2100") ? "" : to} className="block h-10 rounded-lg border border-line bg-surface px-3 text-sm text-fg" /></label>
+          <div className="w-44 space-y-1 text-xs text-muted"><label htmlFor="range-from">{t("from")}</label><DatePicker id="range-from" name="from" required dateFormat={dateFormat} defaultValue={from.startsWith("2000") ? "" : from} /></div>
+          <div className="w-44 space-y-1 text-xs text-muted"><label htmlFor="range-to">{t("to")}</label><DatePicker id="range-to" name="to" required dateFormat={dateFormat} defaultValue={to.startsWith("2100") ? "" : to} /></div>
           <button type="submit" className="h-10 rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("applyRange")}</button>
         </>
       )}

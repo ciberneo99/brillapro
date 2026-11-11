@@ -27,7 +27,8 @@
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "pickDate": "Elegir fecha",
-    "clearDate": "Borrar fecha"
+    "clearDate": "Borrar fecha",
+    "today": "Hoy"
   },
   "nav": {
     "dashboard": "Panel",
