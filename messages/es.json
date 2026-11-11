@@ -931,7 +931,9 @@
       "saving": "Guardando…",
       "error": "Revisa el cliente, las fechas y los conceptos, e inténtalo de nuevo.",
       "logoAlt": "Logo de la empresa",
-      "saveFirst": "Guarda tus cambios antes de enviar: el correo y el PDF usan la factura guardada."
+      "saveFirst": "Guarda tus cambios antes de enviar: el correo y el PDF usan la factura guardada.",
+      "editDetails": "Editar datos",
+      "hideDetails": "Ocultar datos"
     },
     "search": {
       "placeholder": "Buscar por nombre, correo, teléfono o dirección",

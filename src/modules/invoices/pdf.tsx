@@ -1,6 +1,6 @@
 import { Document, Image as PdfImage, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { formatDateOnly } from "@/lib/dates";
-import { displayUrl } from "@/lib/business";
+import { addressLines, displayUrl } from "@/lib/business";
 import { formatMoney, quoteNumber } from "@/lib/money";
 import type { InvoiceDetail } from "./queries";
 
@@ -65,8 +65,8 @@ export type PdfBusiness = { name: string; phone: string | null; email: string | 
 export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function InvoicePdf({
-  invoice, business, logo, prefix, currency, dateFormat, locale,
-}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
+  invoice, business, logo, customerPhone, prefix, currency, dateFormat, locale,
+}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; customerPhone?: string | null; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
   const t = L[locale];
   const m = (c: number) => formatMoney(c, currency);
   const d = (v: string) => formatDateOnly(v, dateFormat);
@@ -108,8 +108,9 @@ export function InvoicePdf({
           <Text style={s.billLabel}>{t.billTo}</Text>
           <View style={{ maxWidth: 300 }}>
             <Text style={s.customer}>{invoice.customer_name}</Text>
-            {invoice.billing_address && <Text style={s.right}>{invoice.billing_address}</Text>}
+            {addressLines(invoice.billing_address).map((l) => <Text key={l} style={s.right}>{l}</Text>)}
             {invoice.customer_email && <Text style={s.right}>{invoice.customer_email}</Text>}
+            {customerPhone && <Text style={s.right}>{customerPhone}</Text>}
           </View>
         </View>
 

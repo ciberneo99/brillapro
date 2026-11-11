@@ -23,3 +23,12 @@ export function normalizeWebsite(input: string): string | null | "invalid" {
 
 /** Website without the scheme, for printing ("https://www.a.com" → "www.a.com"). */
 export const displayUrl = (u: string): string => u.replace(/^https?:\/\//i, "");
+
+/** Splits "7302 Plant Street, Austin, TX, 78745" into the street and the city line (two printed lines). */
+export function addressLines(address: string | null | undefined): string[] {
+  const a = (address ?? "").trim();
+  if (!a) return [];
+  if (a.includes("\n")) return a.split("\n").map((l) => l.trim()).filter(Boolean);
+  const parts = a.split(",").map((p) => p.trim()).filter(Boolean);
+  return parts.length >= 3 ? [parts[0], parts.slice(1).join(", ")] : [a];
+}
