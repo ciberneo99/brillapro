@@ -31,14 +31,14 @@ export function categoryLabels(cats: BankCategory[]): Map<string, { label: strin
 }
 
 export type TxFilters = { q?: string; type?: "in" | "out"; category?: string; month?: string; sort?: "asc" | "desc"; page?: number };
-export type TxRow = { id: string; tx_date: string; description: string; amount_cents: number; balance_cents: number | null; category_id: string | null };
+export type TxRow = { id: string; tx_date: string; description: string; amount_cents: number; balance_cents: number | null; category_id: string | null; notes: string | null };
 
 const clean = (s: string) => s.replace(/[%,()]/g, " ").trim();
 
 export async function listTransactions(f: TxFilters, categoryIds?: string[], size = BANK_PAGE_SIZE) {
   const supabase = await createClient();
   const page = Math.max(1, Math.floor(f.page ?? 1));
-  let q = supabase.from("bank_transactions").select("id,tx_date,description,amount_cents,balance_cents,category_id", { count: "exact" });
+  let q = supabase.from("bank_transactions").select("id,tx_date,description,amount_cents,balance_cents,category_id,notes", { count: "exact" });
   if (f.q && clean(f.q)) q = q.ilike("description", `%${clean(f.q)}%`);
   if (f.type === "in") q = q.gt("amount_cents", 0);
   if (f.type === "out") q = q.lt("amount_cents", 0);

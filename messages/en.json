@@ -1835,6 +1835,12 @@
       "differs": "Your bank statement ends at {bank}. Difference with these transactions: {diff}.",
       "matchesShort": "Matches the bank statement",
       "differsShort": "Bank differs by {diff}"
-    }
+    },
+    "editTitle": "Edit Transaction",
+    "income": "Income",
+    "expense": "Expense",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes",
+    "close": "Close"
   }
 }

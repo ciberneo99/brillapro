@@ -35,6 +35,8 @@ export const editSchema = z.object({
   tx_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   description: text(300),
   category_id: id.nullable(),
+  type: z.enum(["in", "out"]),
+  notes: z.string().trim().max(500).default(""),
 });
 
 /** Money typed by a person ("1,234.56") into cents; null when invalid. */

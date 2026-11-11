@@ -454,14 +454,37 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
 
   await page.getByRole("link", { name: "Transactions" }).click();
   const shell = page.getByRole("row", { name: /shell oil/i });
-  await shell.getByRole("link", { name: "Edit" }).click();
-  await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
-  await page.getByRole("combobox", { name: "Category", exact: true }).last().click();
+  await shell.getByRole("button", { name: "Edit" }).click();
+  const win = page.getByRole("dialog", { name: "Edit Transaction" });
+  await expect(win).toBeVisible();
+  await expect(win.getByLabel("Description")).toHaveValue("SHELL OIL 57444");
+  await win.getByRole("combobox", { name: "Category", exact: true }).click();
   await page.getByPlaceholder("Search categories…").fill("vacu");
   await expect(page.locator("ul[role=listbox] li[role=option]")).toHaveCount(1);
   await page.locator("ul[role=listbox]").getByRole("option", { name: "Vacuums" }).click();
-  await page.getByRole("button", { name: "Save" }).click();
+  await win.getByRole("button", { name: "Save" }).click();
+  await expect(win).toBeHidden();
   await expect(page.getByRole("row", { name: /shell oil/i })).toContainText("Vacuums");
+
+  // Changing the type to Income moves the amount from Withdrawals to Deposits/Credits.
+  const fee = page.getByRole("row", { name: /monthly service fee/i });
+  await expect(fee.getByRole("cell").nth(5)).toContainText("$12.00"); // withdrawals column
+  await fee.getByRole("button", { name: "Edit" }).click();
+  await win.getByLabel("Type").selectOption("in");
+  await win.getByLabel("Amount").fill("15.50");
+  await win.getByLabel("Notes").fill("Refund from the bank");
+  await win.getByRole("button", { name: "Save" }).click();
+  await expect(win).toBeHidden();
+  const moved = page.getByRole("row", { name: /monthly service fee/i });
+  await expect(moved.getByRole("cell").nth(4)).toContainText("$15.50"); // deposits column
+  await expect(moved.getByRole("cell").nth(5)).not.toContainText("$");
+
+  // Cancel leaves everything as it was.
+  await moved.getByRole("button", { name: "Edit" }).click();
+  await win.getByLabel("Description").fill("Should not be saved");
+  await win.getByRole("button", { name: "Cancel" }).click();
+  await expect(win).toBeHidden();
+  await expect(page.getByText("Should not be saved")).toHaveCount(0);
 
   // Delete one (with confirmation).
   page.once("dialog", (d) => d.accept());

@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { getAppContext, requireContext } from "@/lib/session";
 import { dedupeInput, parseStatement, suggestCategory, type ParsedTx, type StatementSummary } from "./parse";
-import { categorySchema, editSchema, importSchema, MAX_PDF_BYTES } from "./schema";
+import { categorySchema, editSchema, importSchema, MAX_PDF_BYTES, toCents } from "./schema";
 
 const BASE = "/reports/bank";
 const raw = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === "string"));
@@ -112,10 +112,13 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
 export async function updateTransaction(id: string, formData: FormData) {
   await guard();
   const f = raw(formData);
-  const p = editSchema.safeParse({ tx_date: f.tx_date, description: f.description, category_id: f.category_id || null });
-  if (!p.success) redirect(back(formData, "error=invalid"));
+  const p = editSchema.safeParse({ tx_date: f.tx_date, description: f.description, category_id: f.category_id || null, type: f.type, notes: f.notes ?? "" });
+  const cents = toCents(String(f.amount ?? ""));
+  if (!p.success || cents === null || cents === 0 || cents >= 100_000_000_000) redirect(back(formData, "error=invalid"));
+  // Income is money in (positive), expense is money out (negative): this is what moves the amount between the columns.
+  const { type, notes, ...rest } = p.data;
   const supabase = await createClient();
-  const { error } = await supabase.from("bank_transactions").update(p.data).eq("id", id);
+  const { error } = await supabase.from("bank_transactions").update({ ...rest, notes: notes || null, amount_cents: type === "in" ? cents : -cents }).eq("id", id);
   revalidatePath(BASE);
   redirect(back(formData, error ? "error=invalid" : "saved=1"));
 }

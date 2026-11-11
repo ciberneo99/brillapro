@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Eye, FileText, Pencil, Search, Trash2 } from "lucide-react";
+import { Eye, FileText, Search, Trash2 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CategoryPicker, type CategoryChoice } from "@/components/bank/CategoryPicker";
+import { EditTransactionDialog } from "@/components/bank/EditTransactionDialog";
 import { ExpandableText } from "@/components/bank/ExpandableText";
 import { StatementImport } from "@/components/bank/StatementImport";
 import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
@@ -164,7 +165,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
         ) : (
           <form className="border-t border-line">
             <input type="hidden" name="back" value={here} />
-            <button type="submit" hidden tabIndex={-1} aria-hidden formAction={canWrite && sp.edit ? updateTransaction.bind(null, sp.edit) : refreshBank} />
+            <button type="submit" hidden tabIndex={-1} aria-hidden formAction={refreshBank} />
             <div className="overflow-x-auto">
               <table className="w-full min-w-[44rem] table-fixed text-sm">
                 <colgroup>
@@ -183,41 +184,27 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
                 <tbody className="divide-y divide-line">
                   {rows.map((r) => {
                     const cat = r.category_id ? labels.get(r.category_id) : null;
-                    const editing = canWrite && sp.edit === r.id;
                     return (
                       <tr key={r.id} className="align-top hover:bg-surface-2/60">
                         {canWrite && <td className="px-4 py-3"><input type="checkbox" name="ids" value={r.id} aria-label={r.description} /></td>}
-                        {editing ? (
-                          <td colSpan={6} className="px-3 py-3">
-                            <div className="grid gap-2 md:grid-cols-[9rem_1fr_14rem_auto]">
-                              <Input type="date" name="tx_date" defaultValue={r.tx_date} aria-label={tb("cols.date")} />
-                              <Input name="description" defaultValue={r.description} maxLength={300} aria-label={tb("cols.description")} />
-                              <CategoryPicker choices={choices} name="category_id" defaultValue={r.category_id ?? ""} ariaLabel={tb("cols.category")} placeholder={tb("uncategorized")} extras={[{ value: "", label: tb("uncategorized") }]} />
-                              <div className="flex gap-2">
-                                <Button type="submit" formAction={updateTransaction.bind(null, r.id)}>{tb("save")}</Button>
-                                <Link href={here} className="inline-flex h-10 items-center rounded-lg px-3 text-sm text-muted hover:bg-surface-2">{tb("cancel")}</Link>
-                              </div>
-                            </div>
-                          </td>
-                        ) : (
-                          <>
-                            <td className="whitespace-nowrap px-3 py-3">{formatDateOnly(r.tx_date, dateFormat)}</td>
-                            <td className="px-3 py-3"><ExpandableText text={r.description} /></td>
-                            <td className="px-3 py-3">
+                        <td className="whitespace-nowrap px-3 py-3">{formatDateOnly(r.tx_date, dateFormat)}</td>
+                        <td className="px-3 py-3"><ExpandableText text={r.description} /></td>
+                        <td className="px-3 py-3">
                               {cat ? <span className="inline-block max-w-full truncate rounded-full px-2.5 py-1 align-middle text-xs font-medium" style={chip(cat.tone)} title={cat.parent ?? undefined}>{cat.label}</span> : <span className="text-xs text-muted">{tb("uncategorized")}</span>}
                             </td>
-                            <td className="px-3 py-3 text-right font-medium tabular-nums text-success">{r.amount_cents > 0 ? m(r.amount_cents) : ""}</td>
-                            <td className="px-3 py-3 text-right font-medium tabular-nums text-danger">{r.amount_cents < 0 ? m(-r.amount_cents) : ""}</td>
-                            <td className="px-3 py-3 text-right tabular-nums text-muted">{r.balance_cents === null ? "" : m(r.balance_cents)}</td>
-                            {canWrite && (
-                              <td className="px-3 py-3">
-                                <div className="flex justify-end gap-1">
-                                  <Link href={params({ page: page > 1 ? String(page) : undefined, edit: r.id })} className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-fg" aria-label={tb("edit")}><Pencil className="h-4 w-4" aria-hidden /></Link>
-                                  <ConfirmSubmit message={tb("confirmDelete")} formAction={deleteTransaction.bind(null, r.id)} className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-danger" aria-label={tb("delete")}><Trash2 className="h-4 w-4" aria-hidden /></ConfirmSubmit>
-                                </div>
-                              </td>
-                            )}
-                          </>
+                        <td className="px-3 py-3 text-right font-medium tabular-nums text-success">{r.amount_cents > 0 ? m(r.amount_cents) : ""}</td>
+                        <td className="px-3 py-3 text-right font-medium tabular-nums text-danger">{r.amount_cents < 0 ? m(-r.amount_cents) : ""}</td>
+                        <td className="px-3 py-3 text-right tabular-nums text-muted">{r.balance_cents === null ? "" : m(r.balance_cents)}</td>
+                        {canWrite && (
+                          <td className="px-3 py-3">
+                            <div className="flex justify-end gap-1">
+                              <EditTransactionDialog
+                                tx={{ id: r.id, date: r.tx_date, description: r.description, amountCents: r.amount_cents, categoryId: r.category_id, notes: r.notes }}
+                                choices={choices} action={updateTransaction.bind(null, r.id)} back={here}
+                              />
+                              <ConfirmSubmit message={tb("confirmDelete")} formAction={deleteTransaction.bind(null, r.id)} className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-danger" aria-label={tb("delete")}><Trash2 className="h-4 w-4" aria-hidden /></ConfirmSubmit>
+                            </div>
+                          </td>
                         )}
                       </tr>
                     );

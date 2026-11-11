@@ -113,3 +113,5 @@ erDiagram
 ### Saldos del banco (migración 0032)
 - **`bank_statements`** (tenant_id, period_start, period_end, beginning_balance_cents, ending_balance_cents, source): el saldo anterior y el saldo final que imprime el banco en cada estado de cuenta importado. Un estado por periodo (`unique (tenant_id, period_start, period_end)`); al reimportar con saldos corregidos se actualizan. RLS: owner/admin escriben, accountant solo lee.
 - El reporte de movimientos (pantalla y PDF) parte del saldo anterior del banco: saldo anterior + depósitos − retiros = saldo final, y lo compara con el saldo final del banco (coincide / diferencia). Solo aparece sin búsqueda ni filtro de tipo o categoría; con filtro de mes usa los estados que terminan en ese mes, sin él encadena todos.
+
+- `bank_transactions.notes` (migración 0033): notas opcionales (máx. 500). Al editar un movimiento, cambiar el tipo (Ingreso/Gasto) cambia el signo de `amount_cents`, y con eso la columna (depósitos o retiros).

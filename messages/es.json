@@ -1835,6 +1835,12 @@
       "differs": "Tu estado de cuenta termina en {bank}. Diferencia con estos movimientos: {diff}.",
       "matchesShort": "Coincide con el banco",
       "differsShort": "El banco difiere por {diff}"
-    }
+    },
+    "editTitle": "Editar movimiento",
+    "income": "Ingreso",
+    "expense": "Gasto",
+    "notes": "Notas",
+    "notesPlaceholder": "Notas opcionales",
+    "close": "Cerrar"
   }
 }
