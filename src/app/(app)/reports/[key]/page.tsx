@@ -9,7 +9,7 @@ import { formatDateOnly } from "@/lib/dates";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { toggleFavorite } from "@/modules/reports/actions";
-import { reportByKey } from "@/modules/reports/catalog";
+import { reportByKey, reportInPlan } from "@/modules/reports/catalog";
 import { buildRunCtx, periodLabel } from "@/modules/reports/context";
 import { formatCell, isRight, sortByDate } from "@/modules/reports/format";
 import { parsePeriod, periodQuery, type PeriodParams } from "@/modules/reports/period";
@@ -27,6 +27,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   const { key } = await params;
   const def = reportByKey(key);
   if (!def || def.href || def.unavailable || !def.needs.every((p) => can(ctx.role, p))) notFound();
+  if (!reportInPlan(def.key, ctx.planId)) redirect("/reports");
   const sp = await searchParams;
   const t = await getTranslations("reports");
   const ti = await getTranslations("invoices");

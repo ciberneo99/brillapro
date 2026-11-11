@@ -28,7 +28,7 @@ test.describe("public pages", () => {
     await page.locator("input[name=password]").fill("not-the-password");
     await page.getByRole("button", { name: /sign in|iniciar/i }).click();
     await expect(page).toHaveURL(/\/login/);
-    await expect(page.getByRole("alert").filter({ hasText: /invitation/i })).toBeVisible(); // not the empty route announcer
+    await expect(page.getByRole("alert").filter({ hasText: /incorrect|incorrecto/i })).toBeVisible(); // not the empty route announcer
   });
 
   test("an unknown request link is not found", async ({ page }) => {

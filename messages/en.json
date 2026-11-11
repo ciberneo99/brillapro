@@ -1217,16 +1217,6 @@
         "desc": "Summarize all payments received over time with payment method breakdowns.",
         "subtitle": "View all payments received from clients."
       },
-      "accounts_payable_aging": {
-        "title": "Accounts Payable Aging",
-        "desc": "Track how much is owed to vendors and suppliers with aging details.",
-        "why": "Needs vendor bills, which BrillaPro doesn't record yet."
-      },
-      "credit_balance": {
-        "title": "Credit Balance",
-        "desc": "View all client credit balances and available credits in one place.",
-        "why": "Needs customer credits, which BrillaPro doesn't record yet."
-      },
       "profit_loss": {
         "title": "Profit and Loss",
         "desc": "Compare payments collected against expenses to understand your business performance.",
@@ -1358,7 +1348,9 @@
     "pdf": {
       "period": "Period",
       "generated": "Generated on"
-    }
+    },
+    "proOnly": "Included in the Pro plan",
+    "upgrade": "Upgrade to Pro"
   },
   "venmo": {
     "title": "Venmo Report Generator",

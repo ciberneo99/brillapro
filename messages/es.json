@@ -1217,16 +1217,6 @@
         "desc": "Resume todos los pagos recibidos con desglose por método de pago.",
         "subtitle": "Consulta todos los pagos recibidos de tus clientes."
       },
-      "accounts_payable_aging": {
-        "title": "Antigüedad de cuentas por pagar",
-        "desc": "Controla cuánto debes a proveedores, con detalle de antigüedad.",
-        "why": "Requiere facturas de proveedores, que BrillaPro aún no registra."
-      },
-      "credit_balance": {
-        "title": "Saldo a favor",
-        "desc": "Consulta los saldos a favor de tus clientes en un solo lugar.",
-        "why": "Requiere créditos de clientes, que BrillaPro aún no registra."
-      },
       "profit_loss": {
         "title": "Ganancias y pérdidas",
         "desc": "Compara los pagos cobrados contra los gastos para entender el desempeño de tu negocio.",
@@ -1358,7 +1348,9 @@
     "pdf": {
       "period": "Periodo",
       "generated": "Generado el"
-    }
+    },
+    "proOnly": "Incluido en el plan Pro",
+    "upgrade": "Mejorar a Pro"
   },
   "venmo": {
     "title": "Generador de reporte de Venmo",

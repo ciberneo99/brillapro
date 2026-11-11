@@ -49,7 +49,7 @@ export type InvoiceLine = { id: string; description: string; quantity: number; u
 export type Payment = { id: string; amount_cents: number; paid_on: string; method: string; reference: string | null; notes: string | null };
 export type InvoiceDetail = {
   id: string; number: number; status: string; display_status: string; customer_id: string; job_id: string | null; quote_id: string | null;
-  issue_date: string; due_date: string; customer_name: string; customer_email: string | null; billing_address: string | null;
+  issue_date: string; due_date: string; customer_name: string; customer_email: string | null; customer_phone: string | null; billing_address: string | null;
   discount_cents: number; tax_rate: number; notes: string | null; terms: string | null; sent_at: string | null;
   lines: InvoiceLine[]; payments: Payment[]; totals: InvoiceTotals;
 };
@@ -58,7 +58,7 @@ export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
   const supabase = await createClient();
   const { data: i } = await supabase
     .from("invoices")
-    .select("id,number,status,customer_id,job_id,quote_id,issue_date,due_date,customer_name,customer_email,billing_address,discount_cents,tax_rate,notes,terms,sent_at")
+    .select("id,number,status,customer_id,job_id,quote_id,issue_date,due_date,customer_name,customer_email,customer_phone,billing_address,discount_cents,tax_rate,notes,terms,sent_at")
     .eq("id", id).maybeSingle();
   if (!i) return null;
   const [{ data: lines }, { data: payments }, { data: t }, { data: ov }] = await Promise.all([

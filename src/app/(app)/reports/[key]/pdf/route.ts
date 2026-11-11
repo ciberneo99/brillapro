@@ -5,7 +5,7 @@ import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
 import { can } from "@/lib/permissions";
 import { getAppContext } from "@/lib/session";
-import { reportByKey } from "@/modules/reports/catalog";
+import { reportByKey, reportInPlan } from "@/modules/reports/catalog";
 import { buildRunCtx, periodLabel } from "@/modules/reports/context";
 import { sortByDate } from "@/modules/reports/format";
 import { ReportPdf } from "@/modules/reports/pdf";
@@ -20,6 +20,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
   const { key } = await params;
   const def = reportByKey(key);
   if (!def || !def.csv || def.unavailable || !def.needs.every((p) => can(ctx.role, p))) return new Response("Not found", { status: 404 });
+  if (!reportInPlan(def.key, ctx.planId)) return new Response("Not found", { status: 404 });
   const q = new URL(req.url).searchParams;
   const today = todayIso(ctx.settings.timezone);
   const period = parsePeriod({ range: q.get("range") ?? undefined, month: q.get("month") ?? undefined, year: q.get("year") ?? undefined, from: q.get("from") ?? undefined, to: q.get("to") ?? undefined }, today, "all");

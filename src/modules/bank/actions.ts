@@ -1,5 +1,6 @@
 "use server";
 
+import { reportInPlan } from "@/modules/reports/catalog";
 import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -23,7 +24,7 @@ const back = (f: FormData, extra = "") => {
 
 async function guard() {
   const ctx = await requireContext();
-  if (!can(ctx.role, "bank:write")) redirect("/reports");
+  if (!can(ctx.role, "bank:write") || !reportInPlan("bank_reports", ctx.planId)) redirect("/reports");
   return ctx;
 }
 
@@ -52,14 +53,15 @@ export async function previewStatement(formData: FormData): Promise<PreviewResul
   if (!transactions.length) return { ok: false, error: "empty" };
 
   const supabase = await createClient();
-  const { data: cats } = await supabase.from("bank_categories").select("id,keywords,parent_id").eq("is_active", true);
-  const leaves = (cats ?? []).filter((c) => c.keywords.trim());
+  const { data: cats } = await supabase.from("bank_categories").select("id,name,keywords,parent_id").eq("is_active", true);
+  const incomeParents = new Set((cats ?? []).filter((c) => !c.parent_id && c.name.trim().toLowerCase() === "income").map((c) => c.id));
+  const leaves = (cats ?? []).filter((c) => c.keywords.trim()).map((c) => ({ id: c.id, keywords: c.keywords, income: incomeParents.has(c.parent_id ?? "") }));
   const seen = new Map<string, number>();
   const rows = transactions.map((t) => {
     const base = dedupeInput(t, 0);
     const n = seen.get(base) ?? 0;
     seen.set(base, n + 1);
-    return { ...t, n, categoryId: suggestCategory(t.description, leaves), duplicate: false };
+    return { ...t, n, categoryId: suggestCategory(t.description, leaves, t.amountCents > 0), duplicate: false };
   });
   const keys = rows.map((r) => key(r, r.n));
   const existing = new Set<string>();
@@ -78,12 +80,12 @@ export async function previewStatement(formData: FormData): Promise<PreviewResul
   return { ok: true, fileName: file.name.slice(0, 200), rows: rows.map((r, i) => ({ ...r, duplicate: existing.has(keys[i]) })), summary };
 }
 
-export type ImportResult = { ok: true; added: number; skipped: number } | { ok: false; error: "invalid" | "denied" | "failed" };
+export type ImportResult = { ok: true; added: number; skipped: number; healed?: number } | { ok: false; error: "invalid" | "denied" | "failed" };
 
 /** Saves the reviewed rows. Rows already imported before are skipped, so a statement can be imported again safely. */
 export async function importTransactions(payload: unknown): Promise<ImportResult> {
   const ctx = await getAppContext();
-  if (!ctx || !can(ctx.role, "bank:write")) return { ok: false, error: "denied" };
+  if (!ctx || !can(ctx.role, "bank:write") || !reportInPlan("bank_reports", ctx.planId)) return { ok: false, error: "denied" };
   const p = importSchema.safeParse(payload);
   if (!p.success) return { ok: false, error: "invalid" };
   const supabase = await createClient();
@@ -91,6 +93,22 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
     tenant_id: ctx.tenant.id, tx_date: r.date, description: r.description, amount_cents: r.amountCents, balance_cents: r.balanceCents,
     category_id: r.categoryId, source: p.data.source || null, dedupe_key: key({ date: r.date, description: r.description, amountCents: r.amountCents, balanceCents: r.balanceCents }, r.n), created_by: ctx.userId,
   }));
+  let healed = 0;
+  // Rows saved by an older import with the wrong direction (a deposit stored as a withdrawal, or the reverse) are corrected in place
+  // instead of being duplicated: same date and balance, opposite sign, and the same start of description.
+  const dates = [...new Set(records.map((r) => r.tx_date))].sort();
+  const { data: old } = await supabase.from("bank_transactions").select("id,tx_date,description,amount_cents,balance_cents").gte("tx_date", dates[0]).lte("tx_date", dates[dates.length - 1]).limit(5000);
+  const taken = new Set<string>();
+  for (let i = 0; i < records.length; i++) {
+    const r = records[i];
+    const wrong = (old ?? []).find((o) => !taken.has(o.id) && o.tx_date === r.tx_date && o.amount_cents === -r.amount_cents && o.balance_cents === r.balance_cents && o.description.toLowerCase().startsWith(r.description.toLowerCase().slice(0, 25)));
+    if (!wrong) continue;
+    taken.add(wrong.id);
+    await supabase.from("bank_transactions").update({ amount_cents: r.amount_cents, description: r.description, dedupe_key: r.dedupe_key }).eq("id", wrong.id);
+    records.splice(i, 1);
+    i--;
+    healed++;
+  }
   let added = 0;
   for (let i = 0; i < records.length; i += 200) {
     const { data, error } = await supabase.from("bank_transactions").upsert(records.slice(i, i + 200), { onConflict: "tenant_id,dedupe_key", ignoreDuplicates: true }).select("id");
@@ -106,7 +124,7 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
     );
   }
   revalidatePath(BASE);
-  return { ok: true, added, skipped: records.length - added };
+  return { ok: true, added, skipped: records.length - added, healed };
 }
 
 export async function updateTransaction(id: string, formData: FormData) {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { reportInPlan } from "@/modules/reports/catalog";
 import { redirect } from "next/navigation";
 import { Eye, FileText, Search, Trash2 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -27,7 +28,7 @@ const chip = (tone: number) => ({ backgroundColor: `color-mix(in srgb, var(--c-$
 
 export default async function BankReportsPage({ searchParams }: { searchParams: Promise<SP> }) {
   const ctx = await requireContext();
-  if (!can(ctx.role, "venmo:read")) redirect("/reports");
+  if (!can(ctx.role, "venmo:read") || !reportInPlan("bank_reports", ctx.planId)) redirect("/reports");
   const canBank = can(ctx.role, "bank:read");
   const canWrite = can(ctx.role, "bank:write");
   const sp = await searchParams;

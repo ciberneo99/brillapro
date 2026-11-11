@@ -18,6 +18,8 @@ export type AppContext = {
   };
   /** Whole days left in the free trial, or null when not trialing. */
   trialDaysLeft: number | null;
+  /** The company's plan ('starter', 'pro', 'trial'...), or null when unknown. */
+  planId: string | null;
 };
 
 /** The authoritative identity for a request. The tenant comes from a verified membership
@@ -43,7 +45,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
   const [{ data: profile }, { data: settings }, { data: sub }] = await Promise.all([
     supabase.from("profiles").select("full_name, locale, theme").eq("id", user.id).single(),
     supabase.from("tenant_settings").select("currency, timezone, date_format, doc_locale, phone, email, address, tax_id, logo_path, city, state, zip_code, website").eq("tenant_id", tenant.id).single(),
-    supabase.from("subscriptions").select("status, trial_ends_at").eq("tenant_id", tenant.id).maybeSingle(),
+    supabase.from("subscriptions").select("status, trial_ends_at, plan_id").eq("tenant_id", tenant.id).maybeSingle(),
   ]);
   if (!profile || !settings) return null;
 
@@ -54,6 +56,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     tenant: { id: tenant.id, name: tenant.name, public_slug: tenant.public_slug, accepts_requests: tenant.accepts_requests },
     role: membership.role,
     settings: settings as AppContext["settings"],
+    planId: sub?.plan_id ?? null,
     trialDaysLeft:
       sub?.status === "trialing" && sub.trial_ends_at
         ? Math.max(0, Math.ceil((new Date(sub.trial_ends_at).getTime() - Date.now()) / 86_400_000))

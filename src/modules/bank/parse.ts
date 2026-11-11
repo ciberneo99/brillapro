@@ -79,36 +79,79 @@ export function detectPeriod(lines: string[], year: number): { start: string; en
   return null;
 }
 
-const INCOME_WORDS = /\b(deposit|credit|refund|interest|zelle (payment )?from|payment from|venmo cashout|transfer from|received)\b/i;
+// Words that say which way the money moved. Expense words win, so "Deposited OR Cashed Check" (a check you wrote) is a withdrawal.
+const EXPENSE_WORDS = /\b(purchase authorized|recurring payment|deposited or cashed|monthly service fee|service fee|zelle to|withdrawal|atm|debit card|overdraft|transfer to|bill pay|autopay|auto pay|payment to|pos purchase)\b/i;
+const INCOME_WORDS = /\b(zelle from|mobile deposit|deposit|venmo cashout|refund|interest|transfer from|payment from|credit|cashback|reversal|direct dep)\b/i;
+// Text from neighbouring tables of the page that ends up on the same line as a transaction.
+const JUNK = /\s+(?:number date amount|date check number|check number description|ending daily balance|deposits\/credits|withdrawals\/debits)\b.*$/i;
+
+const tidy = (d: string) => d.replace(JUNK, "").replace(/\s+/g, " ").trim().slice(0, 300);
+
+/** +1 money in, -1 money out, 0 when the words do not say. */
+export function directionHint(description: string): 1 | -1 | 0 {
+  if (EXPENSE_WORDS.test(description)) return -1;
+  if (INCOME_WORDS.test(description)) return 1;
+  return 0;
+}
+
+type RawTx = { date: string; description: string; abs: number; negative: boolean; section: Section; balance: number | null };
+
+/**
+ * Decides which rows are deposits and which are withdrawals. A statement prints one amount column in text, so the sign comes from
+ * (1) the running balance: between two balances the signed amounts must add up to the balance change, and the choice that
+ * agrees most with the words ("Zelle from", "Purchase authorized") wins; (2) section headings; (3) the words alone.
+ * Anything unclear is treated as an expense.
+ */
+function resolveSigns(raw: RawTx[], beginning: number | null): ParsedTx[] {
+  const hint = (r: RawTx): 1 | -1 | 0 => (r.negative ? -1 : r.section === "in" ? 1 : r.section === "out" ? -1 : directionHint(r.description));
+  const signs: (1 | -1)[] = raw.map((r) => (hint(r) === 1 ? 1 : -1));
+
+  let prev = beginning;
+  let start = 0;
+  raw.forEach((r, i) => {
+    if (r.balance === null) return;
+    const group = raw.slice(start, i + 1);
+    if (prev !== null && group.length <= 14) {
+      const delta = r.balance - prev;
+      let best: { mask: number; cost: number } | null = null;
+      for (let mask = 0; mask < 1 << group.length; mask++) {
+        let sum = 0, cost = 0, ok = true;
+        for (let k = 0; k < group.length && ok; k++) {
+          const plus = (mask >> k) & 1;
+          if (group[k].negative && plus) { ok = false; break; }
+          sum += plus ? group[k].abs : -group[k].abs;
+          const h = hint(group[k]);
+          cost += h === 0 ? (plus ? 0.2 : 0) : (h === 1) === Boolean(plus) ? 0 : 3;
+        }
+        if (ok && sum === delta && (!best || cost < best.cost)) best = { mask, cost };
+      }
+      if (best) group.forEach((_, k) => { signs[start + k] = (best!.mask >> k) & 1 ? 1 : -1; });
+    }
+    prev = r.balance;
+    start = i + 1;
+  });
+
+  return raw.map((r, i) => ({ date: r.date, description: tidy(r.description), amountCents: signs[i] * r.abs, balanceCents: r.balance }));
+}
 
 export function parseStatement(text: string, fallbackYear = new Date().getFullYear()): ParsedStatement {
   const lines = text.split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean);
   const year = detectYear(lines, fallbackYear);
-  const out: ParsedTx[] = [];
+  const out: RawTx[] = [];
   let section: Section = "auto";
-  let prevBalance: number | null = null;
   let pending: { date: string; description: string } | null = null;
   let beginning: number | null = null;
   let ending: number | null = null;
 
   const finish = (date: string, description: string, amountToken: string, balanceToken: string | null) => {
-    const raw = parseMoney(amountToken);
-    if (raw === null || raw === 0) return;
-    const balance = balanceToken ? parseMoney(balanceToken) : null;
-    const abs = Math.abs(raw);
-    let signed: number;
-    if (raw < 0) signed = -abs;
-    else if (balance !== null && prevBalance !== null && (balance === prevBalance + abs || balance === prevBalance - abs)) signed = balance === prevBalance + abs ? abs : -abs;
-    else if (section === "in") signed = abs;
-    else if (section === "out") signed = -abs;
-    else signed = INCOME_WORDS.test(description) ? abs : -abs;
-    if (balance !== null) prevBalance = balance;
-    out.push({ date, description: description.slice(0, 300), amountCents: signed, balanceCents: balance });
+    const amount = parseMoney(amountToken);
+    if (amount === null || amount === 0) return;
+    out.push({ date, description, abs: Math.abs(amount), negative: amount < 0, section, balance: balanceToken ? parseMoney(balanceToken) : null });
   };
 
   for (const line of lines) {
     const begin = BEGIN.exec(line);
-    if (begin) { prevBalance = parseMoney(begin[1]); if (beginning === null) beginning = prevBalance; continue; }
+    if (begin) { if (beginning === null) beginning = parseMoney(begin[1]); continue; }
     const end = END.exec(line);
     if (end && !/^daily/i.test(line)) { if (ending === null) ending = parseMoney(end[1]); continue; }
 
@@ -126,7 +169,7 @@ export function parseStatement(text: string, fallbackYear = new Date().getFullYe
           if (section !== "skip") finish(pending.date, desc, two ? two[1] : m[1], two ? m[1] : null);
           pending = null;
         } else if (!SKIP.test(line) && line.length < 90) pending.description += ` ${line}`;
-      } else if (out.length && section !== "skip" && !SKIP.test(line) && !MONEY.test(line) && line.length < 80 && !sectionOf(line)) {
+      } else if (out.length && section !== "skip" && !SKIP.test(line) && !MONEY.test(line) && line.length < 80 && !JUNK.test(` ${line}`) && !sectionOf(line)) {
         const last = out[out.length - 1];
         if (last.description.length + line.length < 300) last.description += ` ${line}`;
       }
@@ -147,14 +190,18 @@ export function parseStatement(text: string, fallbackYear = new Date().getFullYe
     finish(dated.date, description, second ? second[1] : last[1], second ? last[1] : null);
   }
   const period = detectPeriod(lines, year);
-  return { transactions: out, year, summary: { beginningCents: beginning, endingCents: ending, periodStart: period?.start ?? null, periodEnd: period?.end ?? null } };
+  return { transactions: resolveSigns(out, beginning), year, summary: { beginningCents: beginning, endingCents: ending, periodStart: period?.start ?? null, periodEnd: period?.end ?? null } };
 }
 
-/** Picks the subcategory whose keywords appear in the description (the longest match wins). */
-export function suggestCategory(description: string, categories: { id: string; keywords: string }[]): string | null {
+/**
+ * Picks the subcategory whose keywords appear in the description (the longest match wins).
+ * With a direction, deposits only get categories under "Income" and withdrawals never do.
+ */
+export function suggestCategory(description: string, categories: { id: string; keywords: string; income?: boolean }[], deposit?: boolean): string | null {
   const d = description.toLowerCase();
   let best: { id: string; len: number } | null = null;
   for (const c of categories) {
+    if (deposit !== undefined && c.income !== undefined && c.income !== deposit) continue;
     for (const k of c.keywords.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean)) {
       if (d.includes(k) && (!best || k.length > best.len)) best = { id: c.id, len: k.length };
     }

@@ -33,8 +33,6 @@ export const REPORTS: readonly ReportDef[] = [
   { key: "revenue_by_client", section: "sales", icon: "users", needs: ["invoices:read"], ranged: true, csv: true },
   { key: "accounts_aging", section: "payments", icon: "clock", needs: ["invoices:read"], ranged: false, csv: true },
   { key: "payments_collected", section: "payments", icon: "dollar", needs: ["invoices:read"], ranged: true, csv: true },
-  { key: "accounts_payable_aging", section: "payments", icon: "credit-card", needs: ["expenses:read"], ranged: false, csv: false, unavailable: true },
-  { key: "credit_balance", section: "payments", icon: "clock", needs: ["invoices:read"], ranged: false, csv: false, unavailable: true },
   { key: "profit_loss", section: "accounting", icon: "trending-up", needs: ["invoices:read", "expenses:read"], ranged: true, csv: true },
   { key: "sales_tax", section: "accounting", icon: "receipt", needs: ["invoices:read"], ranged: true, csv: true },
   { key: "expense_report", section: "accounting", icon: "wallet", needs: ["expenses:read"], ranged: true, csv: true },
@@ -43,3 +41,7 @@ export const REPORTS: readonly ReportDef[] = [
 ] as const;
 
 export const reportByKey = (key: string): ReportDef | undefined => REPORTS.find((r) => r.key === key);
+
+/** The Starter plan only includes these reports; every other plan (Pro, trial) has them all. */
+export const STARTER_REPORTS: readonly string[] = ["payments_collected", "revenue_by_client"];
+export const reportInPlan = (key: string, planId: string | null): boolean => planId !== "starter" || STARTER_REPORTS.includes(key);

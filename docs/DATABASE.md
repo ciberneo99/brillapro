@@ -115,3 +115,6 @@ erDiagram
 - El reporte de movimientos (pantalla y PDF) parte del saldo anterior del banco: saldo anterior + depósitos − retiros = saldo final, y lo compara con el saldo final del banco (coincide / diferencia). Solo aparece sin búsqueda ni filtro de tipo o categoría; con filtro de mes usa los estados que terminan en ese mes, sin él encadena todos.
 
 - `bank_transactions.notes` (migración 0033): notas opcionales (máx. 500). Al editar un movimiento, cambiar el tipo (Ingreso/Gasto) cambia el signo de `amount_cents`, y con eso la columna (depósitos o retiros).
+
+- `invoices.customer_phone` (migración 0034): el teléfono del cliente queda guardado en la factura, igual que nombre, correo y dirección. Un borrador sigue al cliente (un trigger lo actualiza en cada guardado); al emitirse queda congelado y ya no cambia aunque se edite el cliente. Las facturas anteriores recibieron el teléfono actual del cliente.
+- Importar un estado de cuenta ya cargado corrige en su lugar los movimientos que quedaron con el signo contrario (mismo día, mismo saldo, misma descripción), sin duplicarlos.

@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ReportCard } from "@/components/reports/ReportCard";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
-import { REPORTS, SECTIONS } from "@/modules/reports/catalog";
+import { REPORTS, SECTIONS, reportInPlan } from "@/modules/reports/catalog";
 import { listFavorites } from "@/modules/reports/queries";
 
 export const metadata = { title: "Reports" };
@@ -30,7 +30,7 @@ export default async function ReportsPage() {
           <p className="mt-4 text-sm text-muted">{t("favoritesEmpty")}</p>
         ) : (
           <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {starred.map((r) => <ReportCard key={r.key} report={r} favorite />)}
+            {starred.map((r) => <ReportCard key={r.key} report={r} favorite locked={!reportInPlan(r.key, ctx.planId)} />)}
           </ul>
         )}
       </section>
@@ -45,7 +45,7 @@ export default async function ReportsPage() {
               <p className="text-sm text-muted">{t(`sections.${s.id}.desc`)}</p>
             </div>
             <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {items.map((r) => <ReportCard key={r.key} report={r} favorite={favorites.has(r.key)} />)}
+              {items.map((r) => <ReportCard key={r.key} report={r} favorite={favorites.has(r.key)} locked={!reportInPlan(r.key, ctx.planId)} />)}
             </ul>
           </section>
         );

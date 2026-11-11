@@ -285,4 +285,17 @@ d("invoices & payments", () => {
       await tx`rollback to savepoint b`;
     });
   });
+
+  it("keeps the customer's phone on the invoice: a draft follows the customer, an issued invoice is frozen", async () => {
+    await sql`update public.customers set phone = '555-0100' where id = ${custA}`;
+    await as(id.office, async (tx) => {
+      const inv = (await newInvoice(tx, id.office))[0].id;
+      expect((await tx`select customer_phone from public.invoices where id = ${inv}`)[0].customer_phone).toBe("555-0100");
+      await line(tx, inv, "Clean", 1, 5000);
+      await tx`select public.issue_invoice(${inv})`;
+      await tx`update public.customers set phone = '555-0199' where id = ${custA}`;
+      await tx`update public.invoices set notes = 'x' where id = ${inv}`.catch(() => null);
+      expect((await tx`select customer_phone from public.invoices where id = ${inv}`)[0].customer_phone).toBe("555-0100");
+    });
+  });
 });

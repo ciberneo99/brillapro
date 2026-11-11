@@ -366,7 +366,7 @@ test("reports hub: sections, favorites, real reports and CSV", async ({ page }) 
   await expect(page.getByRole("row", { name: /net profit/i })).toContainText("$25.00"); // 40.00 collected - 15.00 expenses
   await page.goto("/reports/accounts_aging");
   await expect(page.getByRole("row", { name: /rita lopez/i })).toContainText("$70.00");
-  expect((await page.request.get("/reports/accounts_payable_aging")).status()).toBe(404); // not possible yet
+  expect((await page.request.get("/reports/accounts_payable_aging")).status()).toBe(404); // no longer offered
 
   // CSV download: plain decimals, totals last.
   const res = await page.request.get("/reports/item_sales/csv");

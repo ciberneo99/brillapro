@@ -89,3 +89,24 @@ describe("statement balances", () => {
     expect(balanceSummary([{ ...jan, beginning_balance_cents: null }], undefined, 0, 0)).toBeNull();
   });
 });
+
+describe("statement signs (Wells Fargo style)", () => {
+  it("puts deposits in credits and expenses in debits using the running balance and the wording", () => {
+    const text = [
+      "Statement period 09/01/2026 - 09/30/2026",
+      "Beginning balance on 9/1 $1,000.00",
+      "Date Check Number Description Deposits/Credits Withdrawals/Debits Ending daily balance",
+      "9/2 Zelle From John Doe 200.00",
+      "9/2 Purchase authorized on 09/01 Home Depot 50.00 1,150.00",
+      "9/3 1021 Deposited OR Cashed Check 80.00 1,070.00",
+      "9/4 Mobile Deposit 300.00 1,370.00",
+    ].join("\n");
+    const t = parseStatement(text, 2026).transactions;
+    expect(t.map((x) => x.amountCents)).toEqual([20000, -5000, -8000, 30000]);
+  });
+  it("removes header text that leaks into a description", () => {
+    const t = parseStatement(["Beginning balance $100.00", "9/2 Coffee shop Number Date Amount 5.00 95.00"].join("\n"), 2026).transactions;
+    expect(t[0].description).toBe("Coffee shop");
+    expect(t[0].amountCents).toBe(-500);
+  });
+});

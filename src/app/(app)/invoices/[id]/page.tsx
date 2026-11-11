@@ -49,7 +49,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   };
 
   const { data: cust } = await (await createClient()).from("customers").select("phone,company_name").eq("id", inv.customer_id).maybeSingle();
-  const customerPhone = cust?.phone ?? null;
+  const customerPhone = inv.customer_phone ?? (inv.status === "draft" ? cust?.phone ?? null : null); // an issued invoice keeps the phone it had
   const customerCompany = cust?.company_name || null;
   let customers: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null }[] = [];
   if (editable) {

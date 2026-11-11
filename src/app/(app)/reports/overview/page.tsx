@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { reportInPlan } from "@/modules/reports/catalog";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
@@ -16,6 +17,7 @@ type SP = { month?: string; year?: string };
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SP> }) {
   const ctx = await requireContext();
   if (!can(ctx.role, "reports:read")) redirect("/dashboard");
+  if (!reportInPlan("overview", ctx.planId)) redirect("/reports");
   const sp = await searchParams;
   const t = await getTranslations("reports");
   const ts = await getTranslations("jobs");

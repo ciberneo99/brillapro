@@ -1,4 +1,5 @@
 import { renderToBuffer } from "@react-pdf/renderer";
+import { reportInPlan } from "@/modules/reports/catalog";
 import { createElement } from "react";
 import { getTranslations } from "next-intl/server";
 import { todayIso } from "@/lib/calendar";
@@ -17,7 +18,7 @@ const MAX_ROWS = 5000;
 /** The bank transactions currently on screen (same filters) as a printable PDF. */
 export async function GET(req: Request) {
   const ctx = await getAppContext();
-  if (!ctx || !can(ctx.role, "bank:read")) return new Response("Not found", { status: 404 });
+  if (!ctx || !can(ctx.role, "bank:read") || !reportInPlan("bank_reports", ctx.planId)) return new Response("Not found", { status: 404 });
   const q = new URL(req.url).searchParams;
   const type = q.get("type") === "in" || q.get("type") === "out" ? (q.get("type") as "in" | "out") : undefined;
   const sort = q.get("sort") === "asc" ? "asc" : "desc";

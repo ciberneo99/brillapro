@@ -43,7 +43,7 @@ describe("invoice permissions", () => {
 describe("invoice PDF", () => {
   const invoice: InvoiceDetail = {
     id: "1", number: 12, status: "sent", display_status: "partial", customer_id: "c", job_id: null, quote_id: null,
-    issue_date: "2026-05-01", due_date: "2026-05-16", customer_name: "Ann Lee", customer_email: "a@b.co", billing_address: "1 Main St",
+    issue_date: "2026-05-01", due_date: "2026-05-16", customer_name: "Ann Lee", customer_email: "a@b.co", customer_phone: null, billing_address: "1 Main St",
     discount_cents: 1000, tax_rate: 8, notes: "Thanks", terms: "Net 15", sent_at: null,
     lines: [{ id: "l1", description: "Deep clean", quantity: 1, unit_price_cents: 15000, position: 1 }, { id: "l2", description: "Oven", quantity: 2, unit_price_cents: 2500, position: 2 }],
     payments: [{ id: "p1", amount_cents: 5000, paid_on: "2026-05-03", method: "zelle", reference: "abc", notes: null }],
