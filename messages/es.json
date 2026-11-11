@@ -1715,5 +1715,103 @@
     },
     "footerPrivacy": "Privacidad",
     "footerTerms": "Términos"
+  },
+  "bank": {
+    "intro": "Importa tus estados de cuenta, clasifica cada movimiento en categorías y subcategorías, y ten los reportes de Venmo en un solo lugar.",
+    "tabs": {
+      "transactions": "Movimientos",
+      "categories": "Categorías",
+      "venmo": "Reporte de Venmo"
+    },
+    "title": "Movimientos ({count})",
+    "search": "Buscar en la descripción…",
+    "filters": {
+      "type": "Tipo",
+      "allTypes": "Todos los tipos",
+      "sort": "Orden",
+      "newest": "Fecha: más reciente",
+      "oldest": "Fecha: más antigua",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "month": "Mes",
+      "allMonths": "Todos los meses",
+      "apply": "Aplicar",
+      "clear": "Limpiar"
+    },
+    "cols": {
+      "date": "Fecha",
+      "description": "Descripción",
+      "category": "Categoría",
+      "deposits": "Depósitos/Créditos",
+      "withdrawals": "Retiros/Débitos",
+      "balance": "Saldo",
+      "amount": "Importe"
+    },
+    "uncategorized": "Sin categoría",
+    "empty": "Aún no hay movimientos. Importa un estado de cuenta en PDF arriba para empezar.",
+    "emptyFiltered": "Ningún movimiento coincide con estos filtros.",
+    "select": "Seleccionar",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirmDelete": "¿Eliminar este movimiento?",
+    "saved": "Guardado.",
+    "page": "Página {page} de {pages}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "errors": {
+      "invalid": "Revisa los datos e inténtalo de nuevo.",
+      "select": "Selecciona al menos un movimiento.",
+      "duplicate": "Ya existe una categoría con ese nombre aquí."
+    },
+    "bulk": {
+      "label": "Seleccionados:",
+      "category": "Categoría para los seleccionados",
+      "choose": "Asignar categoría…",
+      "apply": "Aplicar categoría",
+      "delete": "Eliminar seleccionados",
+      "confirmDelete": "¿Eliminar los movimientos seleccionados?"
+    },
+    "import": {
+      "title": "Importar un estado de cuenta",
+      "help": "Sube el PDF que te da tu banco. El archivo se lee en nuestro servidor y no se guarda. Revisas los movimientos antes de guardar nada.",
+      "drop": "Arrastra aquí el PDF de tu estado de cuenta",
+      "choose": "Elegir PDF",
+      "reading": "Leyendo…",
+      "found": "{count, plural, one {# movimiento encontrado} other {# movimientos encontrados}} en {name}.",
+      "all": "Seleccionar todo",
+      "already": "Ya importado",
+      "reviewHint": "Revisa los importes y las categorías. Los depósitos van en verde y los retiros en rojo. Los movimientos ya importados se omiten.",
+      "save": "{count, plural, one {Importar # movimiento} other {Importar # movimientos}}",
+      "saving": "Importando…",
+      "cancel": "Cancelar",
+      "done": "{added, plural, one {# movimiento importado} other {# movimientos importados}}. {skipped} omitidos por estar ya registrados.",
+      "error": {
+        "file": "Elige un archivo PDF.",
+        "type": "Ese archivo no es un PDF.",
+        "tooBig": "El PDF es demasiado grande (máximo 8 MB o 120 páginas).",
+        "unreadable": "No se pudo leer el PDF. Si es un escaneo o una foto, descarga la versión con texto desde tu banco.",
+        "empty": "No se encontraron movimientos. Funcionan mejor los estados con fecha, descripción e importe en cada línea.",
+        "denied": "No tienes permiso para importar estados de cuenta.",
+        "failed": "No se pudieron guardar los movimientos. Inténtalo de nuevo.",
+        "invalid": "Los datos no eran válidos. Vuelve a leer el estado de cuenta."
+      }
+    },
+    "cats": {
+      "help": "Las categorías tienen dos niveles: una categoría principal y sus subcategorías. Agrega las tuyas cuando quieras. Las categorías ocultas se conservan en movimientos pasados, pero ya no se ofrecen para nuevos.",
+      "add": "Agregar una categoría",
+      "name": "Nombre",
+      "parent": "Pertenece a",
+      "topLevel": "Categoría principal",
+      "under": "Subcategoría de {name}",
+      "keywords": "Palabras clave",
+      "keywordsPlaceholder": "Palabras clave, separadas por comas",
+      "keywordsHelp": "Al importar un estado de cuenta, un movimiento cuya descripción contenga una de estas palabras se clasifica solo. Puedes cambiarlo antes de guardar.",
+      "addButton": "Agregar",
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    }
   }
 }

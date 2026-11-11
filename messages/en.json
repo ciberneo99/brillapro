@@ -1715,5 +1715,103 @@
     },
     "footerPrivacy": "Privacy",
     "footerTerms": "Terms"
+  },
+  "bank": {
+    "intro": "Import your bank statements, sort every transaction into categories and subcategories, and keep Venmo reports in one place.",
+    "tabs": {
+      "transactions": "Transactions",
+      "categories": "Categories",
+      "venmo": "Venmo report"
+    },
+    "title": "Transactions ({count})",
+    "search": "Search description…",
+    "filters": {
+      "type": "Type",
+      "allTypes": "All Types",
+      "sort": "Sort",
+      "newest": "Date: Newest",
+      "oldest": "Date: Oldest",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "month": "Month",
+      "allMonths": "All Months",
+      "apply": "Apply",
+      "clear": "Clear"
+    },
+    "cols": {
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "deposits": "Deposits/Credits",
+      "withdrawals": "Withdrawals/Debits",
+      "balance": "Balance",
+      "amount": "Amount"
+    },
+    "uncategorized": "Uncategorized",
+    "empty": "No transactions yet. Import a bank statement PDF above to get started.",
+    "emptyFiltered": "No transactions match these filters.",
+    "select": "Select",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete this transaction?",
+    "saved": "Saved.",
+    "page": "Page {page} of {pages}",
+    "prev": "Previous",
+    "next": "Next",
+    "errors": {
+      "invalid": "Check the details and try again.",
+      "select": "Select at least one transaction first.",
+      "duplicate": "A category with that name already exists here."
+    },
+    "bulk": {
+      "label": "Selected:",
+      "category": "Category for selected",
+      "choose": "Set category…",
+      "apply": "Apply category",
+      "delete": "Delete selected",
+      "confirmDelete": "Delete the selected transactions?"
+    },
+    "import": {
+      "title": "Import a bank statement",
+      "help": "Upload the PDF your bank gives you. The file is read on our server and is not stored. You review the transactions before anything is saved.",
+      "drop": "Drag your statement PDF here",
+      "choose": "Choose PDF",
+      "reading": "Reading…",
+      "found": "{count, plural, one {# transaction} other {# transactions}} found in {name}.",
+      "all": "Select all",
+      "already": "Already imported",
+      "reviewHint": "Check the amounts and categories. Deposits are green and withdrawals are red. Rows already imported are left out.",
+      "save": "{count, plural, one {Import # transaction} other {Import # transactions}}",
+      "saving": "Importing…",
+      "cancel": "Cancel",
+      "done": "{added, plural, one {# transaction imported} other {# transactions imported}}. {skipped} skipped because they were already there.",
+      "error": {
+        "file": "Choose a PDF file.",
+        "type": "That file is not a PDF.",
+        "tooBig": "That PDF is too large (8 MB or 120 pages at most).",
+        "unreadable": "The PDF could not be read. If it is a scan or photo, download the text version from your bank.",
+        "empty": "No transactions were found. Statements with a date, description and amount per line work best.",
+        "denied": "You do not have permission to import statements.",
+        "failed": "Could not save the transactions. Try again.",
+        "invalid": "The data was not valid. Read the statement again."
+      }
+    },
+    "cats": {
+      "help": "Categories have two levels: a main category and its subcategories. Add your own at any time. Hidden categories stay on past transactions but are not offered for new ones.",
+      "add": "Add a category",
+      "name": "Name",
+      "parent": "Belongs to",
+      "topLevel": "Main category",
+      "under": "Subcategory of {name}",
+      "keywords": "Keywords",
+      "keywordsPlaceholder": "Keywords, separated by commas",
+      "keywordsHelp": "When you import a statement, a transaction whose description contains one of these keywords is categorized automatically. You can change it before saving.",
+      "addButton": "Add",
+      "hide": "Hide",
+      "show": "Show"
+    }
   }
 }

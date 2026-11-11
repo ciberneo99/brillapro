@@ -102,3 +102,10 @@ erDiagram
 - **`report_favorites`** (tenant_id, user_id, report_key): reportes marcados con estrella, privados de cada persona (RLS: solo sus filas y solo en su empresa).
 - **`report_sales_tax(p_from, p_to)`**: impuesto por factura enviada en el periodo (base gravable, tasa, impuesto, total). `security invoker`: aplica RLS.
 - Reportes disponibles: detalle de facturas, ventas por concepto, ingresos por cliente, antigüedad de saldos, pagos cobrados, ganancias y pérdidas (base efectivo), impuesto sobre ventas, gastos, resumen del negocio y reportes bancarios (Venmo). No posibles aún: cuentas por pagar (no hay facturas de proveedores) y saldo a favor (no hay créditos de clientes).
+
+### Estados de cuenta bancarios (migración 0029)
+- **`bank_categories`** (tenant_id, parent_id, name, keywords, sort_order, is_active): categorías de dos niveles (principal → subcategoría; un trigger impide más niveles y que una categoría sea su propio padre). Nombre único por empresa y nivel. `keywords` (separadas por coma) clasifican solas los movimientos al importar. Nunca se borran: se ocultan (`is_active`) y los movimientos pasados las conservan.
+- **`bank_transactions`** (tenant_id, tx_date, description, amount_cents con signo —positivo depósito, negativo retiro—, balance_cents, category_id, source, dedupe_key, created_by). `unique (tenant_id, dedupe_key)`: importar dos veces el mismo estado de cuenta no duplica movimientos.
+- RLS (migración 0030): owner y admin leen y escriben; accountant solo lee (el contador es de solo lectura en todo el sistema); siempre dentro de su empresa.
+- **`ensure_bank_categories(p_tenant, p_locale)`**: crea el juego inicial (Ingresos, Gastos de operación, Banco, Dueño, con sus subcategorías) una sola vez; idioma `en`/`es`. Verifica rol.
+- El PDF se lee en el servidor (`unpdf`, sin servicios externos) y **no se guarda**; la persona revisa los movimientos antes de importarlos.

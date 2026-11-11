@@ -375,3 +375,65 @@ test("reports hub: sections, favorites, real reports and CSV", async ({ page }) 
   expect(text).toContain("Office cleaning");
   expect(text).toContain("100.00");
 });
+
+test("bank statements: import a PDF, categories and subcategories, filters, edit and delete", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto("/reports/bank");
+  await expect(page.getByRole("heading", { name: "Transactions (0)" })).toBeVisible();
+
+  // Upload the statement and review what was found before saving.
+  await page.locator("#bank-file").setInputFiles("e2e/fixtures/statement.pdf");
+  await expect(page.getByText(/4 transactions found/i)).toBeVisible({ timeout: 20000 });
+  await expect(page.locator("tbody select").first()).not.toHaveValue(""); // Zelle suggested from its keyword
+  await page.getByRole("button", { name: /import 4 transactions/i }).click();
+  await expect(page.getByText(/4 transactions imported/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Transactions (4)" })).toBeVisible();
+
+  const zelle = page.getByRole("row", { name: /zelle payment from rita lopez/i });
+  await expect(zelle).toContainText("$150.00");
+  await expect(zelle).toContainText("Zelle payment"); // category chip
+  await expect(page.getByRole("row", { name: /shell oil/i })).toContainText("$45.20");
+
+  // Importing the same statement again adds nothing.
+  await page.locator("#bank-file").setInputFiles("e2e/fixtures/statement.pdf");
+  await expect(page.getByText(/already imported/i).first()).toBeVisible({ timeout: 20000 });
+  await page.getByRole("button", { name: /cancel/i }).first().click();
+
+  // Filters.
+  await page.getByRole("combobox", { name: "Type" }).selectOption("in");
+  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Transactions (1)" })).toBeVisible();
+  await page.getByRole("link", { name: "Clear" }).click();
+  await expect(page).toHaveURL(/\/reports\/bank$/);
+  await page.getByPlaceholder("Search description…").fill("shell");
+  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Transactions (1)" })).toBeVisible();
+  await page.getByRole("link", { name: "Clear" }).click();
+  await expect(page).toHaveURL(/\/reports\/bank$/);
+
+  // Own category with a subcategory, then use it on a transaction.
+  await page.getByRole("link", { name: "Categories" }).click();
+  await page.getByPlaceholder("Name").first().fill("Equipment");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await expect(page.getByText("Saved.")).toBeVisible();
+  await page.getByPlaceholder("Name").first().fill("Vacuums");
+  await page.getByRole("combobox", { name: "Belongs to" }).selectOption({ label: "Subcategory of Equipment" });
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await expect(page.locator("input[value=Vacuums]")).toBeVisible();
+
+  await page.getByRole("link", { name: "Transactions" }).click();
+  const shell = page.getByRole("row", { name: /shell oil/i });
+  await shell.getByRole("link", { name: "Edit" }).click();
+  await page.getByRole("combobox", { name: "Category" }).last().selectOption({ label: "Vacuums" });
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByRole("row", { name: /shell oil/i })).toContainText("Vacuums");
+
+  // Delete one (with confirmation).
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("row", { name: /monthly service fee/i }).getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByRole("heading", { name: "Transactions (3)" })).toBeVisible();
+});

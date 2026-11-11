@@ -6,7 +6,7 @@ export type Role = (typeof ROLES)[number];
 
 export const RESOURCES = [
   "dashboard", "customers", "jobs", "quotes", "invoices", "expenses", "calendar",
-  "inventory", "notebook", "reports", "venmo", "settings", "users", "services", "checklists", "employees",
+  "inventory", "notebook", "reports", "venmo", "bank", "settings", "users", "services", "checklists", "employees",
 ] as const;
 export type Resource = (typeof RESOURCES)[number];
 export type Action = "read" | "write";
@@ -35,7 +35,7 @@ const MATRIX: Record<Role, Partial<Record<Resource, Action[]>>> = {
   },
   accountant: {
     dashboard: all("read"), invoices: all("read"), expenses: all("read"),
-    reports: all("read"), venmo: all("read"),
+    reports: all("read"), venmo: all("read"), bank: all("read"),
   },
 };
 
