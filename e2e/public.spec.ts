@@ -28,7 +28,7 @@ test.describe("public pages", () => {
     await page.locator("input[name=password]").fill("not-the-password");
     await page.getByRole("button", { name: /sign in|iniciar/i }).click();
     await expect(page).toHaveURL(/\/login/);
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: /invitation/i })).toBeVisible(); // not the empty route announcer
   });
 
   test("an unknown request link is not found", async ({ page }) => {
@@ -40,6 +40,6 @@ test.describe("public pages", () => {
   test("an invitation link without a valid token explains itself", async ({ page }) => {
     await page.goto("/invite/not-a-token");
     await expect(page).toHaveURL(/\/invite\/accept/);
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: /invitation/i })).toBeVisible(); // not the empty route announcer
   });
 });
