@@ -388,7 +388,7 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   // Upload the statement and review what was found before saving.
   await page.locator("#bank-file").setInputFiles("e2e/fixtures/statement.pdf");
   await expect(page.getByText(/4 transactions found/i)).toBeVisible({ timeout: 20000 });
-  await expect(page.locator("tbody select").first()).not.toHaveValue(""); // Zelle suggested from its keyword
+  await expect(page.locator("tbody").getByRole("combobox").first()).toContainText("Zelle payment"); // suggested from its keyword
   await page.getByRole("button", { name: /import 4 transactions/i }).click();
   await expect(page.getByText(/4 transactions imported/i)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Transactions (4)" })).toBeVisible();
@@ -415,6 +415,15 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await page.getByRole("link", { name: "Clear" }).click();
   await expect(page).toHaveURL(/\/reports\/bank$/);
 
+  // Category filter with search: type to find a category, then filter by it.
+  await page.getByRole("combobox", { name: "Category", exact: true }).click();
+  await page.getByPlaceholder("Search categories…").fill("gas/f");
+  await page.locator("ul[role=listbox]").getByRole("option", { name: "Gas/Fuel" }).click();
+  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Transactions (1)" })).toBeVisible();
+  await page.getByRole("link", { name: "Clear" }).click();
+  await expect(page).toHaveURL(/\/reports\/bank$/);
+
   // Own category with a subcategory, then use it on a transaction.
   await page.getByRole("link", { name: "Categories" }).click();
   await page.getByPlaceholder("Name").first().fill("Equipment");
@@ -428,7 +437,11 @@ test("bank statements: import a PDF, categories and subcategories, filters, edit
   await page.getByRole("link", { name: "Transactions" }).click();
   const shell = page.getByRole("row", { name: /shell oil/i });
   await shell.getByRole("link", { name: "Edit" }).click();
-  await page.getByRole("combobox", { name: "Category" }).last().selectOption({ label: "Vacuums" });
+  await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+  await page.getByRole("combobox", { name: "Category", exact: true }).last().click();
+  await page.getByPlaceholder("Search categories…").fill("vacu");
+  await expect(page.locator("ul[role=listbox] li[role=option]")).toHaveCount(1);
+  await page.locator("ul[role=listbox]").getByRole("option", { name: "Vacuums" }).click();
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("row", { name: /shell oil/i })).toContainText("Vacuums");
 

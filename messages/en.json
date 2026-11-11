@@ -1812,6 +1812,12 @@
       "addButton": "Add",
       "hide": "Hide",
       "show": "Show"
+    },
+    "more": "See more",
+    "less": "See less",
+    "picker": {
+      "search": "Search categories…",
+      "empty": "No categories match."
     }
   }
 }

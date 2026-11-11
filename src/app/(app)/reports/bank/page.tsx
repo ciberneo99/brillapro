@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Pencil, Search, Trash2 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { CategorySelect, StatementImport, type CategoryChoice } from "@/components/bank/StatementImport";
+import { CategoryPicker, type CategoryChoice } from "@/components/bank/CategoryPicker";
+import { ExpandableText } from "@/components/bank/ExpandableText";
+import { StatementImport } from "@/components/bank/StatementImport";
 import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
 import { Alert, Button, Card, Input, Select, cn } from "@/components/ui";
 import { VenmoUploader } from "@/components/venmo/VenmoUploader";
@@ -107,10 +109,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             <Select name="sort" defaultValue={sort} aria-label={tb("filters.sort")}>
               <option value="desc">{tb("filters.newest")}</option><option value="asc">{tb("filters.oldest")}</option>
             </Select>
-            <Select name="category" defaultValue={sp.category ?? ""} aria-label={tb("filters.category")}>
-              <option value="">{tb("filters.allCategories")}</option><option value="none">{tb("uncategorized")}</option>
-              {active.filter((c) => !c.parent_id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </Select>
+            <CategoryPicker choices={choices} name="category" defaultValue={sp.category ?? ""} ariaLabel={tb("filters.category")} placeholder={tb("filters.allCategories")} allowParents extras={[{ value: "", label: tb("filters.allCategories") }, { value: "none", label: tb("uncategorized") }]} />
             <Select name="month" defaultValue={sp.month ?? ""} aria-label={tb("filters.month")}>
               <option value="">{tb("filters.allMonths")}</option>{months.map((x) => <option key={x} value={x}>{monthLabel(x)}</option>)}
             </Select>
@@ -151,7 +150,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
                             <div className="grid gap-2 md:grid-cols-[9rem_1fr_14rem_auto]">
                               <Input type="date" name="tx_date" defaultValue={r.tx_date} aria-label={tb("cols.date")} />
                               <Input name="description" defaultValue={r.description} maxLength={300} aria-label={tb("cols.description")} />
-                              <CategorySelect choices={choices} name="category_id" defaultValue={r.category_id ?? ""} aria-label={tb("cols.category")}><option value="">{tb("uncategorized")}</option></CategorySelect>
+                              <CategoryPicker choices={choices} name="category_id" defaultValue={r.category_id ?? ""} ariaLabel={tb("cols.category")} placeholder={tb("uncategorized")} extras={[{ value: "", label: tb("uncategorized") }]} />
                               <div className="flex gap-2">
                                 <Button type="submit" formAction={updateTransaction.bind(null, r.id)}>{tb("save")}</Button>
                                 <Link href={here} className="inline-flex h-10 items-center rounded-lg px-3 text-sm text-muted hover:bg-surface-2">{tb("cancel")}</Link>
@@ -161,7 +160,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
                         ) : (
                           <>
                             <td className="whitespace-nowrap px-3 py-3">{formatDateOnly(r.tx_date, dateFormat)}</td>
-                            <td className="max-w-md px-3 py-3">{r.description}</td>
+                            <td className="max-w-[28rem] px-3 py-3"><ExpandableText text={r.description} /></td>
                             <td className="px-3 py-3">
                               {cat ? <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" style={chip(cat.tone)} title={cat.parent ?? undefined}>{cat.label}</span> : <span className="text-xs text-muted">{tb("uncategorized")}</span>}
                             </td>
@@ -187,9 +186,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
             {canWrite && (
               <div className="flex flex-wrap items-center gap-2 border-t border-line bg-surface-2 px-5 py-3">
                 <span className="text-sm text-muted">{tb("bulk.label")}</span>
-                <CategorySelect choices={choices} name="bulk_category" defaultValue="" aria-label={tb("bulk.category")} className="w-56">
-                  <option value="" disabled>{tb("bulk.choose")}</option><option value="none">{tb("uncategorized")}</option>
-                </CategorySelect>
+                <CategoryPicker choices={choices} name="bulk_category" ariaLabel={tb("bulk.category")} placeholder={tb("bulk.choose")} className="w-56" extras={[{ value: "none", label: tb("uncategorized") }]} />
                 <Button type="submit" variant="secondary" formAction={bulkCategorize}>{tb("bulk.apply")}</Button>
                 <ConfirmSubmit message={tb("bulk.confirmDelete")} formAction={bulkDelete} className="inline-flex h-10 items-center rounded-lg px-4 text-sm font-medium text-danger hover:bg-surface">{tb("bulk.delete")}</ConfirmSubmit>
               </div>

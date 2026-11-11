@@ -1812,6 +1812,12 @@
       "addButton": "Agregar",
       "hide": "Ocultar",
       "show": "Mostrar"
+    },
+    "more": "Ver más",
+    "less": "Ver menos",
+    "picker": {
+      "search": "Buscar categorías…",
+      "empty": "Ninguna categoría coincide."
     }
   }
 }

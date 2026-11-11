@@ -4,28 +4,12 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, UploadCloud } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Card, Select, cn } from "@/components/ui";
+import { Alert, Button, Card, cn } from "@/components/ui";
+import { CategoryPicker, type CategoryChoice } from "./CategoryPicker";
+import { ExpandableText } from "./ExpandableText";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { importTransactions, previewStatement, type PreviewRow } from "@/modules/bank/actions";
-
-export type CategoryChoice = { id: string; name: string; parent: string | null };
-
-/** Category picker grouped by parent category. */
-export function CategorySelect({ choices, ...props }: { choices: CategoryChoice[] } & React.SelectHTMLAttributes<HTMLSelectElement>) {
-  const parents = choices.filter((c) => !c.parent);
-  return (
-    <Select {...props}>
-      {props.children}
-      {parents.map((p) => {
-        const kids = choices.filter((c) => c.parent === p.name);
-        return kids.length ? (
-          <optgroup key={p.id} label={p.name}>{kids.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
-        ) : <option key={p.id} value={p.id}>{p.name}</option>;
-      })}
-    </Select>
-  );
-}
 
 export function StatementImport({ categories, currency, dateFormat }: { categories: CategoryChoice[]; currency: string; dateFormat: string }) {
   const t = useTranslations("bank");
@@ -107,11 +91,9 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
                   <tr key={i} className={cn(!r.on && "opacity-50")}>
                     <td className="px-3 py-2"><input type="checkbox" checked={r.on} aria-label={r.description} onChange={(e) => set(i, { on: e.target.checked })} /></td>
                     <td className="whitespace-nowrap px-3 py-2">{formatDateOnly(r.date, dateFormat)}</td>
-                    <td className="px-3 py-2">{r.description}{r.duplicate && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">{t("import.already")}</span>}</td>
+                    <td className="max-w-[24rem] px-3 py-2"><ExpandableText text={r.description} />{r.duplicate && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">{t("import.already")}</span>}</td>
                     <td className="px-3 py-2">
-                      <CategorySelect choices={categories} aria-label={t("cols.category")} className="h-9 min-w-44" value={r.categoryId ?? ""} onChange={(e) => set(i, { categoryId: e.target.value || null })}>
-                        <option value="">{t("uncategorized")}</option>
-                      </CategorySelect>
+                      <CategoryPicker choices={categories} ariaLabel={t("cols.category")} placeholder={t("uncategorized")} className="h-9 min-w-48" value={r.categoryId ?? ""} onChange={(id) => set(i, { categoryId: id || null })} extras={[{ value: "", label: t("uncategorized") }]} />
                     </td>
                     <td className={cn("whitespace-nowrap px-3 py-2 text-right font-medium tabular-nums", r.amountCents > 0 ? "text-success" : "text-danger")}>{formatMoney(r.amountCents, currency)}</td>
                   </tr>
