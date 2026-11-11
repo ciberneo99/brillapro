@@ -10,6 +10,7 @@ import { lineSchema, optionSchema, quoteHeaderSchema, settingsSchema, TIERS } fr
 
 const raw = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === "string"));
 const page = (id: string, q = "") => `/quotes/${id}${q}`;
+const UUID = /^[0-9a-f-]{36}$/i;
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
 
 async function guard() {
@@ -47,72 +48,32 @@ export async function createQuote(formData: FormData) {
   redirect(page(data.id));
 }
 
-export async function updateQuote(id: string, formData: FormData) {
+/** Saves the whole draft from the editor: header, options and extra items in their on-screen order, in one transaction. */
+export async function saveQuoteDraft(id: string, formData: FormData) {
   await guard();
-  const p = quoteHeaderSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
+  const h = quoteHeaderSchema.safeParse(raw(formData));
+  const list = (key: string): unknown[] | null => {
+    try { const v = JSON.parse(String(formData.get(key) ?? "[]")); return Array.isArray(v) ? v : null; } catch { return null; }
+  };
+  const options = list("options");
+  const lines = list("lines");
+  if (!h.success || !options || !lines || options.length > 12 || lines.length > 100) redirect(page(id, "?error=invalid"));
+  // Rows left completely blank in the editor are ignored, not errors.
+  const blank = (r: unknown, keys: string[]) => keys.every((k) => String((r as Record<string, unknown>)?.[k] ?? "").trim() === "");
+  const opts = options.filter((o) => !blank(o, ["name", "description", "price"])).map((o) => optionSchema.safeParse(o));
+  const extra = lines.filter((l) => !blank(l, ["description", "price"])).map((l) => lineSchema.safeParse(l));
+  if (opts.some((p) => !p.success) || extra.some((p) => !p.success)) redirect(page(id, "?error=invalid"));
+  const customerId = String(formData.get("customer_id") ?? "");
   const supabase = await createClient();
-  const { data, error } = await supabase.from("quotes").update(p.data).eq("id", id).select("id");
+  const { error } = await supabase.rpc("save_quote_draft", {
+    p_id: id,
+    p_header: { ...h.data, customer_id: UUID.test(customerId) ? customerId : null },
+    p_options: opts.map((p) => (p.success ? p.data : null)),
+    p_lines: extra.map((p) => (p.success ? p.data : null)),
+  });
   revalidatePath(page(id));
-  redirect(page(id, error || !data?.length ? "?error=invalid" : "?saved=1"));
-}
-
-export async function addOption(id: string, formData: FormData) {
-  const ctx = await guard();
-  const p = optionSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { data: last } = await supabase.from("quote_options").select("position").eq("quote_id", id).order("position", { ascending: false }).limit(1);
-  const { error } = await supabase.from("quote_options").insert({ ...p.data, tenant_id: ctx.tenant.id, quote_id: id, position: (last?.[0]?.position ?? 0) + 1 });
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function updateOption(id: string, optionId: string, formData: FormData) {
-  await guard();
-  const p = optionSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { error } = await supabase.from("quote_options").update(p.data).eq("id", optionId).eq("quote_id", id);
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function deleteOption(id: string, optionId: string) {
-  await guard();
-  const supabase = await createClient();
-  await supabase.from("quote_options").delete().eq("id", optionId).eq("quote_id", id);
-  revalidatePath(page(id));
-  redirect(page(id));
-}
-
-export async function addLine(id: string, formData: FormData) {
-  const ctx = await guard();
-  const p = lineSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { data: last } = await supabase.from("quote_lines").select("position").eq("quote_id", id).order("position", { ascending: false }).limit(1);
-  const { error } = await supabase.from("quote_lines").insert({ ...p.data, tenant_id: ctx.tenant.id, quote_id: id, position: (last?.[0]?.position ?? 0) + 1 });
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function updateLine(id: string, lineId: string, formData: FormData) {
-  await guard();
-  const p = lineSchema.safeParse(raw(formData));
-  if (!p.success) redirect(page(id, "?error=invalid"));
-  const supabase = await createClient();
-  const { error } = await supabase.from("quote_lines").update(p.data).eq("id", lineId).eq("quote_id", id);
-  revalidatePath(page(id));
-  redirect(page(id, error ? "?error=invalid" : ""));
-}
-
-export async function deleteLine(id: string, lineId: string) {
-  await guard();
-  const supabase = await createClient();
-  await supabase.from("quote_lines").delete().eq("id", lineId).eq("quote_id", id);
-  revalidatePath(page(id));
-  redirect(page(id));
+  revalidatePath("/quotes");
+  redirect(page(id, error ? "?error=invalid" : "?saved=1"));
 }
 
 /** Marks a draft as sent. Called right before the browser opens the user's own email app (mailto:). */

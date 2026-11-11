@@ -257,3 +257,53 @@ test("Venmo report generator lives at the bottom of Reports, with a visible uplo
   await page.locator("#venmo-file").setInputFiles({ name: "statement.csv", mimeType: "text/csv", buffer: Buffer.from("not,a,venmo,file\n") });
   await expect(zone).toContainText("statement.csv");
 });
+
+test("quote editor: company first in Prepared for, options and items reorder by drag, save, order sticks", async ({ page }) => {
+  await sql`insert into public.customers (tenant_id, first_name, last_name, company_name, status, email, service_address, city, state, zip_code)
+    values (${tenantId}, 'Laura', 'Diaz', 'Acme Offices LLC', 'active', 'laura@acme.test', '9 Pine Rd', 'Dallas', 'TX', '75001')`;
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  await page.goto("/quotes/new");
+  await expect(async () => {
+    await page.locator("#customer_search").fill("acme");
+    await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await page.getByRole("listbox").getByRole("option").first().click();
+  await page.getByRole("button", { name: /create quote|crear cotización/i }).click();
+  await expect(page).toHaveURL(/\/quotes\/[0-9a-f-]{36}/);
+
+  // Company name first (large), then the contact's name.
+  const prepared = page.locator("section[aria-labelledby=prepared-for]");
+  await expect(prepared.locator("p.text-2xl")).toHaveText("Acme Offices LLC");
+  await expect(prepared.locator("p.text-lg")).toHaveText("Laura Diaz");
+
+  // Good / Better / Best are there; price them, then drag Best to the top.
+  const optName = (n: number) => page.getByLabel(new RegExp(`^(Name|Nombre) ${n}$`));
+  await expect(optName(1)).toHaveValue("Good");
+  await page.getByLabel(/^(Price|Precio) 1$/).fill("100");
+  await page.getByLabel(/^(Price|Precio) 3$/).fill("300");
+  const opts = page.locator("section[aria-labelledby=options] li");
+  await opts.nth(2).locator("[draggable=true]").dragTo(opts.nth(0));
+  await expect(optName(1)).toHaveValue("Best");
+
+  // An extra item is charged on every option: Best 300 + 25 = 325.00 in its totals card.
+  await page.getByRole("button", { name: /add item|agregar concepto/i }).click();
+  await page.getByLabel(/^(Description|Descripción) 1$/).fill("Supplies");
+  await page.getByLabel(/^(Rate|Precio) 1$/).last().fill("25");
+  await expect(page.getByTestId("quote-total-card").first()).toContainText("325.00");
+
+  await page.getByRole("button", { name: /save quote|guardar cotización/i }).click();
+  await expect(page).toHaveURL(/saved=1/);
+  await page.reload();
+  await expect(optName(1)).toHaveValue("Best");
+  await expect(optName(2)).toHaveValue("Good");
+  await expect(page.getByLabel(/^(Description|Descripción) 1$/)).toHaveValue("Supplies");
+
+  // Actions menu has the same entries as the invoice.
+  await page.getByRole("button", { name: /^(actions|acciones)/i }).click();
+  for (const n of [/save quote|guardar/i, /duplicate|duplicar/i, /print|imprimir/i, /download pdf|descargar pdf/i]) await expect(page.getByRole("menuitem", { name: n })).toBeVisible();
+});

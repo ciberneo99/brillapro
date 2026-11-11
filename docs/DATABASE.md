@@ -94,3 +94,6 @@ erDiagram
 ### Editor de facturas (migración 0021)
 - **Logo de la empresa**: bucket privado `logos` (PNG/JPG, máx. 1 MB), archivos en `<tenant_id>/<archivo>`. Lo leen todos los miembros de la empresa; solo owner/admin suben o borran. `tenant_settings.logo_path` apunta al archivo. La pantalla usa una URL firmada de 1 hora; el PDF descarga los bytes.
 - **`save_invoice_draft(p_id, p_header jsonb, p_lines jsonb)`**: guarda encabezado + todos los conceptos en una sola transacción, con `position` según el orden recibido. Solo borradores; roles owner/admin/office_staff; el cliente debe ser de la misma empresa; máx. 100 conceptos. Si algo falla, no se guarda nada.
+
+### Editor de cotizaciones (migración 0026)
+- **`save_quote_draft(p_id, p_header jsonb, p_options jsonb, p_lines jsonb)`**: guarda encabezado (cliente, servicio, título, fechas, descuento, impuesto, notas, términos), opciones y conceptos adicionales en una sola transacción, con `position` según el orden recibido. Solo borradores; roles owner/admin/manager/office_staff; cliente y servicio deben ser de la misma empresa; máx. 12 opciones y 100 conceptos. Si algo falla, no se guarda nada.

@@ -185,4 +185,43 @@ d("quotes (RLS, numbering, totals, status)", () => {
       expect((await tx`select 1 from public.quote_lines where quote_id = ${nid}`)).toHaveLength(1);
     });
   });
+
+  it("save_quote_draft: saves header, options and lines in order, drafts only, own company only, roles", async () => {
+    const hdr = (extra = {}) => ({ customer_id: custA, title: " Deep clean ", service_type_id: "", issue_date: "2099-01-01", expires_on: "2099-01-31", discount_cents: 100, tax_rate: 5, notes: "", terms: "T", ...extra });
+    const opts = [{ name: "Better", description: "", base_price_cents: 20000 }, { name: "Good", description: "Basic", base_price_cents: 10000 }];
+    const lines = [{ description: "Second", quantity: 1, unit_price_cents: 500 }, { description: "First", quantity: 2, unit_price_cents: 250 }];
+    const src = (await sql`insert into public.quotes (tenant_id, customer_id, expires_on) values (${tA}, ${custA}, '2099-01-01') returning id`)[0].id;
+    await as(id.office, async (tx) => {
+      await tx`select public.save_quote_draft(${src}, ${tx.json(hdr())}, ${tx.json(opts)}, ${tx.json(lines)})`;
+      expect((await tx`select name from public.quote_options where quote_id = ${src} order by position`).map((r) => r.name)).toEqual(["Better", "Good"]);
+      expect((await tx`select description from public.quote_lines where quote_id = ${src} order by position`).map((r) => r.description)).toEqual(["Second", "First"]);
+      const [h] = await tx`select title, notes, expires_on::text e from public.quotes where id = ${src}`;
+      expect([h.title, h.notes, h.e]).toEqual(["Deep clean", null, "2099-01-31"]);
+      // saving again replaces both lists (reordered, one option removed)
+      await tx`select public.save_quote_draft(${src}, ${tx.json(hdr())}, ${tx.json([opts[1]])}, ${tx.json([...lines].reverse())})`;
+      expect((await tx`select name from public.quote_options where quote_id = ${src}`).map((r) => r.name)).toEqual(["Good"]);
+      expect((await tx`select description from public.quote_lines where quote_id = ${src} order by position`).map((r) => r.description)).toEqual(["First", "Second"]);
+      // another company's customer is refused
+      await tx`savepoint x`;
+      await expect(tx`select public.save_quote_draft(${src}, ${tx.json(hdr({ customer_id: custB }))}, ${tx.json(opts)}, ${tx.json(lines)})`).rejects.toThrow(/customer not found/);
+      await tx`rollback to savepoint x`;
+      // a blank option name fails as a whole
+      await tx`savepoint z`;
+      await expect(tx`select public.save_quote_draft(${src}, ${tx.json(hdr())}, ${tx.json([{ name: "", base_price_cents: 1 }])}, ${tx.json(lines)})`).rejects.toThrow();
+      await tx`rollback to savepoint z`;
+      // sent quotes are locked
+      await tx`select public.set_quote_status(${src}, 'sent')`;
+      await tx`savepoint w`;
+      await expect(tx`select public.save_quote_draft(${src}, ${tx.json(hdr())}, ${tx.json(opts)}, ${tx.json(lines)})`).rejects.toThrow(/only drafts/);
+      await tx`rollback to savepoint w`;
+    });
+    const src2 = (await sql`insert into public.quotes (tenant_id, customer_id, expires_on) values (${tA}, ${custA}, '2099-01-01') returning id`)[0].id;
+    for (const u of [id.accountant, id.employee, id.ownerB]) {
+      await as(u, async (tx) => {
+        await tx`savepoint s`;
+        await expect(tx`select public.save_quote_draft(${src2}, ${tx.json(hdr())}, ${tx.json(opts)}, ${tx.json(lines)})`).rejects.toThrow();
+        await tx`rollback to savepoint s`;
+      });
+    }
+  });
 });
