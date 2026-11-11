@@ -2,7 +2,7 @@ import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { formatCell, isRight } from "./format";
 import type { Col, ReportResult, Row, Tone } from "./run";
 
-export type ReportPdfLabels = { period: string; generated: string; page: string; of: string; transactions: (n: number) => string };
+export type ReportPdfLabels = { period: string; generated: string; page: string; of: string; total?: string; transactions: (n: number) => string };
 
 const TEAL = "#0b7a75";
 const GREEN = "#15803d";
@@ -26,6 +26,8 @@ const s = StyleSheet.create({
   statLabel: { fontSize: 8, color: MUTED },
   statValue: { fontSize: 15, fontFamily: "Helvetica-Bold", marginVertical: 5 },
   statHint: { fontSize: 7.5, color: MUTED },
+  sideTitle: { fontSize: 10, fontFamily: "Helvetica-Bold", paddingBottom: 4, borderBottomWidth: 1, borderBottomColor: LINE },
+  sideRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 3, borderBottomWidth: 0.5, borderBottomColor: "#d1d5db" },
   h2: { fontSize: 11, fontFamily: "Helvetica-Bold", marginTop: 18, marginBottom: 6 },
   th: { flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: LINE, paddingVertical: 5, paddingHorizontal: 4 },
   thText: { fontSize: 8, fontFamily: "Helvetica-Bold", textTransform: "uppercase" },
@@ -74,6 +76,26 @@ export function ReportPdf({
             </View>
           ))}
         </View>
+
+        {result.sideBySide && (
+          <View style={{ flexDirection: "row", gap: 18, marginTop: 16 }} wrap={false}>
+            {result.sideBySide.map((side, k) => (
+              <View key={side.title} style={{ flex: 1 }}>
+                <Text style={[s.sideTitle, { color: k === 0 ? GREEN : RED }]}>{side.title}</Text>
+                {side.rows.map((r) => (
+                  <View key={r.label} style={s.sideRow}>
+                    <Text style={{ flex: 1, paddingRight: 6 }}>{r.label}</Text>
+                    <Text>{formatCell({ key: "", label: "", kind: "money" }, r.cents, currency, dateFormat)}</Text>
+                  </View>
+                ))}
+                <View style={[s.sideRow, { borderBottomWidth: 0, fontFamily: "Helvetica-Bold" }]}>
+                  <Text>{labels.total ?? "Total"}</Text>
+                  <Text>{formatCell({ key: "", label: "", kind: "money" }, side.total, currency, dateFormat)}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
 
         {result.breakdown && result.breakdown.rows.length > 0 && (
           <View>

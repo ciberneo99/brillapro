@@ -1834,6 +1834,8 @@
     "expense": "Gasto",
     "notes": "Notas",
     "notesPlaceholder": "Notas opcionales",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "incomeByCategory": "Ingresos por categoría",
+    "expensesByCategory": "Gastos por categoría"
   }
 }

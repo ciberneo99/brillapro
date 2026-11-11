@@ -1834,6 +1834,8 @@
     "expense": "Expense",
     "notes": "Notes",
     "notesPlaceholder": "Optional notes",
-    "close": "Close"
+    "close": "Close",
+    "incomeByCategory": "Income by category",
+    "expensesByCategory": "Expenses by category"
   }
 }

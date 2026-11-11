@@ -40,7 +40,22 @@ export async function GET(req: Request) {
   const withdrawals = all.reduce((a, r) => a + (r.amount_cents < 0 ? -r.amount_cents : 0), 0);
   const plain = !q.get("q") && !type && !category;
   const summary = plain ? balanceSummary(await listStatements(), month, deposits, withdrawals) : null;
+  // Totals per category (sub-category under its main one), biggest first; the section above the table.
+  const byCat = (sign: 1 | -1) => {
+    const m = new Map<string, number>();
+    for (const r of all) {
+      if (Math.sign(r.amount_cents) !== sign) continue;
+      const c = r.category_id ? labels.get(r.category_id) : null;
+      const label = c ? (c.parent ? `${c.parent}: ${c.label}` : c.label) : tb("uncategorized");
+      m.set(label, (m.get(label) ?? 0) + Math.abs(r.amount_cents));
+    }
+    return [...m].map(([label, cents]) => ({ label, cents })).sort((a, b) => b.cents - a.cents);
+  };
   const result: ReportResult = {
+    sideBySide: [
+      { title: tb("incomeByCategory"), total: deposits, rows: byCat(1) },
+      { title: tb("expensesByCategory"), total: withdrawals, rows: byCat(-1) },
+    ],
     cols: [
       { key: "date", label: tb("cols.date"), kind: "date" },
       { key: "description", label: tb("cols.description"), kind: "text", wide: true },
@@ -80,7 +95,7 @@ export async function GET(req: Request) {
     createElement(ReportPdf, {
       company: ctx.tenant.name, title: tb("pdfTitle"), periodLabel: period, generatedOn: formatDateOnly(today, ctx.settings.date_format),
       result, currency: ctx.settings.currency, dateFormat: ctx.settings.date_format,
-      labels: { period: t("pdf.period"), generated: t("pdf.generated"), page: locale === "es" ? "Página" : "Page", of: locale === "es" ? "de" : "of", transactions: (n: number) => t("transactionsCount", { count: n }) },
+      labels: { period: t("pdf.period"), generated: t("pdf.generated"), page: locale === "es" ? "Página" : "Page", of: locale === "es" ? "de" : "of", total: "Total", transactions: (n: number) => t("transactionsCount", { count: n }) },
     }) as Parameters<typeof renderToBuffer>[0],
   );
   return new Response(new Uint8Array(buffer), {

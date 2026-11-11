@@ -21,6 +21,8 @@ export type ReportResult = {
   groups?: Group[];
   /** Small summary table (payment method summary, expenses by category). */
   breakdown?: { title: string; cols: Col[]; rows: Row[] };
+  /** Two short lists side by side above the main table (bank: income by category | expenses by category). */
+  sideBySide?: { title: string; total: number; rows: { label: string; cents: number }[] }[];
   /** Heading of the main table. */
   tableTitle: string;
 };
