@@ -328,7 +328,18 @@
       "noJobs": "No jobs for this customer yet.",
       "newInvoice": "New invoice",
       "noInvoices": "No invoices for this customer yet.",
-      "repeatLast": "Repeat last invoice"
+      "repeatLast": "Repeat last invoice",
+      "contact": "Contact",
+      "clientNotes": "Client notes",
+      "noNotes": "No client notes yet.",
+      "clientSince": "Client since",
+      "ytd": "{year} revenue",
+      "outstanding": "Outstanding",
+      "actions": "Actions",
+      "backShort": "Back",
+      "bd": "{n}bd",
+      "ba": "{n}ba",
+      "sqft": "{n} sqft"
     },
     "errors": {
       "identityRequired": "Enter a name or a company name.",
@@ -372,6 +383,23 @@
       "running": "In progress",
       "over": "Over the planned time",
       "last": "Last visit {date}"
+    },
+    "notes": {
+      "title": "My Notes",
+      "viewAll": "View all",
+      "placeholder": "Add a new note…",
+      "save": "Save note",
+      "delete": "Delete note",
+      "empty": "No notes about this customer yet.",
+      "invalid": "Write something before saving.",
+      "private": "Only you can see your notes, not even the owner.",
+      "toolbar": "Text formatting",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "numbered": "Numbered list",
+      "bullets": "Bulleted list",
+      "clear": "Clear formatting"
     }
   },
   "request": {
@@ -746,7 +774,8 @@
     "save": "Save",
     "delete": "Delete",
     "empty": "No notes yet.",
-    "updated": "Updated {date}"
+    "updated": "Updated {date}",
+    "aboutCustomer": "About a customer"
   },
   "tasks": {
     "title": "Tasks",

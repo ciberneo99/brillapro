@@ -140,4 +140,17 @@ d("time entries, notes, tasks", () => {
     await expect(as(id.ownerA, (tx) => tx`insert into public.tasks (tenant_id, title, assigned_to, created_by) values (${tA}, 'x', ${id.ownerB}, ${id.ownerA})`)).rejects.toThrow();
     await expect(as(id.accountant, (tx) => tx`insert into public.tasks (tenant_id, title, created_by) values (${tA}, 'x', ${id.accountant})`)).rejects.toThrow();
   });
+
+  it("notes about a customer stay private and only point at customers of the same company", async () => {
+    const other = (await sql`insert into public.customers (tenant_id, first_name, status) values (${tB}, 'Zed', 'active') returning id`)[0].id;
+    await as(id.emp1, async (tx) => {
+      await tx`insert into public.user_notes (tenant_id, user_id, body, customer_id) values (${tA}, ${id.emp1}, '<p>hi</p>', ${custA})`;
+      expect(await tx`select 1 from public.user_notes where customer_id = ${custA}`).toHaveLength(1);
+      await tx`savepoint a`;
+      await expect(tx`insert into public.user_notes (tenant_id, user_id, body, customer_id) values (${tA}, ${id.emp1}, 'x', ${other})`).rejects.toThrow();
+      await tx`rollback to savepoint a`;
+      await tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: id.ownerA, role: "authenticated" })}, true)`;
+      expect(await tx`select 1 from public.user_notes where customer_id = ${custA}`).toHaveLength(0); // not even the owner
+    });
+  });
 });

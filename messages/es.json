@@ -328,7 +328,18 @@
       "noJobs": "Este cliente aún no tiene trabajos.",
       "newInvoice": "Nueva factura",
       "noInvoices": "Este cliente aún no tiene facturas.",
-      "repeatLast": "Repetir última factura"
+      "repeatLast": "Repetir última factura",
+      "contact": "Contacto",
+      "clientNotes": "Notas del cliente",
+      "noNotes": "Aún no hay notas del cliente.",
+      "clientSince": "Cliente desde",
+      "ytd": "Ingresos {year}",
+      "outstanding": "Por cobrar",
+      "actions": "Acciones",
+      "backShort": "Volver",
+      "bd": "{n} rec.",
+      "ba": "{n} baños",
+      "sqft": "{n} pies²"
     },
     "errors": {
       "identityRequired": "Ingresa un nombre o el nombre de una empresa.",
@@ -372,6 +383,23 @@
       "running": "En curso",
       "over": "Más del tiempo planeado",
       "last": "Última visita {date}"
+    },
+    "notes": {
+      "title": "Mis notas",
+      "viewAll": "Ver todas",
+      "placeholder": "Agrega una nota nueva…",
+      "save": "Guardar nota",
+      "delete": "Eliminar nota",
+      "empty": "Aún no hay notas sobre este cliente.",
+      "invalid": "Escribe algo antes de guardar.",
+      "private": "Solo tú ves tus notas, ni siquiera el dueño.",
+      "toolbar": "Formato de texto",
+      "bold": "Negrita",
+      "italic": "Cursiva",
+      "underline": "Subrayado",
+      "numbered": "Lista numerada",
+      "bullets": "Lista con viñetas",
+      "clear": "Quitar formato"
     }
   },
   "request": {
@@ -746,7 +774,8 @@
     "save": "Guardar",
     "delete": "Eliminar",
     "empty": "Aún no hay notas.",
-    "updated": "Actualizada {date}"
+    "updated": "Actualizada {date}",
+    "aboutCustomer": "Sobre un cliente"
   },
   "tasks": {
     "title": "Pendientes",

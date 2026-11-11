@@ -38,3 +38,13 @@ export function formatMinutes(min: number): string {
   const h = Math.floor(min / 60), m = min % 60;
   return h > 0 ? (m > 0 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
 }
+
+/** Money received from this customer since Jan 1 of `year` (payments on their non-void invoices). Zero for roles that can't see payments. */
+export async function getCustomerYtdCents(customerId: string, year: string): Promise<number> {
+  const supabase = await createClient();
+  const { data: invs } = await supabase.from("invoices").select("id").eq("customer_id", customerId).neq("status", "void").limit(2000);
+  const ids = (invs ?? []).map((i) => i.id);
+  if (ids.length === 0) return 0;
+  const { data } = await supabase.from("payments").select("amount_cents").in("invoice_id", ids).gte("paid_on", `${year}-01-01`).lte("paid_on", `${year}-12-31`);
+  return (data ?? []).reduce((a, p) => a + Number(p.amount_cents), 0);
+}

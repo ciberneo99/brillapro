@@ -185,3 +185,31 @@ test("invoice page: Actions menu, add a payment, then edit and delete it in the 
   await history.getByRole("button", { name: /remove|quitar/i }).click();
   await expect(page.locator("section[aria-labelledby=pay-history]")).toHaveCount(0);
 });
+
+test("customer page: compact layout, My Notes with formatting, history at the bottom", async ({ page }) => {
+  const [c] = await sql`insert into public.customers (tenant_id, first_name, last_name, status, email, phone, service_address, city, state, zip_code, property_type, bedrooms, bathrooms, square_footage, cleaning_frequency, rating, notes)
+    values (${tenantId}, 'Jami', 'Obrien', 'active', 'jami@example.com', '8326563859', '155 Joshua Dr', 'Georgetown', 'TX', '78633', 'house', 4, 3, 2610, 'biweekly', 5, 'Dog is friendly') returning id`;
+  await page.goto("/login");
+  await page.locator("input[name=email]").fill(email);
+  await page.locator("input[name=password]").fill(password);
+  await page.getByRole("button", { name: /sign in|iniciar/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto(`/customers/${c.id}`);
+  await expect(page.getByText("jami@example.com")).toBeVisible();
+  await expect(page.getByText("Dog is friendly")).toBeVisible();
+
+  const box = page.getByRole("textbox", { name: /add a new note|agrega una nota/i });
+  await expect(async () => {
+    await box.click();
+    await page.keyboard.press("Control+b");
+    await page.keyboard.type("Too far away");
+    await expect(page.getByRole("button", { name: /save note|guardar nota/i })).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await page.getByRole("button", { name: /save note|guardar nota/i }).click();
+  await expect(page.locator("article b", { hasText: "Too far away" })).toBeVisible();
+  await expect(page.locator("article")).toHaveCount(1);
+
+  // History is the last block on the page.
+  const last = await page.locator("main section, main > div > *").last().getAttribute("aria-labelledby");
+  expect(last).toBe("history-title");
+});
