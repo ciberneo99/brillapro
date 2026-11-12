@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, Ban, ChevronDown, Copy, Download, Mail, Plus, Printer, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Ban, ChevronDown, Copy, Download, Eye, Mail, Plus, Printer, Save, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, cn } from "@/components/ui";
 import { deleteInvoice, duplicateInvoice, markInvoiceSent, recordPayment, voidInvoice } from "@/modules/invoices/actions";
@@ -84,6 +84,7 @@ export function InvoiceToolbar(p: Props) {
               <form action={duplicateInvoice.bind(null, p.id)}><button type="submit" role="menuitem" className={item}><Copy className="h-4 w-4" aria-hidden />{t("duplicate")}</button></form>
             )}
             <button type="button" role="menuitem" className={item} onClick={print}><Printer className="h-4 w-4" aria-hidden />{t("toolbar.print")}</button>
+            <a role="menuitem" className={item} href={`/invoices/${p.id}/pdf`} target="_blank" rel="noopener" onClick={() => setMenu(false)}><Eye className="h-4 w-4" aria-hidden />{t("toolbar.preview")}</a>
             <a role="menuitem" className={item} href={`/invoices/${p.id}/pdf?download=1`} onClick={() => setMenu(false)}><Download className="h-4 w-4" aria-hidden />{t("toolbar.download")}</a>
             {p.canWrite && p.canVoid && (
               <form action={voidInvoice.bind(null, p.id)} onSubmit={confirmThen(t("toolbar.confirmVoid"))}>

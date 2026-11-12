@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, CheckCircle2, ChevronDown, Copy, Download, Mail, Printer, Save, Trash2, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronDown, Copy, Download, Eye, Mail, Printer, Save, Trash2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, Field, Select, cn } from "@/components/ui";
 import { acceptQuote, declineQuote, deleteQuote, duplicateQuote, markQuoteSent } from "@/modules/quotes/actions";
@@ -83,6 +83,7 @@ export function QuoteToolbar(p: Props) {
               <form action={duplicateQuote.bind(null, p.id)}><button type="submit" role="menuitem" className={item}><Copy className="h-4 w-4" aria-hidden />{t("duplicate")}</button></form>
             )}
             <button type="button" role="menuitem" className={item} onClick={print}><Printer className="h-4 w-4" aria-hidden />{t("toolbar.print")}</button>
+            <a role="menuitem" className={item} href={`/quotes/${p.id}/pdf`} target="_blank" rel="noopener" onClick={() => setMenu(false)}><Eye className="h-4 w-4" aria-hidden />{t("toolbar.preview")}</a>
             <a role="menuitem" className={item} href={`/quotes/${p.id}/pdf?download=1`} onClick={() => setMenu(false)}><Download className="h-4 w-4" aria-hidden />{t("toolbar.download")}</a>
             {p.canWrite && p.open && (
               <form action={declineQuote.bind(null, p.id)} onSubmit={confirmThen(t("toolbar.confirmDecline"))}>
