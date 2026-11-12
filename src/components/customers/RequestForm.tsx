@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Field, Input, Select, Card, SectionTitle } from "@/components/ui";
+import { Alert, Button, Field, Input, Card, SectionTitle } from "@/components/ui";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 import { GroupedNumberInput, SmartTextarea, ZipInput } from "@/components/ui/fields";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
@@ -13,10 +14,12 @@ import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 import type { RequestState } from "@/app/request/[slug]/actions";
 
 export function RequestForm({
-  action, company,
+  action, company, services,
 }: {
   action: (state: RequestState, formData: FormData) => Promise<RequestState>;
   company: string;
+  /** The company's active service types (Settings → Services), in the order it set. */
+  services: string[];
 }) {
   const t = useTranslations("request");
   const tf = useTranslations("customers");
@@ -75,21 +78,19 @@ export function RequestForm({
           {f("state", tf("form.state"), "text", { smart: "state" })}
           {f("zip_code", tf("form.zipCode"), "text", { kind: "zip" })}
           <Field label={tf("form.propertyType")} htmlFor="property_type">
-            <Select id="property_type" name="property_type" defaultValue="">
-              <option value="">{tf("form.choose")}</option>
-              {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{tf(`propertyType.${p}`)}</option>)}
-            </Select>
+            <SelectMenu id="property_type" name="property_type" ariaLabel={tf("form.propertyType")} options={[{ value: "", label: tf("form.choose") }, ...PROPERTY_TYPES.map((p) => ({ value: p, label: tf(`propertyType.${p}`) }))]} />
           </Field>
           {f("square_footage", tf("form.squareFootage"), "text", { kind: "grouped" })}
           {f("bedrooms", tf("form.bedrooms"), "text", { inputMode: "numeric" })}
           {f("bathrooms", tf("form.bathrooms"), "text", { inputMode: "decimal" })}
           <Field label={tf("form.frequency")} htmlFor="cleaning_frequency">
-            <Select id="cleaning_frequency" name="cleaning_frequency" defaultValue="">
-              <option value="">{tf("form.choose")}</option>
-              {FREQUENCIES.map((x) => <option key={x} value={x}>{tf(`frequency.${x}`)}</option>)}
-            </Select>
+            <SelectMenu id="cleaning_frequency" name="cleaning_frequency" ariaLabel={tf("form.frequency")} options={[{ value: "", label: tf("form.choose") }, ...FREQUENCIES.map((x) => ({ value: x, label: tf(`frequency.${x}`) }))]} />
           </Field>
-          {f("preferred_service", tf("form.preferredService"), "text", { smart: "sentence" })}
+          {services.length > 0 && (
+            <Field label={tf("form.preferredService")} htmlFor="preferred_service">
+              <SelectMenu id="preferred_service" name="preferred_service" ariaLabel={tf("form.preferredService")} options={[{ value: "", label: tf("form.choose") }, ...services.map((name) => ({ value: name, label: name }))]} />
+            </Field>
+          )}
         </div>
       </Card>
 

@@ -33,7 +33,8 @@ const schema = z.object({
   bedrooms: z.string().trim().regex(/^\d{0,2}$/).optional().default(""),
   bathrooms: z.string().trim().regex(/^(\d{1,2}(\.5)?)?$/).optional().default(""),
   cleaning_frequency: z.enum(FREQUENCIES).or(z.literal("")).optional().default(""),
-  preferred_service: sn(100), message: sn(2000),
+  // The database keeps it only if it matches one of the company's active services (see public.submit_quote_request).
+  preferred_service: t(100), message: sn(2000),
 });
 
 const MIN_FILL_MS = 3000; // humans take longer than this to fill a form

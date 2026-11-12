@@ -11,7 +11,11 @@ export const metadata = { title: "Request a quote", robots: { index: false } };
 export default async function RequestPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = await createClient();
-  const { data: company } = await supabase.rpc("public_company_name", { p_slug: slug.slice(0, 80) });
+  const safeSlug = slug.slice(0, 80);
+  const [{ data: company }, { data: services }] = await Promise.all([
+    supabase.rpc("public_company_name", { p_slug: safeSlug }),
+    supabase.rpc("public_request_services", { p_slug: safeSlug }), // the company's own list from Settings → Services
+  ]);
   if (!company) notFound();
 
   const t = await getTranslations("request");
@@ -25,7 +29,7 @@ export default async function RequestPage({ params }: { params: Promise<{ slug: 
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <p className="mb-6 mt-1 text-sm text-muted">{t("subtitle", { company })}</p>
-      <RequestForm action={submitQuoteRequest.bind(null, slug)} company={company} />
+      <RequestForm action={submitQuoteRequest.bind(null, slug)} company={company} services={((services ?? []) as { name: string }[]).map((x) => x.name)} />
     </main>
   );
 }
