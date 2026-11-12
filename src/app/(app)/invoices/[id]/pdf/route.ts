@@ -1,7 +1,8 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { fullAddress } from "@/lib/business";
-import { logoForPdf } from "@/lib/logo-server";
+import { readableOnWhite } from "@/lib/brand-color";
+import { getBrand, logoForPdf } from "@/lib/logo-server";
 import { quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
@@ -22,10 +23,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { data: cust } = await supabase.from("customers").select("phone,company_name").eq("id", invoice.customer_id).maybeSingle();
   const is = await getInvoiceSettings(ctx.tenant.id);
   const s = ctx.settings;
-  const logo = await logoForPdf(s.logo_path);
+  const [logo, brand] = await Promise.all([logoForPdf(s.logo_path), getBrand(ctx.tenant.id)]);
 
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
+      brand: brand.color ? readableOnWhite(brand.color) : null, logoSize: brand.size,
       invoice, logo, customerPhone: invoice.customer_phone ?? (invoice.status === "draft" ? cust?.phone ?? null : null), customerCompany: cust?.company_name || null, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
       business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), website: s.website, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],

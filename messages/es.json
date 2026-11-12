@@ -182,8 +182,22 @@
       "choose": "Elegir archivo de logo",
       "upload": "Subir logo",
       "remove": "Quitar logo",
-      "help": "PNG o JPG, hasta 1 MB. Se muestra arriba en tus facturas.",
+      "help": "PNG o JPG, hasta 1 MB. Se muestra arriba en tus facturas y cotizaciones.",
+      "brandTitle": "Color de facturas y cotizaciones",
+      "brandHelp": "Se toma de tu logo automáticamente al subirlo. Cámbialo si prefieres otro color.",
+      "colorLabel": "Color",
+      "sample": "Así se ve en tus facturas",
+      "sampleText": "Descripción · Cant. · Importe",
+      "sizeTitle": "Tamaño del logo en facturas y cotizaciones",
+      "sizes": { "small": "Pequeño", "medium": "Mediano", "large": "Grande" },
+      "saveBrand": "Guardar",
+      "match": "Igualar a mi logo",
+      "useDefault": "Usar el verde predeterminado",
       "status": {
+        "brand": "Color y tamaño del logo guardados.",
+        "brandreset": "Volvió al verde predeterminado.",
+        "nocolor": "No encontramos un color en este logo.",
+        "badcolor": "Elige un color válido e inténtalo de nuevo.",
         "saved": "Logo guardado.",
         "removed": "Logo quitado.",
         "type": "Usa una imagen PNG o JPG.",
@@ -489,6 +503,8 @@
     "tooMany": "Hay demasiadas solicitudes ahora. Inténtalo de nuevo en unos minutos.",
     "tooFast": "Revisa el formulario con calma y envíalo de nuevo.",
     "invalid": "Revisa tus datos e inténtalo de nuevo.",
+    "required": "Completa todos los campos marcados con *.",
+    "chooseService": "Elige un servicio.",
     "failed": "No pudimos enviar tu solicitud. Inténtalo de nuevo."
   },
   "requests": {
@@ -503,8 +519,6 @@
   },
   "dashboardExtra": {
     "customersCount": "{count, plural, =0 {Aún no hay clientes activos} one {# cliente activo} other {# clientes activos}}"
-    "required": "Completa todos los campos marcados con *.",
-    "chooseService": "Elige un servicio.",
   },
   "services": {
     "title": "Tipos de servicio",

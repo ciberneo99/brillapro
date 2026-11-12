@@ -10,6 +10,9 @@ import { normalizeAddress } from "@/lib/text";
 import { normalizeWebsite } from "@/lib/business";
 import { normalizeZip } from "@/lib/zip";
 import { checkLogo } from "@/lib/logo";
+import { DEFAULT_BRAND, isHexColor, isLogoSize } from "@/lib/brand-color";
+import { dominantLogoColor } from "@/lib/logo-color";
+import { getBrand, logoForPdf } from "@/lib/logo-server";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
@@ -86,7 +89,9 @@ export async function uploadLogo(formData: FormData) {
   const path = `${ctx.tenant.id}/${randomUUID()}.${check.ext}`;
   const { error } = await supabase.storage.from("logos").upload(path, file, { contentType: file.type, upsert: false });
   if (error) redirect("/settings?logo=upload");
-  const { error: linkError } = await supabase.from("tenant_settings").update({ logo_path: path }).eq("tenant_id", ctx.tenant.id);
+  // The brand color follows the new logo on its own; it can be changed afterwards in Settings.
+  const color = await dominantLogoColor(Buffer.from(await file.arrayBuffer())).catch(() => null);
+  const { error: linkError } = await supabase.from("tenant_settings").update({ logo_path: path, ...(color ? { brand_color: color } : {}) }).eq("tenant_id", ctx.tenant.id);
   if (linkError) {
     await supabase.storage.from("logos").remove([path]);
     redirect("/settings?logo=upload");
@@ -104,4 +109,43 @@ export async function removeLogo() {
   if (!error && ctx.settings.logo_path) await supabase.storage.from("logos").remove([ctx.settings.logo_path]);
   revalidatePath("/", "layout");
   redirect("/settings?logo=removed");
+}
+
+/** Brand color and logo size for invoices and quotes. */
+export async function saveBrand(formData: FormData) {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect("/settings");
+  const color = String(formData.get("brand_color") ?? "").trim().toLowerCase();
+  const size = String(formData.get("logo_size") ?? "");
+  if (!isHexColor(color) || !isLogoSize(size)) redirect("/settings?logo=badcolor");
+  const current = await getBrand(ctx.tenant.id);
+  // Saving only a new size must not turn the automatic default into a chosen color.
+  const keepDefault = current.color === null && color === DEFAULT_BRAND;
+  const supabase = await createClient();
+  const { error } = await supabase.from("tenant_settings").update({ ...(keepDefault ? {} : { brand_color: color }), logo_size: size }).eq("tenant_id", ctx.tenant.id);
+  revalidatePath("/settings");
+  redirect(error ? "/settings?logo=badcolor" : "/settings?logo=brand");
+}
+
+/** "Match my logo": reads the color of the current logo again. */
+export async function matchLogoColor() {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect("/settings");
+  const logo = await logoForPdf(ctx.settings.logo_path);
+  const color = logo ? await dominantLogoColor(logo.data).catch(() => null) : null;
+  if (!color) redirect("/settings?logo=nocolor");
+  const supabase = await createClient();
+  const { error } = await supabase.from("tenant_settings").update({ brand_color: color }).eq("tenant_id", ctx.tenant.id);
+  revalidatePath("/settings");
+  redirect(error ? "/settings?logo=badcolor" : "/settings?logo=brand");
+}
+
+/** Back to the app green. */
+export async function resetBrandColor() {
+  const ctx = await requireContext();
+  if (!can(ctx.role, "settings:write")) redirect("/settings");
+  const supabase = await createClient();
+  const { error } = await supabase.from("tenant_settings").update({ brand_color: null }).eq("tenant_id", ctx.tenant.id);
+  revalidatePath("/settings");
+  redirect(error ? "/settings?logo=badcolor" : "/settings?logo=brandreset");
 }

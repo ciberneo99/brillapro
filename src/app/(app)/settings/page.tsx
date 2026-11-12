@@ -5,7 +5,7 @@ import { BusinessSettingsForm } from "@/components/BusinessSettingsForm";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Card } from "@/components/ui";
 import { LogoCard } from "@/components/LogoCard";
-import { logoUrl } from "@/lib/logo-server";
+import { getBrand, logoUrl } from "@/lib/logo-server";
 import { PlanCard } from "@/components/billing/PlanCard";
 import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
 import { publicEnv } from "@/lib/env";
@@ -28,8 +28,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const tpr = await getTranslations("pricing.settings");
   const theme = await getTheme();
   const s = ctx.settings;
-  const logo = await logoUrl(s.logo_path);
-  const logoStatus = ["saved", "removed", "type", "size", "upload"].includes(sp.logo ?? "") ? sp.logo : undefined;
+  const [logo, brand] = await Promise.all([logoUrl(s.logo_path), getBrand(ctx.tenant.id)]);
+  const logoStatus = ["saved", "removed", "type", "size", "upload", "brand", "brandreset", "nocolor", "badcolor"].includes(sp.logo ?? "") ? sp.logo : undefined;
 
   return (
     <div className="space-y-6">
@@ -111,7 +111,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </Link>
       )}
 
-      <LogoCard url={logo} canEdit={can(ctx.role, "settings:write")} status={logoStatus} />
+      <LogoCard url={logo} canEdit={can(ctx.role, "settings:write")} status={logoStatus} brandColor={brand.color} logoSize={brand.size} />
 
       <Card>
         <BusinessSettingsForm

@@ -2,6 +2,7 @@ import { Document, Image as PdfImage, Page, StyleSheet, Text, View } from "@reac
 import { addressLines, displayUrl } from "@/lib/business";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney, quoteNumber } from "@/lib/money";
+import { DEFAULT_BRAND, LOGO_DIMS, type LogoSize } from "@/lib/brand-color";
 import type { QuoteDetail } from "./queries";
 
 const L = {
@@ -19,17 +20,17 @@ const L = {
   },
 } as const;
 
-const TEAL = "#0b7a75"; // same teal as the app
 const GREEN = "#15803d";
 const RED = "#c62828";
 const INK = "#1f2937";
 const MUTED = "#6b7280";
 const LINE = "#d1d5db";
 
-const s = StyleSheet.create({
+/** Styles depend on the company's brand color (`TEAL` below is that color) and on how big its logo is. */
+const makeStyles = (TEAL: string, logoBox: { h: number; w: number }) => StyleSheet.create({
   page: { paddingTop: 40, paddingBottom: 50, paddingHorizontal: 44, fontSize: 10, fontFamily: "Helvetica", color: INK },
   row: { flexDirection: "row", justifyContent: "space-between" },
-  logo: { maxHeight: 60, maxWidth: 120, objectFit: "contain", objectPositionX: 0 },
+  logo: { maxHeight: logoBox.h, maxWidth: logoBox.w, objectFit: "contain", objectPositionX: 0 },
   logoBox: { width: 48, height: 48, borderRadius: 8, backgroundColor: TEAL, alignItems: "center", justifyContent: "center" },
   logoLetter: { color: "#ffffff", fontSize: 24, fontFamily: "Helvetica-Bold" },
   biz: { fontSize: 15, fontFamily: "Helvetica-Bold", marginBottom: 4 },
@@ -61,9 +62,12 @@ export type PdfBusiness = { name: string; phone: string | null; email: string | 
 export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function QuotePdf({
-  quote, business, logo, prefix, currency, dateFormat, locale,
-}: { quote: QuoteDetail; business: PdfBusiness; logo?: PdfLogo; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
+  quote, business, logo, brand, logoSize, prefix, currency, dateFormat, locale,
+}: { quote: QuoteDetail; business: PdfBusiness; logo?: PdfLogo; brand?: string | null; logoSize?: LogoSize; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
   const t = L[locale];
+  const TEAL = brand ?? DEFAULT_BRAND;
+  const dims = LOGO_DIMS[logoSize ?? "medium"];
+  const s = makeStyles(TEAL, dims);
   const m = (c: number) => formatMoney(c, currency);
   const d = (v: string) => formatDateOnly(v, dateFormat);
   const c = quote.customer;
@@ -97,10 +101,10 @@ export function QuotePdf({
     <Document title={`${quoteNumber(prefix, quote.number)} - ${business.name}`}>
       <Page size="LETTER" style={s.page}>
         <View style={s.row}>
-          <View style={{ width: "30%" }}>
+          <View style={{ width: `${dims.left}%` }}>
             {logo ? <PdfImage src={{ data: logo.data, format: logo.format }} style={s.logo} /> : <View style={s.logoBox}><Text style={s.logoLetter}>{business.name.trim().charAt(0).toUpperCase() || "B"}</Text></View>}
           </View>
-          <View style={{ width: "36%" }}>
+          <View style={{ width: `${dims.mid}%` }}>
             <Text style={s.biz}>{business.name}</Text>
             {business.address && <Text style={s.muted}>{business.address}</Text>}
             {business.phone && <Text style={s.muted}>{business.phone}</Text>}
@@ -108,7 +112,7 @@ export function QuotePdf({
             {business.website && <Text style={s.muted}>{displayUrl(business.website)}</Text>}
             {business.tax_id && <Text style={s.muted}>{business.tax_id}</Text>}
           </View>
-          <View style={{ width: "34%" }}>
+          <View style={{ width: `${dims.right}%` }}>
             {label && <Text style={[s.pill, { backgroundColor: color }]}>{label}</Text>}
             <Text style={s.h1}>{t.quote}</Text>
             <View style={s.meta}><Text style={s.metaLabel}>{t.number}</Text><Text style={s.metaValue}>{quoteNumber(prefix, quote.number)}</Text></View>

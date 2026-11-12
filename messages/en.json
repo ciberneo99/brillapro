@@ -182,8 +182,22 @@
       "choose": "Choose a logo file",
       "upload": "Upload logo",
       "remove": "Remove logo",
-      "help": "PNG or JPG, up to 1 MB. Shown at the top of your invoices.",
+      "help": "PNG or JPG, up to 1 MB. Shown at the top of your invoices and quotes.",
+      "brandTitle": "Invoice and quote color",
+      "brandHelp": "Taken from your logo automatically when you upload it. Change it if you prefer another color.",
+      "colorLabel": "Color",
+      "sample": "How it looks on your invoices",
+      "sampleText": "Description · Qty · Amount",
+      "sizeTitle": "Logo size on invoices and quotes",
+      "sizes": { "small": "Small", "medium": "Medium", "large": "Large" },
+      "saveBrand": "Save",
+      "match": "Match my logo",
+      "useDefault": "Use the default green",
       "status": {
+        "brand": "Color and logo size saved.",
+        "brandreset": "Back to the default green.",
+        "nocolor": "We could not find a color in this logo.",
+        "badcolor": "Pick a valid color and try again.",
         "saved": "Logo saved.",
         "removed": "Logo removed.",
         "type": "Use a PNG or JPG image.",
@@ -489,6 +503,8 @@
     "tooMany": "Too many requests right now. Please try again in a few minutes.",
     "tooFast": "Please take a moment to review the form and send it again.",
     "invalid": "Please check your details and try again.",
+    "required": "Please fill in all the fields marked with *.",
+    "chooseService": "Please choose a service.",
     "failed": "We could not send your request. Please try again."
   },
   "requests": {
@@ -503,8 +519,6 @@
   },
   "dashboardExtra": {
     "customersCount": "{count, plural, =0 {No active customers yet} one {# active customer} other {# active customers}}"
-    "required": "Please fill in all the fields marked with *.",
-    "chooseService": "Please choose a service.",
   },
   "services": {
     "title": "Service types",
