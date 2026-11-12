@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Field, Input, Card, SectionTitle } from "@/components/ui";
+import { Alert, Button, Field, Input, Card, SectionTitle, cn } from "@/components/ui";
 import { SelectMenu } from "@/components/ui/SelectMenu";
 import { GroupedNumberInput, SmartTextarea, ZipInput } from "@/components/ui/fields";
 import { PhoneInput } from "@/components/ui/PhoneInput";
@@ -31,7 +31,14 @@ export function RequestForm({
   useEffect(() => {
     mountedAt.current = Date.now();
   }, []);
+  // The service list is a custom menu, so the browser cannot enforce "required" on it: check it here.
+  const [serviceMissing, setServiceMissing] = useState(false);
   const submit = (fd: FormData) => {
+    if (services.length > 0 && String(fd.get("preferred_service") ?? "") === "") {
+      setServiceMissing(true);
+      document.getElementById("preferred_service")?.focus();
+      return;
+    }
     fd.set("rendered_at", String(mountedAt.current));
     formAction(fd);
   };
@@ -45,9 +52,9 @@ export function RequestForm({
     );
   }
 
-  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal"; smart?: TextMode; kind?: "zip" | "grouped" } = {}) => (
-    <Field label={label} htmlFor={name}>
-      {extra.kind === "zip" ? <ZipInput id={name} name={name} /> : extra.kind === "grouped" ? <GroupedNumberInput id={name} name={name} /> : extra.smart ? <SmartTextInput id={name} name={name} mode={extra.smart} autoComplete={extra.autoComplete} /> : type === "tel" ? <PhoneInput id={name} name={name} /> : type === "email" ? <EmailInput id={name} name={name} /> : <Input id={name} name={name} type={type} {...extra} />}
+  const f = (name: string, label: string, type = "text", extra: { autoComplete?: string; inputMode?: "numeric" | "decimal"; smart?: TextMode; kind?: "zip" | "grouped"; required?: boolean } = {}) => (
+    <Field label={extra.required ? `${label} *` : label} htmlFor={name}>
+      {extra.kind === "zip" ? <ZipInput id={name} name={name} /> : extra.kind === "grouped" ? <GroupedNumberInput id={name} name={name} /> : extra.smart ? <SmartTextInput id={name} name={name} mode={extra.smart} autoComplete={extra.autoComplete} required={extra.required} /> : type === "tel" ? <PhoneInput id={name} name={name} required={extra.required} /> : type === "email" ? <EmailInput id={name} name={name} required={extra.required} /> : <Input id={name} name={name} type={type} {...extra} />}
     </Field>
   );
 
@@ -62,11 +69,11 @@ export function RequestForm({
       <Card accent="blue" className="space-y-4">
         <SectionTitle accent="blue">{t("contact")}</SectionTitle>
         <div className="grid gap-4 sm:grid-cols-2">
-          {f("first_name", tf("form.firstName"), "text", { autoComplete: "given-name", smart: "name" })}
-          {f("last_name", tf("form.lastName"), "text", { autoComplete: "family-name", smart: "name" })}
+          {f("first_name", tf("form.firstName"), "text", { autoComplete: "given-name", smart: "name", required: true })}
+          {f("last_name", tf("form.lastName"), "text", { autoComplete: "family-name", smart: "name", required: true })}
           <div className="sm:col-span-2">{f("company_name", tf("form.companyName"), "text", { autoComplete: "organization" })}</div>
-          {f("email", tf("form.email"), "email", { autoComplete: "email" })}
-          {f("phone", tf("form.phone"), "tel", { autoComplete: "tel" })}
+          {f("email", tf("form.email"), "email", { autoComplete: "email", required: true })}
+          {f("phone", tf("form.phone"), "tel", { autoComplete: "tel", required: true })}
         </div>
       </Card>
 
@@ -87,8 +94,9 @@ export function RequestForm({
             <SelectMenu id="cleaning_frequency" name="cleaning_frequency" ariaLabel={tf("form.frequency")} options={[{ value: "", label: tf("form.choose") }, ...FREQUENCIES.map((x) => ({ value: x, label: tf(`frequency.${x}`) }))]} />
           </Field>
           {services.length > 0 && (
-            <Field label={tf("form.preferredService")} htmlFor="preferred_service">
-              <SelectMenu id="preferred_service" name="preferred_service" ariaLabel={tf("form.preferredService")} options={[{ value: "", label: tf("form.choose") }, ...services.map((name) => ({ value: name, label: name }))]} />
+            <Field label={`${tf("form.preferredService")} *`} htmlFor="preferred_service"> 
+              <SelectMenu id="preferred_service" name="preferred_service" ariaLabel={tf("form.preferredService")} onChange={() => setServiceMissing(false)} className={cn(serviceMissing && "!border-danger")} options={[{ value: "", label: tf("form.choose") }, ...services.map((name) => ({ value: name, label: name }))]} />
+              {serviceMissing && <p role="alert" className="text-sm text-danger">{t("chooseService")}</p>}
             </Field>
           )}
         </div>

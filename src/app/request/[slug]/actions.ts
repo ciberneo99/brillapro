@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
-export type RequestState = { error?: "invalid" | "contactNeeded" | "unavailable" | "tooMany" | "tooFast" | "failed"; done?: boolean } | undefined;
+export type RequestState = { error?: "invalid" | "required" | "contactNeeded" | "unavailable" | "tooMany" | "tooFast" | "failed"; done?: boolean } | undefined;
 
 const t = (max: number) => z.string().trim().max(max).optional().default("");
 const sn = (max: number) => z.string().trim().max(max).optional().default("").transform(normalizeSentences);
@@ -52,11 +52,16 @@ export async function submitQuoteRequest(slug: string, _: RequestState, formData
   const parsed = schema.safeParse(Object.fromEntries([...formData.entries()].filter(([, v]) => typeof v === "string")));
   if (!parsed.success) return { error: "invalid" };
   const d = parsed.data;
-  if (!d.email && !d.phone) return { error: "contactNeeded" };
-  if (d.email && !isValidEmail(d.email)) return { error: "invalid" };
-  if (`${d.first_name}${d.last_name}${d.company_name}`.trim() === "") return { error: "invalid" };
+  // First name, last name, email and phone are mandatory (the form marks them with *).
+  if (!d.first_name || !d.last_name || !d.email || d.phone.replace(/D/g, "").length < 10) return { error: "required" };
+  if (!isValidEmail(d.email)) return { error: "invalid" };
 
   const supabase = await createClient(); // no session: runs as the anonymous role
+  // A service is mandatory too, whenever the company offers any: it must be one of its active services.
+  const { data: services } = await supabase.rpc("public_request_services", { p_slug: slug.slice(0, 80) });
+  const offered = ((services ?? []) as { name: string }[]).map((x) => x.name.toLowerCase());
+  if (offered.length > 0 && !offered.includes(d.preferred_service.toLowerCase())) return { error: "required" };
+
   const { error } = await supabase.rpc("submit_quote_request", { p_slug: slug.slice(0, 80), p_data: d });
   if (!error) return { done: true };
   if (error.code === "P0002") return { error: "unavailable" };

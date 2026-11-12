@@ -503,6 +503,8 @@
   },
   "dashboardExtra": {
     "customersCount": "{count, plural, =0 {No active customers yet} one {# active customer} other {# active customers}}"
+    "required": "Please fill in all the fields marked with *.",
+    "chooseService": "Please choose a service.",
   },
   "services": {
     "title": "Service types",
