@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
@@ -65,13 +66,13 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
             </thead>
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-2">
+                <ClickableRow key={r.id} href={`/quotes/${r.id}`} className="hover:bg-surface-2">
                   <td className="p-3"><Link href={`/quotes/${r.id}`} className="font-medium text-primary hover:underline">{quoteNumber(qs.quote_prefix, r.number)}</Link></td>
                   <td className="p-3">{displayName(r)}{r.title && <span className="block text-xs text-muted">{r.title}</span>}</td>
                   <td className="p-3">{formatDateOnly(r.expires_on, ctx.settings.date_format)}</td>
                   <td className="p-3"><QuoteStatusBadge status={r.display_status} /></td>
                   <td className="p-3 text-right font-medium">{r.total_cents == null ? "—" : formatMoney(r.total_cents, ctx.settings.currency)}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

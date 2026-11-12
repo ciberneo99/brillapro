@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
@@ -65,14 +66,14 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
             </thead>
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-2">
+                <ClickableRow key={r.id} href={`/invoices/${r.id}`} className="hover:bg-surface-2">
                   <td className="p-3"><Link href={`/invoices/${r.id}`} className="font-medium text-primary hover:underline">{quoteNumber(settings.invoice_prefix, r.number)}</Link></td>
                   <td className="p-3">{r.customer_name}</td>
                   <td className="p-3">{formatDateOnly(r.due_date, ctx.settings.date_format)}</td>
                   <td className="p-3"><InvoiceStatusBadge status={r.display_status} /></td>
                   <td className="p-3 text-right">{formatMoney(r.total_cents ?? 0, cur)}</td>
                   <td className="p-3 text-right font-medium">{r.status === "sent" ? formatMoney(r.balance_cents ?? 0, cur) : "—"}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

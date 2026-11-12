@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
@@ -68,13 +69,13 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
             </thead>
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-2">
+                <ClickableRow key={r.id} href={`/jobs/${r.id}`} className="hover:bg-surface-2">
                   <td className="whitespace-nowrap p-3">{formatDateOnly(r.scheduled_date, ctx.settings.date_format)}{r.start_time && <span className="block text-xs text-muted">{formatTime(r.start_time)}</span>}</td>
                   <td className="p-3"><Link href={`/jobs/${r.id}`} className="font-medium text-primary hover:underline">{r.title}</Link><span className="block text-xs text-muted">{r.customer_name}</span></td>
                   <td className="p-3 text-muted">{r.address}</td>
                   <td className="p-3"><JobStatusBadge status={r.status} /></td>
                   {staff && <td className="p-3 text-right">{formatMoney(r.price_cents, ctx.settings.currency)}</td>}
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

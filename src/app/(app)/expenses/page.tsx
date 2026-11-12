@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CategoryPicker } from "@/components/bank/CategoryPicker";
@@ -95,13 +96,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
             </thead>
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-2">
+                <ClickableRow key={r.id} href={`/expenses/${r.id}`} className="hover:bg-surface-2">
                   <td className="p-3"><Link href={`/expenses/${r.id}`} className="font-medium text-primary hover:underline">{formatDateOnly(r.expense_date, ctx.settings.date_format)}</Link></td>
                   <td className="p-3">{r.vendor || r.description || "—"}</td>
                   <td className="p-3">{r.categoryName}</td>
                   <td className="p-3">{r.receipt_path ? "📎" : ""}</td>
                   <td className="p-3 text-right font-medium">{formatMoney(r.amount_cents, cur)}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

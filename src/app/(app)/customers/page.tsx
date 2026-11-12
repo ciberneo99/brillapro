@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import {
@@ -204,7 +205,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   const x = extras.get(c.id);
                   const addr = addressLine(c);
                   return (
-                    <tr key={c.id} className="align-top hover:bg-surface-2/60">
+                    <ClickableRow key={c.id} href={`/customers/${c.id}`} className="align-top hover:bg-surface-2/60">
                       <td className="min-w-40 max-w-48 px-2.5 py-4">
                         <Link href={`/customers/${c.id}`} className="text-base font-semibold hover:text-primary">{displayName(c) || t("unnamed")}</Link>
                         {c.company_name && displayName(c) !== c.company_name && <p className="text-xs text-muted">{c.company_name}</p>}
@@ -227,7 +228,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                       <td className="px-2.5 py-4"><Stars value={c.rating} label={c.rating ? t("list.stars", { count: c.rating }) : t("list.noRating")} /></td>
                       <td className="px-2.5 py-4">{owes(x)}</td>
                       <td className="px-2.5 py-4 text-right">{menu(c)}</td>
-                    </tr>
+                    </ClickableRow>
                   );
                 })}
               </tbody>
@@ -240,7 +241,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
               const x = extras.get(c.id);
               const addr = addressLine(c);
               return (
-                <li key={c.id} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+                <ClickableRow as="li" key={c.id} href={`/customers/${c.id}`} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <Link href={`/customers/${c.id}`} className="text-base font-semibold hover:text-primary">{displayName(c) || t("unnamed")}</Link>
@@ -261,7 +262,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                       <p>{owes(x)}</p>
                     </div>
                   </div>
-                </li>
+                </ClickableRow>
               );
             })}
           </ul>

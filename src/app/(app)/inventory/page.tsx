@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
@@ -47,7 +48,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
             </thead>
             <tbody className="divide-y divide-line">
               {items.map((i) => (
-                <tr key={i.id} className="hover:bg-surface-2">
+                <ClickableRow key={i.id} href={`/inventory/${i.id}`} className="hover:bg-surface-2">
                   <td className="p-3"><Link href={`/inventory/${i.id}`} className="font-medium text-primary hover:underline">{i.name}</Link></td>
                   <td className="p-3 text-right font-medium">{i.on_hand} <span className="text-muted">{i.unit}</span></td>
                   <td className="p-3 text-right text-muted">{i.min_quantity || "—"}</td>
@@ -56,7 +57,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                       : i.is_low ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs text-danger">{t("low")}</span>
                       : <span className="rounded-full bg-success-soft px-2 py-0.5 text-xs text-success">{t("ok")}</span>}
                   </td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>
