@@ -2001,7 +2001,7 @@
       "delete": "Eliminar seleccionados",
       "confirmDelete": "¿Eliminar los movimientos seleccionados?"
     },
-    "import": {
+    "import": { "withdrawalsOnly": "Modo gastos: solo se importan los retiros (débitos). Los depósitos del estado de cuenta se omiten.",
       "title": "Importar un estado de cuenta",
       "help": "Sube el PDF que te da tu banco. El archivo se lee en nuestro servidor y no se guarda. Revisas los movimientos antes de guardar nada.",
       "drop": "Arrastra aquí el PDF de tu estado de cuenta",

@@ -72,7 +72,7 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
       {sp.saved === "1" && <Alert tone="success">{tb("saved")}</Alert>}
       {sp.matched !== undefined && <Alert tone="success">{t("matchedCount", { count: Number(sp.matched) || 0 })}</Alert>}
 
-      {canWrite && <StatementImport categories={choices} currency={cur} dateFormat={ctx.settings.date_format} />}
+      {canWrite && <StatementImport categories={choices} currency={cur} dateFormat={ctx.settings.date_format} withdrawalsOnly />}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">

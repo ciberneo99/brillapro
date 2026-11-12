@@ -12,7 +12,7 @@ import { formatMoney } from "@/lib/money";
 import { importTransactions, previewStatement, type PreviewRow } from "@/modules/bank/actions";
 import { parseMoney } from "@/modules/bank/parse";
 
-export function StatementImport({ categories, currency, dateFormat }: { categories: CategoryChoice[]; currency: string; dateFormat: string }) {
+export function StatementImport({ categories, currency, dateFormat, withdrawalsOnly = false }: { categories: CategoryChoice[]; currency: string; dateFormat: string; withdrawalsOnly?: boolean }) {
   const t = useTranslations("bank");
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
@@ -34,7 +34,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
     start(async () => {
       const res = await previewStatement(body);
       if (res.ok) {
-        setName(res.fileName); setRows(res.rows.map((r) => ({ ...r, on: !r.duplicate })));
+        setName(res.fileName); setRows(res.rows.filter((r) => !withdrawalsOnly || r.amountCents < 0).map((r) => ({ ...r, on: !r.duplicate })));
         const plain = (c: number | null) => (c === null ? "" : (c / 100).toFixed(2));
         setPrev(plain(res.summary.beginningCents)); setBankEnd(plain(res.summary.endingCents));
         setPeriod(res.summary.periodStart && res.summary.periodEnd ? { start: res.summary.periodStart, end: res.summary.periodEnd } : null);
@@ -50,7 +50,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
     start(async () => {
       const res = await importTransactions({
         source: name,
-        statement: period && (prevCents !== null || endCents !== null) ? { beginningCents: prevCents, endingCents: endCents, periodStart: period.start, periodEnd: period.end } : null,
+        statement: !withdrawalsOnly && period && (prevCents !== null || endCents !== null) ? { beginningCents: prevCents, endingCents: endCents, periodStart: period.start, periodEnd: period.end } : null,
         rows: chosen.map((r) => ({ date: r.date, description: r.description, amountCents: r.amountCents, balanceCents: r.balanceCents, categoryId: r.categoryId, n: r.n })),
       });
       if (res.ok) { setDone({ added: res.added, skipped: res.skipped }); setRows(null); router.refresh(); }
@@ -71,6 +71,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
       <div>
         <h2 className="text-base font-semibold">{t("import.title")}</h2>
         <p className="text-sm text-muted">{t("import.help")}</p>
+        {withdrawalsOnly && <p className="mt-1 text-sm font-medium text-primary">{t("import.withdrawalsOnly")}</p>}
       </div>
       <div
         onDragOver={(e) => { e.preventDefault(); setOver(true); }}
@@ -92,7 +93,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
       {rows && (
         <div className="space-y-3">
           <p className="text-sm">{t("import.found", { count: rows.length, name })}</p>
-          <div className="space-y-2 rounded-lg border border-line bg-surface-2 p-3">
+          {!withdrawalsOnly && <div className="space-y-2 rounded-lg border border-line bg-surface-2 p-3">
             <p className="text-sm font-medium">{t("import.balances")}{period && <span className="ml-2 font-normal text-muted">{formatDateOnly(period.start, dateFormat)} – {formatDateOnly(period.end, dateFormat)}</span>}</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">{t("import.previousBalance")}
@@ -105,7 +106,7 @@ export function StatementImport({ categories, currency, dateFormat }: { categori
             {gap === null ? <p className="text-xs text-muted">{t("import.balanceHint")}</p>
               : gap === 0 ? <p className="text-sm font-medium text-success">{t("import.matches")}</p>
               : <p className="text-sm font-medium text-danger">{t("import.differs", { amount: formatMoney(Math.abs(gap), currency) })}</p>}
-          </div>
+          </div>}
           <div className="max-h-[28rem] overflow-auto rounded-lg border border-line">
             <table className="w-full min-w-[40rem] table-fixed text-sm">
               <colgroup><col className="w-10" /><col className="w-28" /><col /><col className="w-56" /><col className="w-28" /></colgroup>

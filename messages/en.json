@@ -2001,7 +2001,7 @@
       "delete": "Delete selected",
       "confirmDelete": "Delete the selected transactions?"
     },
-    "import": {
+    "import": { "withdrawalsOnly": "Expenses mode: only withdrawals (debits) are imported. Deposits in the statement are skipped.",
       "title": "Import a bank statement",
       "help": "Upload the PDF your bank gives you. The file is read on our server and is not stored. You review the transactions before anything is saved.",
       "drop": "Drag your statement PDF here",
