@@ -1,8 +1,8 @@
 // Small server-rendered SVG charts. No chart library: fewer dependencies, no client JS, and they follow the theme tokens.
 
-/** Rounds `max` up to a tidy axis ceiling and returns evenly spaced ticks. */
+/** Rounds `max` up to a tidy axis ceiling and returns evenly spaced ticks (cents). An empty chart still gets a $100 axis, so the ticks are always distinct. */
 export function niceTicks(max: number, count = 4): number[] {
-  const raw = Math.max(max, 1) / count;
+  const raw = Math.max(max, 10_000) / count;
   const mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
   return Array.from({ length: count + 1 }, (_, i) => Math.round(step * i));
@@ -22,10 +22,10 @@ function Grid({ ticks, top, F = FDEFAULT }: { ticks: number[]; top: number; F?: 
   const ih = F.h - F.t - F.b;
   return (
     <>
-      {ticks.map((v) => {
+      {ticks.map((v, i) => {
         const y = F.t + ih - (v / top) * ih;
         return (
-          <g key={v}>
+          <g key={i}>
             <line x1={F.l} x2={F.w - F.r} y1={y} y2={y} stroke="var(--line)" strokeDasharray={v === 0 ? undefined : "3 4"} />
             <text x={F.l - 8} y={y + 4} textAnchor="end" fontSize="11" fill="var(--fg-muted)">{compact(v)}</text>
           </g>
