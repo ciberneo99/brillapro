@@ -2,7 +2,7 @@ import { Document, Image as PdfImage, Page, StyleSheet, Text, View } from "@reac
 import { formatDateOnly } from "@/lib/dates";
 import { addressLines, displayUrl } from "@/lib/business";
 import { formatMoney, quoteNumber } from "@/lib/money";
-import { DEFAULT_BRAND, LOGO_DIMS, type LogoSize } from "@/lib/brand-color";
+import { DEFAULT_BRAND, LOGO_DIMS, readableOnWhite, textOn, type LogoSize } from "@/lib/brand-color";
 import type { InvoiceDetail } from "./queries";
 
 const L = {
@@ -32,11 +32,11 @@ const makeStyles = (TEAL: string, logoBox: { h: number; w: number }) => StyleShe
   row: { flexDirection: "row", justifyContent: "space-between" },
   logo: { maxHeight: logoBox.h, maxWidth: logoBox.w, objectFit: "contain", objectPositionX: 0 },
   logoBox: { width: 48, height: 48, borderRadius: 8, backgroundColor: TEAL, alignItems: "center", justifyContent: "center" },
-  logoLetter: { color: "#ffffff", fontSize: 24, fontFamily: "Helvetica-Bold" },
+  logoLetter: { color: textOn(TEAL), fontSize: 24, fontFamily: "Helvetica-Bold" },
   biz: { fontSize: 15, fontFamily: "Helvetica-Bold", marginBottom: 4 },
   muted: { color: MUTED, marginBottom: 2 },
   pill: { alignSelf: "flex-end", borderRadius: 10, paddingVertical: 3, paddingHorizontal: 12, color: "#ffffff", fontSize: 9, fontFamily: "Helvetica-Bold" },
-  h1: { fontSize: 24, fontFamily: "Helvetica-Bold", color: TEAL, marginTop: 8, marginBottom: 6, textAlign: "right" },
+  h1: { fontSize: 24, fontFamily: "Helvetica-Bold", color: readableOnWhite(TEAL, 3), marginTop: 8, marginBottom: 6, textAlign: "right" },
   meta: { flexDirection: "row", justifyContent: "flex-end", marginTop: 3 },
   metaLabel: { color: MUTED, width: 52, textAlign: "right", paddingRight: 8 },
   metaValue: { width: 70, textAlign: "right", fontFamily: "Helvetica-Bold" },
@@ -44,7 +44,7 @@ const makeStyles = (TEAL: string, logoBox: { h: number; w: number }) => StyleShe
   billLabel: { fontSize: 10, fontFamily: "Helvetica-Bold" },
   customer: { fontSize: 14, fontFamily: "Helvetica-Bold", textAlign: "right", marginBottom: 3 },
   right: { textAlign: "right", color: MUTED, marginBottom: 2 },
-  th: { flexDirection: "row", backgroundColor: TEAL, color: "#ffffff", paddingVertical: 6, paddingHorizontal: 8, fontFamily: "Helvetica-Bold", marginTop: 14 },
+  th: { flexDirection: "row", backgroundColor: TEAL, color: textOn(TEAL), paddingVertical: 6, paddingHorizontal: 8, fontFamily: "Helvetica-Bold", marginTop: 14 },
   tr: { flexDirection: "row", paddingVertical: 8, paddingHorizontal: 8, borderBottomWidth: 0.5, borderBottomColor: LINE },
   c1: { flex: 5 }, c2: { flex: 1, textAlign: "right" }, c3: { flex: 1.6, textAlign: "right" }, c4: { flex: 1.6, textAlign: "right" },
   totals: { marginTop: 14, alignSelf: "flex-end", width: 230 },
@@ -148,7 +148,7 @@ export function InvoicePdf({
           {invoice.tax_rate > 0 && <View style={s.tl}><Text style={{ color: MUTED }}>{t.tax} ({invoice.tax_rate}%)</Text><Text>{m(x.tax_cents)}</Text></View>}
           <View style={s.tl}><Text style={s.bold}>{t.total}</Text><Text style={s.bold}>{m(x.total_cents)}</Text></View>
           <View style={s.tl}><Text style={{ color: MUTED }}>{t.paid}</Text><Text style={{ color: GREEN }}>{m(x.paid_cents)}</Text></View>
-          <View style={[s.balance, { backgroundColor: balanceColor }]}><Text>{t.balance}</Text><Text>{m(x.balance_cents)}</Text></View>
+          <View style={[s.balance, { backgroundColor: balanceColor, color: textOn(balanceColor) }]}><Text>{t.balance}</Text><Text>{m(x.balance_cents)}</Text></View>
         </View>
 
         {invoice.payments.length > 0 && (

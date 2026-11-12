@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Alert, Button, Card, cn } from "@/components/ui";
 import { matchLogoColor, removeLogo, resetBrandColor, saveBrand, uploadLogo } from "@/app/(app)/settings/actions";
-import { DEFAULT_BRAND, LOGO_SIZES, readableOnWhite, type LogoSize } from "@/lib/brand-color";
+import { DEFAULT_BRAND, LOGO_SIZES, textOn, type LogoSize } from "@/lib/brand-color";
 
 const OK = ["saved", "removed", "brand", "brandreset"];
 
@@ -46,7 +46,7 @@ export async function LogoCard({
             </label>
             <div className="min-w-48 flex-1">
               <p className="mb-1 text-xs text-muted">{t("sample")}</p>
-              <div className="rounded-md px-3 py-2 text-xs font-semibold text-white" style={{ backgroundColor: readableOnWhite(color) }}>{t("sampleText")}</div>
+              <div className="rounded-md px-3 py-2 text-xs font-semibold" style={{ backgroundColor: color, color: textOn(color) }}>{t("sampleText")}</div>
             </div>
           </div>
 

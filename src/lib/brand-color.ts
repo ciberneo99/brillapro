@@ -35,3 +35,6 @@ export function readableOnWhite(hex: string, minContrast = 4.5): string {
   for (let i = 0; i < 40 && contrastWithWhite(toHex(rgb)) < minContrast; i++) rgb = rgb.map((v) => v * 0.94) as Rgb;
   return toHex(rgb);
 }
+
+/** Text color to print on top of a brand-colored area: white, or near-black when the color is too light for white. */
+export const textOn = (hex: string): string => (isHexColor(hex) && contrastWithWhite(hex) < 3 ? "#1f2937" : "#ffffff");

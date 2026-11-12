@@ -1,7 +1,6 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { fullAddress } from "@/lib/business";
-import { readableOnWhite } from "@/lib/brand-color";
 import { getBrand, logoForPdf } from "@/lib/logo-server";
 import { quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -27,7 +26,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
-      brand: brand.color ? readableOnWhite(brand.color) : null, logoSize: brand.size,
+      brand: brand.color, logoSize: brand.size,
       invoice, logo, customerPhone: invoice.customer_phone ?? (invoice.status === "draft" ? cust?.phone ?? null : null), customerCompany: cust?.company_name || null, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
       business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), website: s.website, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],
