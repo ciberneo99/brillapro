@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
+import { QuoteCalculator } from "@/components/quotes/QuoteCalculator";
 import { QuoteStatusBadge } from "@/components/quotes/QuoteStatusBadge";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney, quoteNumber } from "@/lib/money";
@@ -42,6 +43,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           {can(ctx.role, "settings:read") && (
             <Link href="/settings/quotes" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("settings")}</Link>
           )}
+          {can(ctx.role, "quotes:write") && <QuoteCalculator currency={ctx.settings.currency} />}
           {can(ctx.role, "quotes:write") && (
             <Link href="/quotes/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>
           )}

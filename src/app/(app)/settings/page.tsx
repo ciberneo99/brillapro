@@ -25,6 +25,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const tt = await getTranslations("team");
   const ti = await getTranslations("invoices");
   const tx = await getTranslations("expenses");
+  const tpr = await getTranslations("pricing.settings");
   const theme = await getTheme();
   const s = ctx.settings;
   const logo = await logoUrl(s.logo_path);
@@ -56,6 +57,23 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </Card>
         </Link>
       )}
+
+      {can(ctx.role, "quotes:read") && (
+
+        <Link href="/settings/pricing" className="block">
+
+          <Card accent="violet" className="transition-shadow hover:shadow-md">
+
+            <h2 className="text-base font-semibold">{tpr("title")}</h2>
+
+            <p className="mt-1 text-sm text-muted">{tpr("cardIntro")}</p>
+
+          </Card>
+
+        </Link>
+
+      )}
+
 
       {can(ctx.role, "invoices:read") && (
         <Link href="/settings/invoices" className="block">
