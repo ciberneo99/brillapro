@@ -26,7 +26,7 @@ export function MoreActions({ canImport }: { canImport: boolean }) {
     return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
   }, [menu]);
 
-  const item = "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-surface-2";
+  const item = "bp-fx-item flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-primary-soft hover:text-primary";
   return (
     <div ref={wrap} className="relative">
       <button

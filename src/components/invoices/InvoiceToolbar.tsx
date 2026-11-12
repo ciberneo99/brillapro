@@ -13,7 +13,7 @@ type Props = {
   balanceText: string; today: string; currency: string; dateFormat: string;
 };
 
-const item = "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50";
+const item = "bp-fx-item flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-primary-soft hover:text-primary disabled:cursor-not-allowed disabled:opacity-50";
 
 /** Top-right of the invoice page: Back, Add payment, and the Actions menu. */
 export function InvoiceToolbar(p: Props) {
@@ -69,7 +69,7 @@ export function InvoiceToolbar(p: Props) {
           {t("toolbar.actions")}<ChevronDown className="ml-1 h-4 w-4" aria-hidden />
         </Button>
         {menu && (
-          <div role="menu" className="absolute right-0 z-30 mt-1 w-60 overflow-hidden rounded-lg border border-line bg-surface py-1 shadow-lg">
+          <div role="menu" className="absolute right-0 z-30 mt-1 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-lg">
             {p.canWrite && p.draft && (
               <button type="submit" form="invoice-form" role="menuitem" className={item} onClick={() => setMenu(false)}><Save className="h-4 w-4" aria-hidden />{t("toolbar.save")}</button>
             )}
@@ -88,12 +88,12 @@ export function InvoiceToolbar(p: Props) {
             <a role="menuitem" className={item} href={`/invoices/${p.id}/pdf?download=1`} onClick={() => setMenu(false)}><Download className="h-4 w-4" aria-hidden />{t("toolbar.download")}</a>
             {p.canWrite && p.canVoid && (
               <form action={voidInvoice.bind(null, p.id)} onSubmit={confirmThen(t("toolbar.confirmVoid"))}>
-                <button type="submit" role="menuitem" className={cn(item, "text-danger")}><Ban className="h-4 w-4" aria-hidden />{t("void")}</button>
+                <button type="submit" role="menuitem" className={cn(item, "text-danger hover:text-danger")}><Ban className="h-4 w-4" aria-hidden />{t("void")}</button>
               </form>
             )}
             {p.canWrite && p.draft && (
               <form action={deleteInvoice.bind(null, p.id)} onSubmit={confirmThen(t("toolbar.confirmDelete"))}>
-                <button type="submit" role="menuitem" className={cn(item, "border-t border-line text-danger")}><Trash2 className="h-4 w-4" aria-hidden />{t("toolbar.delete")}</button>
+                <button type="submit" role="menuitem" className={cn(item, "text-danger hover:text-danger")}><Trash2 className="h-4 w-4" aria-hidden />{t("toolbar.delete")}</button>
               </form>
             )}
           </div>
