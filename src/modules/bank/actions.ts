@@ -15,10 +15,10 @@ import { categorySchema, editSchema, importSchema, MAX_PDF_BYTES, toCents } from
 const BASE = "/reports/bank";
 const raw = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === "string"));
 const key = (t: ParsedTx, n: number) => createHash("sha1").update(dedupeInput(t, n)).digest("hex");
-/** Only ever go back to a page inside the bank reports. */
+/** Only ever go back to a page inside the bank reports or the bank tab of Expenses. */
 const back = (f: FormData, extra = "") => {
   const to = String(f.get("back") ?? "");
-  const path = to.startsWith(BASE) && !to.startsWith("//") ? to : BASE;
+  const path = (to.startsWith(BASE) || to.startsWith("/expenses/bank")) && !to.startsWith("//") ? to : BASE;
   return extra ? `${path}${path.includes("?") ? "&" : "?"}${extra}` : path;
 };
 
@@ -123,7 +123,7 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
       { onConflict: "tenant_id,period_start,period_end" },
     );
   }
-  revalidatePath(BASE);
+  revalidatePath(BASE); revalidatePath("/expenses/bank");
   return { ok: true, added, skipped: records.length - added, healed };
 }
 
@@ -137,7 +137,7 @@ export async function updateTransaction(id: string, formData: FormData) {
   const { type, notes, ...rest } = p.data;
   const supabase = await createClient();
   const { error } = await supabase.from("bank_transactions").update({ ...rest, notes: notes || null, amount_cents: type === "in" ? cents : -cents }).eq("id", id);
-  revalidatePath(BASE);
+  revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData, error ? "error=invalid" : "saved=1"));
 }
 
@@ -145,7 +145,7 @@ export async function deleteTransaction(id: string, formData: FormData) {
   await guard();
   const supabase = await createClient();
   await supabase.from("bank_transactions").delete().eq("id", id);
-  revalidatePath(BASE);
+  revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData));
 }
 
@@ -158,7 +158,7 @@ export async function bulkCategorize(formData: FormData) {
   if (!list.length || (cat !== "none" && !/^[0-9a-f-]{36}$/i.test(cat))) redirect(back(formData, "error=select"));
   const supabase = await createClient();
   const { error } = await supabase.from("bank_transactions").update({ category_id: cat === "none" ? null : cat }).in("id", list);
-  revalidatePath(BASE);
+  revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData, error ? "error=invalid" : "saved=1"));
 }
 
@@ -174,7 +174,7 @@ export async function bulkDelete(formData: FormData) {
   if (!list.length) redirect(back(formData, "error=select"));
   const supabase = await createClient();
   await supabase.from("bank_transactions").delete().in("id", list);
-  revalidatePath(BASE);
+  revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData));
 }
 
@@ -187,7 +187,7 @@ async function categoryGuard() {
 }
 const catBack = (f: FormData) => { const to = String(f.get("back") ?? ""); return CAT_PAGES.includes(to) ? to : CAT_PAGES[0]; };
 const withQ = (path: string, q: string) => `${path}${path.includes("?") ? "&" : "?"}${q}`;
-function refreshCategories() { revalidatePath(BASE); revalidatePath("/expenses", "layout"); revalidatePath("/settings/expense-categories"); }
+function refreshCategories() { revalidatePath(BASE); revalidatePath("/expenses/bank"); revalidatePath("/expenses", "layout"); revalidatePath("/settings/expense-categories"); }
 
 export async function addBankCategory(formData: FormData) {
   const ctx = await categoryGuard();

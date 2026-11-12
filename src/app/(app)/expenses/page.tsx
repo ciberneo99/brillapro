@@ -2,7 +2,10 @@ import Link from "next/link";
 import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Paperclip } from "lucide-react";
 import { CategoryPicker } from "@/components/bank/CategoryPicker";
+import { ExpensesTabs } from "@/components/expenses/ExpensesTabs";
+import { reportInPlan } from "@/modules/reports/catalog";
 import { Button, Card } from "@/components/ui";
 import { formatDateOnly } from "@/lib/dates";
 import { addDays, addMonths, todayIso } from "@/lib/calendar";
@@ -20,6 +23,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
   if (!can(ctx.role, "expenses:read")) redirect("/dashboard");
   const sp = await searchParams;
   const t = await getTranslations("expenses");
+  const tb = await getTranslations("expensesBank");
+  const showBank = can(ctx.role, "bank:read") && reportInPlan("bank_reports", ctx.planId);
   const cur = ctx.settings.currency;
   const today = todayIso(ctx.settings.timezone);
   const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(sp.month ?? "") ? sp.month! : today.slice(0, 7);
@@ -50,10 +55,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <div className="flex gap-2">
+          {can(ctx.role, "expenses:write") && <Link href="/expenses/new" className={btn} title={tb("uploadReceiptTop")}><Paperclip className="mr-2 h-4 w-4" aria-hidden />{tb("uploadReceiptTop")}</Link>}
           {can(ctx.role, "settings:read") && <Link href="/settings/expense-categories" className={btn}>{t("categories")}</Link>}
           {can(ctx.role, "expenses:write") && <Link href="/expenses/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
         </div>
       </div>
+
+      {showBank && <ExpensesTabs active="expenses" />}
 
       <div className="flex items-center gap-2">
         <Link href={href({ month: addMonths(first, -1).slice(0, 7), page: "" })} className={btn} aria-label={t("prevMonth")}>←</Link>
