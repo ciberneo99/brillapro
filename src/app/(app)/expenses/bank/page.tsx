@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Link2, Paperclip, Unlink, X } from "lucide-react";
+import { Eye, FileText, Link2, Paperclip, Unlink, X } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { CategoryChoice } from "@/components/bank/CategoryPicker";
 import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
@@ -33,6 +33,7 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
   const canWrite = can(ctx.role, "bank:write");
   const sp = await searchParams;
   const t = await getTranslations("expensesBank");
+  const tr = await getTranslations("reports");
   const tb = await getTranslations("bank");
   const locale = await getLocale();
   const cur = ctx.settings.currency;
@@ -81,6 +82,8 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
           <Link href={href({ month: addMonths(first, 1).slice(0, 7) })} className={btn} aria-label={t("nextMonth")}>→</Link>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <a href={`/reports/bank/pdf?type=out&sort=asc&month=${month}`} target="_blank" rel="noopener" className={btn}><Eye className="mr-2 h-4 w-4" aria-hidden />{tr("previewPdf")}</a>
+          <a href={`/reports/bank/pdf?type=out&sort=asc&month=${month}&download=1`} className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:opacity-90"><FileText className="mr-2 h-4 w-4" aria-hidden />{tr("downloadPdf")}</a>
           <Link href={href({ missing: onlyMissing ? "0" : "1" })} className={btn} aria-pressed={onlyMissing}>{onlyMissing ? t("showAll") : t("onlyMissing")}</Link>
           {canWrite && stats.suggested > 0 && (
             <form action={autoMatchMonth}>

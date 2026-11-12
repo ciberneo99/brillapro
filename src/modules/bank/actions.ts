@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/permissions";
 import { getAppContext, requireContext } from "@/lib/session";
 import { dedupeInput, parseStatement, suggestCategory, type ParsedTx, type StatementSummary } from "./parse";
+import { learnChoices, learnedCategories } from "./learned";
 import { categorySchema, editSchema, importSchema, MAX_PDF_BYTES, toCents } from "./schema";
 
 const BASE = "/reports/bank";
@@ -56,12 +57,13 @@ export async function previewStatement(formData: FormData): Promise<PreviewResul
   const { data: cats } = await supabase.from("bank_categories").select("id,name,keywords,parent_id").eq("is_active", true);
   const incomeParents = new Set((cats ?? []).filter((c) => !c.parent_id && c.name.trim().toLowerCase() === "income").map((c) => c.id));
   const leaves = (cats ?? []).filter((c) => c.keywords.trim()).map((c) => ({ id: c.id, keywords: c.keywords, income: incomeParents.has(c.parent_id ?? "") }));
+  const learned = await learnedCategories(supabase, transactions.map((t) => t.description));
   const seen = new Map<string, number>();
-  const rows = transactions.map((t) => {
+  const rows = transactions.map((t, i) => {
     const base = dedupeInput(t, 0);
     const n = seen.get(base) ?? 0;
     seen.set(base, n + 1);
-    return { ...t, n, categoryId: suggestCategory(t.description, leaves, t.amountCents > 0), duplicate: false };
+    return { ...t, n, categoryId: learned[i] ?? suggestCategory(t.description, leaves, t.amountCents > 0), duplicate: false };
   });
   const keys = rows.map((r) => key(r, r.n));
   const existing = new Set<string>();
@@ -93,6 +95,18 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
     tenant_id: ctx.tenant.id, tx_date: r.date, description: r.description, amount_cents: r.amountCents, balance_cents: r.balanceCents,
     category_id: r.categoryId, source: p.data.source || null, dedupe_key: key({ date: r.date, description: r.description, amountCents: r.amountCents, balanceCents: r.balanceCents }, r.n), created_by: ctx.userId,
   }));
+  // Learn what the person changed in the preview: the importer would have suggested something else.
+  {
+    const { data: cats } = await supabase.from("bank_categories").select("id,name,keywords,parent_id").eq("is_active", true);
+    const incomeParents = new Set((cats ?? []).filter((c) => !c.parent_id && c.name.trim().toLowerCase() === "income").map((c) => c.id));
+    const leaves = (cats ?? []).filter((c) => c.keywords.trim()).map((c) => ({ id: c.id, keywords: c.keywords, income: incomeParents.has(c.parent_id ?? "") }));
+    const learned = await learnedCategories(supabase, p.data.rows.map((r) => r.description));
+    const picks = p.data.rows.flatMap((r, i) => {
+      const suggested = learned[i] ?? suggestCategory(r.description, leaves, r.amountCents > 0);
+      return r.categoryId && r.categoryId !== suggested ? [{ description: r.description, to: r.categoryId, from: suggested }] : [];
+    });
+    await learnChoices(supabase, ctx.tenant.id, picks);
+  }
   let healed = 0;
   // Rows saved by an older import with the wrong direction (a deposit stored as a withdrawal, or the reverse) are corrected in place
   // instead of being duplicated: same date and balance, opposite sign, and the same start of description.
@@ -128,7 +142,7 @@ export async function importTransactions(payload: unknown): Promise<ImportResult
 }
 
 export async function updateTransaction(id: string, formData: FormData) {
-  await guard();
+  const ctx = await guard();
   const f = raw(formData);
   const p = editSchema.safeParse({ tx_date: f.tx_date, description: f.description, category_id: f.category_id || null, type: f.type, notes: f.notes ?? "" });
   const cents = toCents(String(f.amount ?? ""));
@@ -136,7 +150,9 @@ export async function updateTransaction(id: string, formData: FormData) {
   // Income is money in (positive), expense is money out (negative): this is what moves the amount between the columns.
   const { type, notes, ...rest } = p.data;
   const supabase = await createClient();
+  const { data: before } = await supabase.from("bank_transactions").select("category_id").eq("id", id).maybeSingle();
   const { error } = await supabase.from("bank_transactions").update({ ...rest, notes: notes || null, amount_cents: type === "in" ? cents : -cents }).eq("id", id);
+  if (!error && rest.category_id && rest.category_id !== before?.category_id) await learnChoices(supabase, ctx.tenant.id, [{ description: rest.description, to: rest.category_id, from: before?.category_id }]);
   revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData, error ? "error=invalid" : "saved=1"));
 }
@@ -152,12 +168,14 @@ export async function deleteTransaction(id: string, formData: FormData) {
 const ids = (f: FormData) => f.getAll("ids").filter((v): v is string => typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v)).slice(0, 500);
 
 export async function bulkCategorize(formData: FormData) {
-  await guard();
+  const ctx = await guard();
   const list = ids(formData);
   const cat = String(formData.get("bulk_category") ?? "");
   if (!list.length || (cat !== "none" && !/^[0-9a-f-]{36}$/i.test(cat))) redirect(back(formData, "error=select"));
   const supabase = await createClient();
+  const { data: before } = cat === "none" ? { data: [] } : await supabase.from("bank_transactions").select("description,category_id").in("id", list);
   const { error } = await supabase.from("bank_transactions").update({ category_id: cat === "none" ? null : cat }).in("id", list);
+  if (!error && cat !== "none") await learnChoices(supabase, ctx.tenant.id, (before ?? []).map((b) => ({ description: b.description, to: cat, from: b.category_id })));
   revalidatePath(BASE); revalidatePath("/expenses/bank");
   redirect(back(formData, error ? "error=invalid" : "saved=1"));
 }
