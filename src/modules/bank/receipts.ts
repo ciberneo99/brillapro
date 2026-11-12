@@ -8,7 +8,10 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { reportInPlan } from "@/modules/reports/catalog";
+import { listCategories } from "@/modules/expenses/queries";
+import { readReceipt } from "@/modules/expenses/receipt-ai";
 import { checkReceipt } from "@/modules/expenses/schema";
+import { todayIso } from "@/lib/calendar";
 import { autoPairs } from "./match";
 
 const HOME = "/expenses/bank";
@@ -34,7 +37,7 @@ export async function uploadTxReceipt(id: string, formData: FormData) {
   const check = checkReceipt(file);
   if ("error" in check) redirect(back(formData, `error=${check.error}`));
   const supabase = await createClient();
-  const { data: tx } = await supabase.from("bank_transactions").select("receipt_path").eq("id", id).maybeSingle();
+  const { data: tx } = await supabase.from("bank_transactions").select("receipt_path,category_id").eq("id", id).maybeSingle();
   if (!tx) redirect(back(formData));
   const path = `${ctx.tenant.id}/bank/${id}/${randomUUID()}.${check.ext}`;
   const { error } = await supabase.storage.from("receipts").upload(path, file, { contentType: file.type, upsert: false });
@@ -42,8 +45,17 @@ export async function uploadTxReceipt(id: string, formData: FormData) {
   const { error: linkError } = await supabase.from("bank_transactions").update({ receipt_path: path }).eq("id", id);
   if (linkError) { await supabase.storage.from("receipts").remove([path]); redirect(back(formData, "error=upload")); }
   if (tx.receipt_path) await supabase.storage.from("receipts").remove([tx.receipt_path]);
+
+  // With the AI reader on, an uncategorized line gets the category the receipt points to (it can be changed with the pencil).
+  let filled = false;
+  if (!tx.category_id) {
+    const cats = (await listCategories({ activeOnly: true })).map((c) => ({ id: c.id, name: c.label }));
+    const read = await readReceipt({ base64: Buffer.from(await file.arrayBuffer()).toString("base64"), mediaType: file.type }, cats, todayIso(ctx.settings.timezone));
+    const pick = read.ok ? read.suggestion.category_id : null;
+    if (pick) { const { error: e } = await supabase.from("bank_transactions").update({ category_id: pick }).eq("id", id); filled = !e; }
+  }
   refresh();
-  redirect(back(formData, "saved=receipt"));
+  redirect(back(formData, filled ? "saved=receiptcat" : "saved=receipt"));
 }
 
 export async function removeTxReceipt(id: string, formData: FormData) {

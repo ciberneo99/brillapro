@@ -57,7 +57,7 @@ export function ReceiptScanner({ aiEnabled }: { aiEnabled: boolean }) {
     <div className="space-y-2">
       <input
         ref={input} id="receipt" name="receipt" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"
-        onChange={(e) => { setHasFile(Boolean(e.target.files?.length)); setMessage(null); }} className="block w-full text-sm"
+        onChange={(e) => { const has = Boolean(e.target.files?.length); setHasFile(has); setMessage(null); if (has && aiEnabled) void scan(); }} className="block w-full text-sm"
       />
       {aiEnabled && hasFile && (
         <div className="space-y-1">

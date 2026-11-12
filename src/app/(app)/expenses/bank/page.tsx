@@ -67,6 +67,7 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
 
       {err && <Alert>{err}</Alert>}
       {sp.saved === "receipt" && <Alert tone="success">{t("savedReceipt")}</Alert>}
+      {sp.saved === "receiptcat" && <Alert tone="success">{t("savedReceiptCat")}</Alert>}
       {sp.saved === "linked" && <Alert tone="success">{t("savedLinked")}</Alert>}
       {sp.saved === "1" && <Alert tone="success">{tb("saved")}</Alert>}
       {sp.matched !== undefined && <Alert tone="success">{t("matchedCount", { count: Number(sp.matched) || 0 })}</Alert>}
