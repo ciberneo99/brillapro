@@ -108,7 +108,7 @@ export default async function DashboardPage() {
               <Plus className="h-4 w-4" aria-hidden /> {t("new.button")}
             </summary>
             <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-line bg-surface p-1.5 shadow-card">
-              {quick.map((q) => <Link key={q.href} href={q.href} className="block rounded-lg px-3 py-2 text-sm hover:bg-surface-2">{q.label}</Link>)}
+              {quick.map((q) => <Link key={q.href} href={q.href} className="bp-fx-item block rounded-lg px-3 py-2 text-sm hover:bg-primary-soft hover:text-primary">{q.label}</Link>)}
             </div>
           </details>
         )}

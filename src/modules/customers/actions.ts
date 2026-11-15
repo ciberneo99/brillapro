@@ -85,6 +85,18 @@ export async function changeCustomerStatus(id: string, action: "archive" | "inac
   redirect(`/customers/${id}${error?.message.includes("limit") ? "?error=limit" : ""}`);
 }
 
+/** "Delete" from the customers list: archives the customer (history is kept) and returns to the same list with a confirmation. */
+export async function removeCustomerFromList(id: string, back: string) {
+  const ctx = await requireContext();
+  const list = back.startsWith("/customers") && !back.startsWith("//") ? back.split("#")[0] : "/customers";
+  const to = (q: string) => { const [path, qs = ""] = list.split("?"); const sp = new URLSearchParams(qs); sp.delete("removed"); sp.delete("removeError"); for (const [k, v] of new URLSearchParams(q)) sp.set(k, v); return `${path}?${sp.toString()}`; };
+  if (!can(ctx.role, "customers:write")) redirect(to("removeError=1"));
+  const supabase = await createClient();
+  const { error } = await supabase.from("customers").update({ status: "archived" }).eq("id", id);
+  revalidatePath("/customers");
+  redirect(to(error ? "removeError=1" : "removed=1"));
+}
+
 /** Adds customers from a CSV. Valid rows are saved, the rest are reported one by one; nothing is ever overwritten. */
 export async function importCustomers(formData: FormData): Promise<ImportResult> {
   const ctx = await requireContext();

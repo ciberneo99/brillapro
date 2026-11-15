@@ -6,12 +6,12 @@ import {
   AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, PawPrint, Phone, Plus, Ruler, Search,
 } from "lucide-react";
 import { CustomerMenu } from "@/components/customers/CustomerMenu";
-import { changeCustomerStatus } from "@/modules/customers/actions";
+import { removeCustomerFromList } from "@/modules/customers/actions";
 import { MoreActions } from "@/components/customers/MoreActions";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { Stars } from "@/components/customers/Stars";
 import { TimeBar } from "@/components/customers/TimeBar";
-import { Button, Select, cn } from "@/components/ui";
+import { Alert, Button, Select, cn } from "@/components/ui";
 import { formatMoney } from "@/lib/money";
 import { mapsUrl } from "@/lib/maps";
 import { can } from "@/lib/permissions";
@@ -22,7 +22,7 @@ import { displayName, FREQUENCIES, PROPERTY_TYPES, STATUSES, type CustomerRow } 
 
 export const metadata = { title: "Customers" };
 
-type SP = { q?: string; status?: string; sort?: string; page?: string; type?: string; freq?: string; rating?: string; sqft?: string };
+type SP = { q?: string; status?: string; sort?: string; page?: string; type?: string; freq?: string; rating?: string; sqft?: string; removed?: string; removeError?: string };
 
 const addressLine = (c: CustomerRow) => [c.service_address, [c.city, [c.state, c.zip_code].filter(Boolean).join(" ")].filter(Boolean).join(", ")].filter(Boolean).join(", ");
 
@@ -57,7 +57,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   const menu = (c: CustomerRow) => (
     <CustomerMenu
       id={c.id} labels={menuLabels} canEdit={canWrite} canQuote={can(ctx.role, "quotes:write")} canJob={can(ctx.role, "jobs:write")}
-      removeAction={canWrite && c.status !== "archived" ? changeCustomerStatus.bind(null, c.id, "archive") : undefined}
+      removeAction={canWrite && c.status !== "archived" ? removeCustomerFromList.bind(null, c.id, href({})) : undefined}
     />
   );
 
@@ -81,6 +81,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto min-w-0 max-w-7xl space-y-5">
       <input id="adv-toggle" type="checkbox" defaultChecked={hasAdv} aria-label={t("list.advanced")} className="peer sr-only" />
+      {sp.removed && <Alert tone="success">{t("list.removed")}</Alert>}
+      {sp.removeError && <Alert>{t("list.removeError")}</Alert>}
       <div className="flex flex-wrap items-center gap-3" style={{ marginTop: 0 }}>
         <form method="get" role="search" className="relative min-w-56 flex-1">
           {status && <input type="hidden" name="status" value={status} />}

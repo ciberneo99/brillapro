@@ -418,6 +418,8 @@
       "newJob": "New job",
       "delete": "Delete",
       "confirmDelete": "Delete this customer? It is archived: it disappears from the list but its history is kept, and you can restore it later.",
+      "removed": "Customer deleted. It was archived, so its history is kept and you can restore it from the Archived filter.",
+      "removeError": "The customer could not be deleted.",
       "noJobs": "No jobs for this customer yet.",
       "newInvoice": "New invoice",
       "noInvoices": "No invoices for this customer yet.",

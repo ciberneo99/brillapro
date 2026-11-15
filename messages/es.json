@@ -418,6 +418,8 @@
       "newJob": "Nuevo trabajo",
       "delete": "Eliminar",
       "confirmDelete": "¿Eliminar este cliente? Se archiva: sale de la lista pero conserva su historial y puedes restaurarlo después.",
+      "removed": "Cliente eliminado. Quedó archivado: su historial se conserva y puedes restaurarlo desde el filtro Archivado.",
+      "removeError": "No se pudo eliminar al cliente.",
       "noJobs": "Este cliente aún no tiene trabajos.",
       "newInvoice": "Nueva factura",
       "noInvoices": "Este cliente aún no tiene facturas.",
