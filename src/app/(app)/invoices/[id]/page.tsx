@@ -81,7 +81,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           </p>
         </div>
         <InvoiceToolbar
-          id={id} draft={draft} canWrite={canWrite} canVoid={inv.status === "sent" && x.paid_cents === 0} canPay={open} mailto={mailto} resend={!draft}
+          id={id} status={inv.status} draft={draft} canWrite={canWrite} canVoid={inv.status === "sent" && x.paid_cents === 0} canPay={open} mailto={mailto} resend={!draft}
           balanceText={centsToMoneyText(x.balance_cents)} today={today} currency={cur} dateFormat={fmt}
         />
       </div>

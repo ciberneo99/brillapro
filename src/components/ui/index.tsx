@@ -70,14 +70,19 @@ export function SectionTitle({ accent, children }: { accent: Accent; children: R
 }
 
 export function Alert({ tone = "danger", children }: { tone?: "danger" | "success"; children: ReactNode }) {
+  if (tone === "success") {
+    return (
+      <div role="status" className="bp-saved flex items-center gap-3 rounded-xl border border-success/40 bg-success-soft px-4 py-3 text-base font-semibold text-success">
+        <svg viewBox="0 0 52 52" className="h-8 w-8 shrink-0" aria-hidden>
+          <circle cx="26" cy="26" r="24" className="bp-saved-ring" fill="none" stroke="currentColor" strokeWidth="3" />
+          <path d="M14 27l8 8 16-17" className="bp-saved-check" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span>{children}</span>
+      </div>
+    );
+  }
   return (
-    <div
-      role={tone === "danger" ? "alert" : "status"}
-      className={cn(
-        "rounded-lg px-3 py-2 text-sm",
-        tone === "danger" ? "bg-danger-soft text-danger" : "bg-success-soft text-success",
-      )}
-    >
+    <div role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
       {children}
     </div>
   );

@@ -1120,7 +1120,15 @@
       "confirmDelete": "¿Eliminar este borrador? No se puede deshacer.",
       "confirmVoid": "¿Anular esta factura? Quedará en tus registros como anulada.",
       "confirmDeletePayment": "¿Eliminar este pago?",
-      "paymentNotAvailable": "Los pagos se pueden agregar cuando la factura ya fue enviada y tiene saldo."
+      "paymentNotAvailable": "Los pagos se pueden agregar cuando la factura ya fue enviada y tiene saldo.",
+      "statusLabel": "Estado de la factura",
+      "statusDraft": "Borrador",
+      "statusSent": "Enviada / Sin pagar",
+      "statusVoid": "Cancelada",
+      "statusHasPayments": "Esta factura tiene pagos, así que no se puede cambiar a ese estado.",
+      "statusNoLines": "Agrega al menos una línea a la factura antes de marcarla como enviada.",
+      "statusMissing": "A la base de datos le falta la actualización 0044 (set_invoice_status) para cambiar estados.",
+      "statusFailed": "No se pudo cambiar el estado."
     }
   },
   "expenses": {

@@ -112,6 +112,19 @@ export async function voidInvoice(id: string) {
   redirect(page(id, error ? "?error=void" : ""));
 }
 
+/** Sets the stored status by hand (Draft / Sent / Cancelled), e.g. when the invoice is texted instead of emailed. */
+export async function setInvoiceStatus(id: string, status: string): Promise<{ ok: boolean; reason?: "payments" | "lines" | "missing" | "failed" }> {
+  await guard();
+  if (!UUID.test(id) || !["draft", "sent", "void"].includes(status)) return { ok: false, reason: "failed" };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_invoice_status", { p_id: id, p_status: status });
+  revalidatePath(page(id));
+  revalidatePath("/invoices");
+  if (!error) return { ok: true };
+  const m = `${error.code ?? ""} ${error.message}`;
+  return { ok: false, reason: /has payments/.test(m) ? "payments" : /no lines/.test(m) ? "lines" : /PGRST202|schema cache|does not exist/.test(m) ? "missing" : "failed" };
+}
+
 export async function deleteInvoice(id: string) {
   await guard();
   const supabase = await createClient();

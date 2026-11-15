@@ -6,10 +6,11 @@ import { ArrowLeft, Ban, ChevronDown, Copy, Download, Eye, Mail, Plus, Printer, 
 import { useTranslations } from "next-intl";
 import { Button, cn } from "@/components/ui";
 import { deleteInvoice, duplicateInvoice, markInvoiceSent, recordPayment, voidInvoice } from "@/modules/invoices/actions";
+import { InvoiceStatusMenu } from "./InvoiceStatusMenu";
 import { PaymentFields } from "./PaymentFields";
 
 type Props = {
-  id: string; draft: boolean; canWrite: boolean; canVoid: boolean; canPay: boolean; mailto: string | null; resend: boolean;
+  id: string; status: string; draft: boolean; canWrite: boolean; canVoid: boolean; canPay: boolean; mailto: string | null; resend: boolean;
   balanceText: string; today: string; currency: string; dateFormat: string;
 };
 
@@ -58,10 +59,22 @@ export function InvoiceToolbar(p: Props) {
         <ArrowLeft className="h-4 w-4" aria-hidden />{t("back")}
       </Link>
 
+      {p.canWrite && <InvoiceStatusMenu id={p.id} status={p.status} />}
+
       {p.canWrite && (
-        <Button type="button" variant="secondary" disabled={!p.canPay} title={p.canPay ? undefined : t("toolbar.paymentNotAvailable")} onClick={() => dialog.current?.showModal()}>
-          <Plus className="mr-1 h-4 w-4" aria-hidden />{t("toolbar.addPayment")}
-        </Button>
+        <span className="group relative inline-flex">
+          <Button type="button" variant="secondary" disabled={!p.canPay} aria-describedby={p.canPay ? undefined : "pay-unavailable"} onClick={() => dialog.current?.showModal()}>
+            <Plus className="mr-1 h-4 w-4" aria-hidden />{t("toolbar.addPayment")}
+          </Button>
+          {!p.canPay && (
+            <span
+              id="pay-unavailable" role="tooltip"
+              className="pointer-events-none absolute right-0 top-full z-30 mt-3 w-80 max-w-[80vw] translate-y-1 rounded-xl bg-orange-500 px-4 py-3 text-left text-base font-medium leading-snug text-white opacity-0 shadow-[0_0_0_1px_rgb(251_146_60),0_10px_28px_-6px_rgb(249_115_22/0.75),0_0_26px_2px_rgb(249_115_22/0.55)] transition duration-150 group-hover:translate-y-0 group-hover:opacity-100"
+            >
+              {t("toolbar.paymentNotAvailable")}
+            </span>
+          )}
+        </span>
       )}
 
       <div ref={root} className="relative">

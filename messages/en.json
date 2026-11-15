@@ -1120,7 +1120,15 @@
       "confirmDelete": "Delete this draft invoice? This can't be undone.",
       "confirmVoid": "Void this invoice? It will stay in your records as void.",
       "confirmDeletePayment": "Delete this payment?",
-      "paymentNotAvailable": "Payments can be added once the invoice has been sent and has a balance."
+      "paymentNotAvailable": "Payments can be added once the invoice has been sent and has a balance.",
+      "statusLabel": "Invoice status",
+      "statusDraft": "Draft",
+      "statusSent": "Sent / Unpaid",
+      "statusVoid": "Cancelled",
+      "statusHasPayments": "This invoice has payments, so its status cannot be changed to that.",
+      "statusNoLines": "Add at least one line to the invoice before marking it as sent.",
+      "statusMissing": "The database needs update 0044 (set_invoice_status) before statuses can be changed.",
+      "statusFailed": "The status could not be changed."
     }
   },
   "expenses": {
