@@ -1,5 +1,6 @@
-import { Field, Input, Select } from "@/components/ui";
+import { Field, Select } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { TimeRange } from "@/components/ui/TimeRange";
 import { MoneyInput } from "@/components/ui/fields";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
 import { centsToMoneyText } from "@/lib/money";
@@ -25,10 +26,7 @@ export function JobFields({
         </Select>
       </Field>
       <Field label={labels.date} htmlFor={dateName}><DatePicker id={dateName} name={dateName} defaultValue={v.scheduled_date ?? ""} dateFormat={dateFormat} /></Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={labels.start} htmlFor="start_time"><Input id="start_time" name="start_time" type="time" defaultValue={v.start_time?.slice(0, 5) ?? ""} /></Field>
-        <Field label={labels.end} htmlFor="end_time"><Input id="end_time" name="end_time" type="time" defaultValue={v.end_time?.slice(0, 5) ?? ""} /></Field>
-      </div>
+      <div className="sm:col-span-2"><TimeRange startLabel={labels.start} endLabel={labels.end} defaultStart={v.start_time} defaultEnd={v.end_time} /></div>
       <div className="sm:col-span-2"><Field label={labels.address} htmlFor="address"><SmartTextInput id="address" name="address" mode="address" defaultValue={v.address ?? ""} maxLength={300} /></Field></div>
       <Field label={labels.price} htmlFor="price"><MoneyInput id="price" name="price" defaultValue={centsToMoneyText(v.price_cents ?? 0)} currency={currency} /></Field>
       <Field label={labels.access} htmlFor="access_notes"><textarea id="access_notes" name="access_notes" rows={2} maxLength={1000} defaultValue={v.access_notes ?? ""} className={ta} /></Field>

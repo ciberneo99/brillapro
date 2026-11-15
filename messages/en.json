@@ -757,6 +757,7 @@
     }
   },
   "jobs": {
+    "endAfterStart": "End time must be after the start time.",
     "title": "Jobs",
     "new": "New job",
     "back": "Back to jobs",

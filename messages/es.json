@@ -757,6 +757,7 @@
     }
   },
   "jobs": {
+    "endAfterStart": "La hora de fin debe ser posterior a la de inicio.",
     "title": "Trabajos",
     "new": "Nuevo trabajo",
     "back": "Volver a trabajos",

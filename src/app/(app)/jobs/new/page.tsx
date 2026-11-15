@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Alert, Button, Card, Field, Select } from "@/components/ui";
+import { Alert, Button, Card, Field } from "@/components/ui";
 import { JobFields } from "@/components/jobs/JobFields";
 import { isIsoDate } from "@/lib/calendar";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { displayName } from "@/modules/customers/schema";
+import { CUSTOMER_OPTION_COLUMNS, toCustomerOptions } from "@/modules/customers/options";
+import { JobCustomerField } from "@/components/jobs/JobCustomerField";
 import { createJob } from "@/modules/jobs/actions";
 import { listServiceTypes } from "@/modules/services/queries";
 
@@ -20,7 +21,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
   const t = await getTranslations("jobs");
   const supabase = await createClient();
   const { data: customers } = await supabase
-    .from("customers").select("id,first_name,last_name,company_name").neq("status", "archived").order("first_name").limit(1000);
+    .from("customers").select(CUSTOMER_OPTION_COLUMNS).neq("status", "archived").order("first_name").limit(1000);
   const services = (await listServiceTypes()).filter((s) => s.is_active);
   const labels = {
     title: t("titleField"), service: t("service"), noService: t("noService"), date: t("date"), start: t("start"), end: t("end"),
@@ -40,10 +41,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
         <Card accent="blue">
           <form action={createJob} className="space-y-4">
             <Field label={t("customer")} htmlFor="customer_id">
-              <Select id="customer_id" name="customer_id" required defaultValue={sp.customer ?? ""}>
-                <option value="" disabled>{t("chooseCustomer")}</option>
-                {(customers ?? []).map((c) => <option key={c.id} value={c.id}>{displayName(c)}</option>)}
-              </Select>
+              <JobCustomerField customers={toCustomerOptions(customers ?? [])} initialId={sp.customer} />
             </Field>
             <p className="text-xs text-muted">{t("addressHelp")}</p>
             <JobFields v={{ scheduled_date: isIsoDate(sp.date) ? sp.date : undefined }} services={services} labels={labels} dateFormat={ctx.settings.date_format} currency={ctx.settings.currency} />

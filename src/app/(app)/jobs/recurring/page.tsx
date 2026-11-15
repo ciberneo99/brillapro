@@ -10,7 +10,8 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { formatTime } from "@/lib/time";
-import { displayName } from "@/modules/customers/schema";
+import { CUSTOMER_OPTION_COLUMNS, toCustomerOptions } from "@/modules/customers/options";
+import { JobCustomerField } from "@/components/jobs/JobCustomerField";
 import { listEmployees } from "@/modules/employees/module";
 import { createSchedule, endSchedule, extendSchedule } from "@/modules/recurring/actions";
 import { FREQUENCIES, listSchedules } from "@/modules/recurring/module";
@@ -31,7 +32,7 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
     listSchedules(),
     listEmployees({ activeOnly: true }),
     listServiceTypes(),
-    supabase.from("customers").select("id,first_name,last_name,company_name").neq("status", "archived").order("first_name").limit(1000),
+    supabase.from("customers").select(CUSTOMER_OPTION_COLUMNS).neq("status", "archived").order("first_name").limit(1000),
   ]);
   const labels = {
     title: tj("titleField"), service: tj("service"), noService: tj("noService"), date: t("startDate"), start: tj("start"), end: tj("end"),
@@ -85,10 +86,7 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
           <form action={createSchedule} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={tj("customer")} htmlFor="customer_id">
-                <Select id="customer_id" name="customer_id" required defaultValue="">
-                  <option value="" disabled>{tj("chooseCustomer")}</option>
-                  {(customers ?? []).map((c) => <option key={c.id} value={c.id}>{displayName(c)}</option>)}
-                </Select>
+                <JobCustomerField customers={toCustomerOptions(customers ?? [])} />
               </Field>
               <Field label={t("repeats")} htmlFor="frequency">
                 <Select id="frequency" name="frequency" defaultValue="weekly">
