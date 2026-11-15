@@ -3,8 +3,10 @@ import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import {
-  AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, MoreVertical, PawPrint, Phone, Plus, Ruler, Search,
+  AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, PawPrint, Phone, Plus, Ruler, Search,
 } from "lucide-react";
+import { CustomerMenu } from "@/components/customers/CustomerMenu";
+import { changeCustomerStatus } from "@/modules/customers/actions";
 import { MoreActions } from "@/components/customers/MoreActions";
 import { StatusBadge } from "@/components/customers/StatusBadge";
 import { Stars } from "@/components/customers/Stars";
@@ -51,16 +53,12 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     return s ? `/customers?${s}` : "/customers";
   };
 
+  const menuLabels = { menu: t("list.menu"), view: t("list.view"), edit: t("list.edit"), newQuote: t("list.newQuote"), newJob: t("list.newJob"), remove: t("list.delete"), confirmRemove: t("list.confirmDelete") };
   const menu = (c: CustomerRow) => (
-    <details className="relative">
-      <summary aria-label={t("list.menu")} className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg hover:bg-surface-2"><MoreVertical className="h-4 w-4" aria-hidden /></summary>
-      <div className="absolute right-0 z-20 mt-1 w-44 rounded-xl border border-line bg-surface p-1.5 text-sm shadow-card">
-        <Link href={`/customers/${c.id}`} className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t("list.view")}</Link>
-        {canWrite && <Link href={`/customers/${c.id}/edit`} className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t("list.edit")}</Link>}
-        {can(ctx.role, "quotes:write") && <Link href={`/quotes/new?customer=${c.id}`} className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t("list.newQuote")}</Link>}
-        {can(ctx.role, "jobs:write") && <Link href={`/jobs/new?customer=${c.id}`} className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t("list.newJob")}</Link>}
-      </div>
-    </details>
+    <CustomerMenu
+      id={c.id} labels={menuLabels} canEdit={canWrite} canQuote={can(ctx.role, "quotes:write")} canJob={can(ctx.role, "jobs:write")}
+      removeAction={canWrite && c.status !== "archived" ? changeCustomerStatus.bind(null, c.id, "archive") : undefined}
+    />
   );
 
   const property = (c: CustomerRow) => (
@@ -191,8 +189,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       ) : (
         <>
           {/* Desktop: full table */}
-          <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface shadow-card lg:block">
-            <table className="w-full min-w-[980px] text-left text-sm">
+          <div className="hidden rounded-2xl border border-line bg-surface shadow-card xl:block">
+            <table className="w-full text-left text-sm">
               <thead className="bg-surface-2 text-xs text-muted">
                 <tr>
                   {(["name", "contact", "property", "time", "status", "frequency", "rating", "outstanding", "actions"] as const).map((k) => (
@@ -206,7 +204,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   const addr = addressLine(c);
                   return (
                     <ClickableRow key={c.id} href={`/customers/${c.id}`} className="align-top hover:bg-surface-2/60">
-                      <td className="min-w-40 max-w-48 px-2.5 py-4">
+                      <td className="min-w-48 max-w-72 px-2.5 py-4">
                         <Link href={`/customers/${c.id}`} className="text-base font-semibold hover:text-primary">{displayName(c) || t("unnamed")}</Link>
                         {c.company_name && displayName(c) !== c.company_name && <p className="text-xs text-muted">{c.company_name}</p>}
                         {addr && <a href={mapsUrl(addr)} target="_blank" rel="noopener noreferrer" title={t("list.openMap")} className="mt-1 flex gap-1 text-xs text-primary hover:underline"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{addr}<span className="sr-only"> ({t("list.openMap")})</span></a>}
@@ -216,7 +214,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                         {c.phone && <p className="mt-1 flex items-center gap-1.5"><Phone className="h-4 w-4 shrink-0" aria-hidden />{c.phone}</p>}
                         {!c.email && !c.phone && "—"}
                       </td>
-                      <td className="px-2.5 py-4">{property(c)}</td>
+                      <td className="min-w-44 px-2.5 py-4">{property(c)}</td>
                       <td className="px-2.5 py-4"><TimeBar x={x} dateFormat={df} /></td>
                       <td className="px-2.5 py-4">
                         <StatusBadge status={c.status} />
@@ -236,7 +234,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           </div>
 
           {/* Phone and tablet: one card per customer */}
-          <ul className="space-y-3 lg:hidden">
+          <ul className="space-y-3 xl:hidden">
             {rows.map((c) => {
               const x = extras.get(c.id);
               const addr = addressLine(c);

@@ -416,6 +416,8 @@
       "newQuote": "Nueva cotización",
       "noQuotes": "Este cliente aún no tiene cotizaciones.",
       "newJob": "Nuevo trabajo",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar este cliente? Se archiva: sale de la lista pero conserva su historial y puedes restaurarlo después.",
       "noJobs": "Este cliente aún no tiene trabajos.",
       "newInvoice": "Nueva factura",
       "noInvoices": "Este cliente aún no tiene facturas.",

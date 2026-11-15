@@ -103,7 +103,7 @@ d("invoices & payments", () => {
       await expect(tx`select public.record_payment(${inv}, 5001, current_date, 'cash', null, null)`).rejects.toThrow(/exceeds/);
       await tx`rollback to savepoint b`;
       await tx`savepoint c`;
-      await expect(tx`select public.record_payment(${inv}, 100, current_date, 'bitcoin', null, null)`).rejects.toThrow();
+      await expect(tx`select public.record_payment(${inv}, 100, current_date, 'Bit coin!', null, null)`).rejects.toThrow();
       await tx`rollback to savepoint c`;
       await tx`savepoint dd`;
       await expect(tx`insert into public.payments (tenant_id, invoice_id, amount_cents, paid_on, method) values (${tA}, ${inv}, 100, current_date, 'cash')`).rejects.toThrow();
