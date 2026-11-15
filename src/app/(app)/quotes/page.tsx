@@ -34,7 +34,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
     const q = p.toString();
     return q ? `/quotes?${q}` : "/quotes";
   };
-  const pill = (on: boolean) => cn("rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:bg-surface-2");
+  const pill = (on: boolean) => cn("bp-fx bp-fx-nobar rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:border-primary hover:bg-primary-soft");
 
   return (
     <div className="space-y-6">
@@ -42,11 +42,11 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <div className="flex gap-2">
           {can(ctx.role, "settings:read") && (
-            <Link href="/settings/quotes" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">{t("settings")}</Link>
+            <Link href="/settings/quotes" className="bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft">{t("settings")}</Link>
           )}
           {can(ctx.role, "quotes:write") && <QuoteCalculator currency={ctx.settings.currency} />}
           {can(ctx.role, "quotes:write") && (
-            <Link href="/quotes/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>
+            <Link href="/quotes/new" className="bp-fx bp-fx-solid inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>
           )}
         </div>
       </div>
@@ -83,8 +83,8 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted">{t("page", { page, pages })}</span>
           <div className="flex gap-2">
-            {page > 1 && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ status: active, page: String(page - 1) })}>{t("prev")}</Link>}
-            {page < pages && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ status: active, page: String(page + 1) })}>{t("next")}</Link>}
+            {page > 1 && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ status: active, page: String(page - 1) })}>{t("prev")}</Link>}
+            {page < pages && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ status: active, page: String(page + 1) })}>{t("next")}</Link>}
           </div>
         </div>
       )}

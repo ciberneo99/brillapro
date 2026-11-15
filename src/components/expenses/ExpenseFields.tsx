@@ -5,7 +5,8 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { MoneyInput, SmartTextarea } from "@/components/ui/fields";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
 import { centsToMoneyText } from "@/lib/money";
-import { EXPENSE_METHODS } from "@/modules/expenses/schema";
+import { methodChoices } from "@/modules/payment-methods/labels";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
 import type { Category, ExpenseRow } from "@/modules/expenses/queries";
 
 export type JobOption = { id: string; title: string; customer_name: string; scheduled_date: string };
@@ -17,7 +18,7 @@ export async function ExpenseFields({
   categories: Category[]; jobs: JobOption[]; value?: ExpenseRow; today: string; dateFormat: string; currency: string;
 }) {
   const t = await getTranslations("expenses");
-  const tm = await getTranslations("invoices.method");
+  const methods = await listPaymentMethods();
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label={t("date")} htmlFor="expense_date">
@@ -35,7 +36,7 @@ export async function ExpenseFields({
       <Field label={t("method")} htmlFor="payment_method">
         <Select id="payment_method" name="payment_method" defaultValue={value?.payment_method ?? ""}>
           <option value="">—</option>
-          {EXPENSE_METHODS.map((m) => <option key={m} value={m}>{tm(m)}</option>)}
+          {methodChoices(methods, value?.payment_method).map((m) => <option key={m.code} value={m.code}>{m.name}</option>)}
         </Select>
       </Field>
       <Field label={t("job")} htmlFor="job_id" hint={t("jobHint")}>

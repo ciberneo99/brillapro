@@ -111,7 +111,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="text-xl font-semibold">{tb("title", { count: total })}</h2>
             <div className="flex flex-wrap items-center gap-2">
-              <a href={pdfHref()} target="_blank" rel="noopener" className="inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2"><Eye className="mr-2 h-4 w-4" aria-hidden />{tr("previewPdf")}</a>
+              <a href={pdfHref()} target="_blank" rel="noopener" className="bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft"><Eye className="mr-2 h-4 w-4" aria-hidden />{tr("previewPdf")}</a>
               <a href={pdfHref("download=1")} className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:opacity-90"><FileText className="mr-2 h-4 w-4" aria-hidden />{tr("downloadPdf")}</a>
             </div>
             <p className="text-sm text-muted">
@@ -224,8 +224,8 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
           <div className="flex items-center justify-between border-t border-line px-5 py-3 text-sm">
             <span className="text-muted">{tb("page", { page, pages })}</span>
             <div className="flex gap-2">
-              {page > 1 && <Link href={params({ page: String(page - 1) })} className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2">{tb("prev")}</Link>}
-              {page < pages && <Link href={params({ page: String(page + 1) })} className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2">{tb("next")}</Link>}
+              {page > 1 && <Link href={params({ page: String(page - 1) })} className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft">{tb("prev")}</Link>}
+              {page < pages && <Link href={params({ page: String(page + 1) })} className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft">{tb("next")}</Link>}
             </div>
           </div>
         )}

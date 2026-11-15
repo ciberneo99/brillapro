@@ -1,4 +1,21 @@
 {
+  "paymentMethods": {
+    "title": "Métodos de pago",
+    "intro": "Las formas en que tus clientes te pagan. Aparecen al registrar un pago en una factura y al agregar un gasto.",
+    "back": "Configuración",
+    "name": "Nombre",
+    "add": "Agregar un método",
+    "addButton": "Agregar",
+    "save": "Guardar",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "hidden": "Oculto",
+    "saved": "Guardado.",
+    "duplicate": "Ya existe un método con ese nombre.",
+    "invalid": "Escribe un nombre (máximo 60 caracteres).",
+    "help": "Ocultar un método lo quita de las opciones nuevas; los pagos ya registrados lo conservan.",
+    "readOnly": "Solo el dueño o un administrador puede cambiar los métodos de pago."
+  },
   "brand": {
     "name": "BrillaPro",
     "tagline": "Administra tu negocio de limpieza desde un solo lugar."

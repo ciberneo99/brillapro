@@ -48,7 +48,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
     if (o.page) p.set("page", o.page);
     return `/expenses?${p.toString()}`;
   };
-  const btn = "inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2";
+  const btn = "bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft";
 
   return (
     <div className="space-y-6">
@@ -57,7 +57,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
         <div className="flex gap-2">
           {can(ctx.role, "expenses:write") && <Link href="/expenses/new" className={btn} title={tb("uploadReceiptTop")}><Paperclip className="mr-2 h-4 w-4" aria-hidden />{tb("uploadReceiptTop")}</Link>}
           {can(ctx.role, "settings:read") && <Link href="/settings/expense-categories" className={btn}>{t("categories")}</Link>}
-          {can(ctx.role, "expenses:write") && <Link href="/expenses/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
+          {can(ctx.role, "expenses:write") && <Link href="/expenses/new" className="bp-fx bp-fx-solid inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
         </div>
       </div>
 
@@ -121,8 +121,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted">{t("page", { page, pages })}</span>
           <div className="flex gap-2">
-            {page > 1 && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ page: String(page - 1) })}>{t("prev")}</Link>}
-            {page < pages && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ page: String(page + 1) })}>{t("next")}</Link>}
+            {page > 1 && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ page: String(page - 1) })}>{t("prev")}</Link>}
+            {page < pages && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ page: String(page + 1) })}>{t("next")}</Link>}
           </div>
         </div>
       )}

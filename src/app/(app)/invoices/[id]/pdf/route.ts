@@ -7,6 +7,7 @@ import { can } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
 import { getAppContext } from "@/lib/session";
 import { InvoicePdf } from "@/modules/invoices/pdf";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
 import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
 
 export const runtime = "nodejs";
@@ -26,7 +27,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const buffer = await renderToBuffer(
     createElement(InvoicePdf, {
-      brand: brand.color, logoSize: brand.size,
+      brand: brand.color, logoSize: brand.size, methodNames: Object.fromEntries((await listPaymentMethods()).map((m) => [m.code, m.name])),
       invoice, logo, customerPhone: invoice.customer_phone ?? (invoice.status === "draft" ? cust?.phone ?? null : null), customerCompany: cust?.company_name || null, prefix: is.invoice_prefix, currency: s.currency, dateFormat: s.date_format, locale: s.doc_locale as "en" | "es",
       business: { name: ctx.tenant.name, phone: s.phone, email: s.email, address: fullAddress(s), website: s.website, tax_id: s.tax_id },
     }) as Parameters<typeof renderToBuffer>[0],

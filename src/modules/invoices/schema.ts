@@ -46,7 +46,7 @@ export const paymentSchema = z
   .object({
     amount: money(true),
     paid_on: isoDate,
-    method: z.enum(PAYMENT_METHODS),
+    method: z.string().regex(/^[a-z0-9_]{1,40}$/),
     reference: z.string().optional().transform((v) => (v ?? "").trim()).pipe(z.string().max(120)),
     notes: sentence(500),
   })

@@ -10,7 +10,7 @@ import { buildRunCtx, periodLabel } from "@/modules/reports/context";
 import { sortByDate } from "@/modules/reports/format";
 import { ReportPdf } from "@/modules/reports/pdf";
 import { parsePeriod } from "@/modules/reports/period";
-import { PAYMENT_METHODS, runReport } from "@/modules/reports/run";
+import { isMethodCode, runReport } from "@/modules/reports/run";
 
 export const runtime = "nodejs";
 
@@ -24,7 +24,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
   const q = new URL(req.url).searchParams;
   const today = todayIso(ctx.settings.timezone);
   const period = parsePeriod({ range: q.get("range") ?? undefined, month: q.get("month") ?? undefined, year: q.get("year") ?? undefined, from: q.get("from") ?? undefined, to: q.get("to") ?? undefined }, today, "all");
-  const method = key === "payments_collected" && PAYMENT_METHODS.includes(q.get("method") ?? "") ? q.get("method")! : undefined;
+  const method = key === "payments_collected" && isMethodCode(q.get("method") ?? "") ? q.get("method")! : undefined;
   const raw = await runReport(key, await buildRunCtx(ctx, period, method));
   if (!raw) return new Response("Not found", { status: 404 });
   const result = sortByDate(raw, "desc");

@@ -6,6 +6,7 @@ import { Calendar, CreditCard, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 
 /** Reloads the report's data (the server runs it again). */
 export function RefreshButton({ className }: { className?: string }) {
@@ -34,7 +35,7 @@ type Props = {
 };
 
 const field = "relative flex items-center";
-const select = "h-10 appearance-none rounded-lg border border-line bg-surface pl-9 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary";
+const select = "min-w-44 !pl-9";
 
 /** Period and method pickers. Changing one reloads the report; "Custom range" reveals two dates. */
 export function ReportFilters({ base, range, from, to, methods, method, noRange, dateFormat }: Props) {
@@ -47,21 +48,21 @@ export function ReportFilters({ base, range, from, to, methods, method, noRange,
       {!noRange && (
         <div className={field}>
           <Calendar className="pointer-events-none absolute left-3 h-4 w-4 text-muted" aria-hidden />
-          <select
-            name="range" defaultValue={range} aria-label={t("period")} className={select}
-            onChange={(e) => { if (e.target.value === "custom") setCustom(true); else { setCustom(false); submit(); } }}
-          >
-            {(["all", "this_month", "last_month", "this_year", "last_year", "custom"] as const).map((r) => <option key={r} value={r}>{t(`range.${r}`)}</option>)}
-          </select>
+          <SelectMenu
+            name="range" defaultValue={range} ariaLabel={t("period")} className={select}
+            options={(["all", "this_month", "last_month", "this_year", "last_year", "custom"] as const).map((r) => ({ value: r, label: t(`range.${r}`) }))}
+            onChange={(v) => { if (v === "custom") setCustom(true); else { setCustom(false); setTimeout(submit, 0); } }}
+          />
         </div>
       )}
       {methods && (
         <div className={field}>
-          <CreditCard className="pointer-events-none absolute left-3 h-4 w-4 text-muted" aria-hidden />
-          <select name="method" defaultValue={method ?? ""} aria-label={t("methodFilter")} className={select} onChange={submit}>
-            <option value="">{t("allMethods")}</option>
-            {methods.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
-          </select>
+          <CreditCard className="pointer-events-none absolute left-3 z-10 h-4 w-4 text-muted" aria-hidden />
+          <SelectMenu
+            name="method" defaultValue={method ?? ""} ariaLabel={t("methodFilter")} className={select}
+            options={[{ value: "", label: t("allMethods") }, ...methods.map((m) => ({ value: m.id, label: m.label }))]}
+            onChange={() => setTimeout(submit, 0)}
+          />
         </div>
       )}
       {!noRange && custom && (

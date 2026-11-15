@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { savePreferences } from "@/lib/preferences";
 import { cn } from "@/components/ui";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 import { LOCALES, THEMES, type Theme } from "@/i18n/config";
 
 /** Language + theme switchers. Theme is applied to <html> immediately, then persisted.
@@ -42,16 +43,12 @@ export function PreferenceControls({ theme: initialTheme, compact = false }: { t
         ))}
       </div>
       {compact ? (
-        <select
-          aria-label={t("theme")}
-          value={theme}
-          onChange={(e) => setTheme(e.target.value as Theme)}
-          className="h-9 rounded-lg border border-line bg-surface px-2 text-sm text-fg"
-        >
-          {THEMES.map((th) => (
-            <option key={th} value={th}>{t(th)}</option>
-          ))}
-        </select>
+        <div className="w-32">
+          <SelectMenu
+            ariaLabel={t("theme")} value={theme} onChange={(v) => setTheme(v as Theme)} className="h-9"
+            options={THEMES.map((th) => ({ value: th, label: t(th) }))}
+          />
+        </div>
       ) : (
         <div role="group" aria-label={t("theme")} className={group}>
           {THEMES.map((th) => (

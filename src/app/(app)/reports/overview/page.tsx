@@ -49,8 +49,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const totalJobs = jobs.reduce((s, r) => s + r.jobs, 0);
   const totalHours = hours.reduce((s, r) => s + r.seconds, 0);
 
-  const btn = "inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2";
-  const pill = (on: boolean) => cn("rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:bg-surface-2");
+  const btn = "bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft";
+  const pill = (on: boolean) => cn("bp-fx bp-fx-nobar rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:border-primary hover:bg-primary-soft");
   const year = Number((yearMode ? sp.year : month.slice(0, 4)));
 
   return (

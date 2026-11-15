@@ -24,7 +24,7 @@ export function QuoteCalculator({ currency }: { currency: string }) {
     <>
       <button
         type="button" onClick={() => setOpen(true)} aria-haspopup="dialog"
-        className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2"
+        className="bp-fx inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft"
       >
         <Calculator className="h-4 w-4" aria-hidden /> {t("open")}
       </button>

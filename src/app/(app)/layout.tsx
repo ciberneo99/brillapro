@@ -2,13 +2,15 @@ import { getTranslations } from "next-intl/server";
 import { LogOut } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
 import { PreferenceControls } from "@/components/PreferenceControls";
+import { PaymentMethodsProvider } from "@/components/PaymentMethodsProvider";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
 import { NAV } from "@/lib/navigation";
 import { can } from "@/lib/permissions";
 import { isPlatformAdmin, requireContext } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const [ctx, platformAdmin, t, theme] = await Promise.all([requireContext(), isPlatformAdmin(), getTranslations("common"), getTheme()]);
+  const [ctx, platformAdmin, t, theme, methods] = await Promise.all([requireContext(), isPlatformAdmin(), getTranslations("common"), getTheme(), listPaymentMethods()]);
 
   // Menu only shows what this role may read (server-side filter; routes re-check on their own).
   const items = NAV.filter((n) => can(ctx.role, `${n.resource}:read`)).map(({ key, href }) => ({ key, href }));
@@ -35,7 +37,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         }
       />
-      <main className="mx-auto min-w-0 max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+      <main className="mx-auto min-w-0 max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
+        <PaymentMethodsProvider methods={methods.map(({ code, name, is_active }) => ({ code, name, is_active }))}>{children}</PaymentMethodsProvider>
+      </main>
     </div>
   );
 }

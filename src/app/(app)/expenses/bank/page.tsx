@@ -55,7 +55,7 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
   const labels = categoryLabels(cats);
   const choices: CategoryChoice[] = cats.filter((c) => c.is_active).map((c) => ({ id: c.id, name: c.name, parent: c.parent_id ? labels.get(c.id)!.parent : null }));
   const { rows, stats } = await monthWithdrawals(month, onlyMissing);
-  const btn = "inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2";
+  const btn = "bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft";
   const err = sp.error === "type" ? t("errType") : sp.error === "size" ? t("errSize") : sp.error ? t("errGeneric") : null;
 
   return (

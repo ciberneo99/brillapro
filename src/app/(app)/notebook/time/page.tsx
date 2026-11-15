@@ -89,10 +89,10 @@ export default async function TimePage({ searchParams }: { searchParams: Promise
           {seesAll && all.length > 0 && (
             <form action="/notebook/time" className="flex items-center gap-2">
               <input type="hidden" name="date" value={date} />
-              <select name="employee" defaultValue={sp.employee ?? ""} aria-label={t("employee")} className="h-9 rounded-lg border border-line bg-surface px-2 text-sm">
+              <Select name="employee" defaultValue={sp.employee ?? ""} aria-label={t("employee")} className="h-9 w-48">
                 <option value="">{t("everyone")}</option>
                 {all.map((e) => <option key={e.id} value={e.id}>{e.full_name}</option>)}
-              </select>
+              </Select>
               <button type="submit" className={btn}>{t("filter")}</button>
             </form>
           )}

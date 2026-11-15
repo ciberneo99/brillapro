@@ -1,4 +1,21 @@
 {
+  "paymentMethods": {
+    "title": "Payment methods",
+    "intro": "The ways customers pay you. They appear when you record a payment on an invoice and when you add an expense.",
+    "back": "Settings",
+    "name": "Name",
+    "add": "Add a method",
+    "addButton": "Add",
+    "save": "Save",
+    "hide": "Hide",
+    "show": "Show",
+    "hidden": "Hidden",
+    "saved": "Saved.",
+    "duplicate": "A method with that name already exists.",
+    "invalid": "Enter a name (up to 60 characters).",
+    "help": "Hiding a method removes it from new choices; payments already recorded keep it.",
+    "readOnly": "Only the owner or an admin can change payment methods."
+  },
   "brand": {
     "name": "BrillaPro",
     "tagline": "Run your cleaning business from one place."

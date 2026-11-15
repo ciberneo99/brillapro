@@ -19,13 +19,13 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
   const items = await listItems({ showInactive });
   const low = items.filter((i) => i.is_low);
   const value = items.reduce((s, i) => s + (i.is_active && i.unit_cost_cents ? Math.round(i.on_hand * i.unit_cost_cents) : 0), 0);
-  const pill = (on: boolean) => cn("rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:bg-surface-2");
+  const pill = (on: boolean) => cn("bp-fx bp-fx-nobar rounded-full border px-3 py-1 text-sm", on ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface hover:border-primary hover:bg-primary-soft");
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        {can(ctx.role, "inventory:write") && <Link href="/inventory/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
+        {can(ctx.role, "inventory:write") && <Link href="/inventory/new" className="bp-fx bp-fx-solid inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">{t("new")}</Link>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

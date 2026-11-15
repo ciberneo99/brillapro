@@ -160,11 +160,11 @@ async function accountsAging(c: RunCtx): Promise<ReportResult> {
   };
 }
 
-export const PAYMENT_METHODS = ["cash", "check", "card", "zelle", "venmo", "bank_transfer", "other"];
+export const isMethodCode = (m: string) => /^[a-z0-9_]{1,40}$/.test(m);
 
 async function paymentsCollected(c: RunCtx): Promise<ReportResult> {
   let q = c.supabase.from("payments").select("invoice_id,amount_cents,paid_on,method,reference,notes").gte("paid_on", c.from).lte("paid_on", c.to);
-  if (c.method && PAYMENT_METHODS.includes(c.method)) q = q.eq("method", c.method);
+  if (c.method && isMethodCode(c.method)) q = q.eq("method", c.method);
   const { data } = await q.order("paid_on", { ascending: false }).limit(LIMIT);
   const pays = data ?? [];
   const ids = [...new Set(pays.map((p) => p.invoice_id))];

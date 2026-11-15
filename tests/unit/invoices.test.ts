@@ -18,11 +18,11 @@ describe("invoice schemas", () => {
     expect(invoiceHeaderSchema.safeParse({ ...head, tax_rate: "101" }).success).toBe(false);
     expect(invoiceHeaderSchema.safeParse({ ...head, customer_name: " " }).success).toBe(false);
   });
-  it("payment needs a positive amount and a known method", () => {
+  it("payment needs a positive amount and a well-formed method code", () => {
     expect(paymentSchema.parse({ amount: "1,250.50", paid_on: "2026-05-01", method: "zelle" })).toMatchObject({ amount: 125050, method: "zelle" });
     expect(paymentSchema.safeParse({ amount: "0", paid_on: "2026-05-01", method: "cash" }).success).toBe(false);
     expect(paymentSchema.safeParse({ amount: "", paid_on: "2026-05-01", method: "cash" }).success).toBe(false);
-    expect(paymentSchema.safeParse({ amount: "5", paid_on: "2026-05-01", method: "bitcoin" }).success).toBe(false);
+    expect(paymentSchema.safeParse({ amount: "5", paid_on: "2026-05-01", method: "Bit coin!" }).success).toBe(false);
   });
   it("settings", () => {
     expect(invoiceSettingsSchema.parse({ invoice_prefix: "fac-", invoice_due_days: "30", invoice_terms: "" })).toMatchObject({ invoice_prefix: "FAC-", invoice_due_days: 30, invoice_terms: null });

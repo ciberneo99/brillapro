@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Card, cn } from "@/components/ui";
+import { Card, Select, cn } from "@/components/ui";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { addDays, addMonths, isIsoDate, monthGrid, startOfWeek, todayIso, weekDays } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
@@ -104,10 +104,10 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
             <input type="hidden" name="view" value={view} />
             <input type="hidden" name="date" value={date} />
             <label htmlFor="employee" className="text-muted">{t("employee")}</label>
-            <select id="employee" name="employee" defaultValue={employee ?? ""} className="h-9 rounded-lg border border-line bg-surface px-2">
+            <Select id="employee" name="employee" defaultValue={employee ?? ""} className="h-9 w-48">
               <option value="">{t("everyone")}</option>
               {employees.map((e) => <option key={e.id} value={e.id}>{e.full_name}</option>)}
-            </select>
+            </Select>
             <button type="submit" className={cn(btn, idle)}>{t("filter")}</button>
           </form>
         )}

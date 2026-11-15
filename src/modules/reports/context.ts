@@ -4,17 +4,19 @@ import { createClient } from "@/lib/supabase/server";
 import { todayIso } from "@/lib/calendar";
 import type { AppContext } from "@/lib/session";
 import { getInvoiceSettings } from "@/modules/invoices/queries";
+import { methodName } from "@/modules/payment-methods/labels";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
 import type { Period } from "./period";
 import type { RunCtx } from "./run";
 
 /** Everything a report needs to run, with labels in the person's language. */
 export async function buildRunCtx(ctx: AppContext, p: Period, method?: string): Promise<RunCtx> {
-  const [t, ti, supabase, is] = await Promise.all([
-    getTranslations("reports.cols"), getTranslations("invoices"), createClient(), getInvoiceSettings(ctx.tenant.id),
+  const [t, ti, supabase, is, methods] = await Promise.all([
+    getTranslations("reports.cols"), getTranslations("invoices"), createClient(), getInvoiceSettings(ctx.tenant.id), listPaymentMethods(),
   ]);
   return {
     supabase, from: p.from, to: p.to, today: todayIso(ctx.settings.timezone), invoicePrefix: is.invoice_prefix, method,
-    t: (k) => t(k), methodName: (m) => ti(`method.${m}`), status: (s) => ti(`status.${s}`),
+    t: (k) => t(k), methodName: (m) => methodName(methods, m, (c) => ti(`method.${c}` as never)), status: (s) => ti(`status.${s}`),
   };
 }
 

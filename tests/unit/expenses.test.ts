@@ -12,11 +12,11 @@ describe("expenseSchema", () => {
     expect(r.payment_method).toBeNull();
     expect(r.job_id).toBeNull();
   });
-  it("rejects zero, bad amounts, bad dates and unknown methods", () => {
+  it("rejects zero, bad amounts, bad dates and malformed methods", () => {
     expect(expenseSchema.safeParse({ ...base, amount: "0" }).success).toBe(false);
     expect(expenseSchema.safeParse({ ...base, amount: "abc" }).success).toBe(false);
     expect(expenseSchema.safeParse({ ...base, expense_date: "05/10/2026" }).success).toBe(false);
-    expect(expenseSchema.safeParse({ ...base, payment_method: "bitcoin" }).success).toBe(false);
+    expect(expenseSchema.safeParse({ ...base, payment_method: "Bit coin!" }).success).toBe(false);
     expect(expenseSchema.safeParse({ ...base, category_id: "nope" }).success).toBe(false);
   });
 });

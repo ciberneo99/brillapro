@@ -53,7 +53,7 @@ export function QuoteToolbar(p: Props) {
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      <Link href="/quotes" className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2">
+      <Link href="/quotes" className="bp-fx inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft">
         <ArrowLeft className="h-4 w-4" aria-hidden />{t("back")}
       </Link>
 

@@ -66,8 +66,8 @@ export type PdfBusiness = { name: string; phone: string | null; email: string | 
 export type PdfLogo = { data: Buffer; format: "png" | "jpg" } | null;
 
 export function InvoicePdf({
-  invoice, business, logo, brand, logoSize, customerPhone, customerCompany, prefix, currency, dateFormat, locale,
-}: { invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; brand?: string | null; logoSize?: LogoSize; customerPhone?: string | null; customerCompany?: string | null; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
+  invoice, business, logo, brand, logoSize, customerPhone, customerCompany, prefix, currency, dateFormat, locale, methodNames,
+}: { methodNames?: Record<string, string>; invoice: InvoiceDetail; business: PdfBusiness; logo?: PdfLogo; brand?: string | null; logoSize?: LogoSize; customerPhone?: string | null; customerCompany?: string | null; prefix: string; currency: string; dateFormat: string; locale: "en" | "es" }) {
   const t = L[locale];
   const TEAL = brand ?? DEFAULT_BRAND;
   const dims = LOGO_DIMS[logoSize ?? "medium"];
@@ -158,7 +158,7 @@ export function InvoicePdf({
               {invoice.payments.map((p) => (
                 <View key={p.id} style={s.pay}>
                   <View>
-                    <Text style={s.bold}>{m(p.amount_cents)} - {t.methods[p.method as keyof typeof t.methods] ?? p.method}</Text>
+                    <Text style={s.bold}>{m(p.amount_cents)} - {methodNames?.[p.method] ?? t.methods[p.method as keyof typeof t.methods] ?? p.method}</Text>
                     <Text style={{ color: MUTED, fontSize: 9 }}>{d(p.paid_on)}{p.reference ? ` · ${p.reference}` : ""}</Text>
                   </View>
                 </View>

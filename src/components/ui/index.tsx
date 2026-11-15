@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { SelectField } from "./SelectField";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
 export const cn = clsx;
@@ -28,8 +29,9 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return <input {...props} className={cn(control, className)} />;
 }
 
-export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} className={cn(control, className)} />;
+/** Drop-down list: same <option> children as a native select, rendered with the app's glow menu. */
+export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
+  return <SelectField {...props} />;
 }
 
 export function Field({ label, hint, htmlFor, children }: { label: string; hint?: string; htmlFor: string; children: ReactNode }) {

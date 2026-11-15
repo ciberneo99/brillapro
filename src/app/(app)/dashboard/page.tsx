@@ -15,6 +15,9 @@ import { getDashboard, sumByMonth, todayIn } from "@/modules/dashboard/queries";
 
 export const metadata = { title: "Dashboard" };
 
+import { methodName } from "@/modules/payment-methods/labels";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
+
 const METHOD_COLOR: Record<string, string> = {
   cash: "var(--c-blue)", check: "var(--c-amber)", venmo: "var(--c-teal)", zelle: "var(--c-green)",
   card: "var(--c-rose)", bank_transfer: "var(--c-violet)", other: "var(--fg-muted)",
@@ -56,7 +59,11 @@ export default async function DashboardPage() {
 
   const methodTotals = new Map<string, number>();
   for (const p of d.payments ?? []) methodTotals.set(p.method, (methodTotals.get(p.method) ?? 0) + p.amount_cents);
-  const slices = [...methodTotals.entries()].sort((a, b) => b[1] - a[1]).map(([m, v]) => ({ label: tm(m as never), value: v, color: METHOD_COLOR[m] ?? "var(--fg-muted)" }));
+  const methodList = await listPaymentMethods();
+  const extra = ["var(--c-blue)", "var(--c-amber)", "var(--c-teal)", "var(--c-green)", "var(--c-rose)", "var(--c-violet)"];
+  const slices = [...methodTotals.entries()].sort((a, b) => b[1] - a[1]).map(([m, v], i) => ({
+    label: methodName(methodList, m, (c) => tm(c as never)), value: v, color: METHOD_COLOR[m] ?? extra[i % extra.length],
+  }));
   const methodsTotal = slices.reduce((s, x) => s + x.value, 0);
 
   const monthLabels = d.months.map(monthLabel);
@@ -97,7 +104,7 @@ export default async function DashboardPage() {
         )}
         {quick.length > 0 && (
           <details className="relative">
-            <summary className="flex h-11 cursor-pointer list-none items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
+            <summary className="bp-fx bp-fx-solid flex h-11 cursor-pointer list-none items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
               <Plus className="h-4 w-4" aria-hidden /> {t("new.button")}
             </summary>
             <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-line bg-surface p-1.5 shadow-card">

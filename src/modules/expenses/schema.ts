@@ -18,7 +18,7 @@ export const expenseSchema = z
       return c;
     }),
     expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    payment_method: z.string().optional().transform((v) => (v ? v : null)).pipe(z.enum(EXPENSE_METHODS).nullable()),
+    payment_method: z.string().optional().transform((v) => (v ? v : null)).pipe(z.string().regex(/^[a-z0-9_]{1,40}$/).nullable()),
   })
   .transform(({ amount, ...rest }) => ({ ...rest, amount_cents: amount }));
 

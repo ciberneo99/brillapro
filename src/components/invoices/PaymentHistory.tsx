@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
 import { centsToMoneyText, formatMoney } from "@/lib/money";
 import { deletePayment, updatePayment } from "@/modules/invoices/actions";
+import { usePaymentMethods } from "@/components/PaymentMethodsProvider";
+import { methodName } from "@/modules/payment-methods/labels";
 import { PaymentFields } from "./PaymentFields";
 
 export type PaymentRow = { id: string; amount_cents: number; paid_on: string; paid_label: string; method: string; reference: string | null; notes: string | null };
@@ -13,6 +15,7 @@ export type PaymentRow = { id: string; amount_cents: number; paid_on: string; pa
 /** Payments on the invoice. Owners and admins can edit or delete a payment. */
 export function PaymentHistory({ invoiceId, payments, canManage, currency, dateFormat }: { invoiceId: string; payments: PaymentRow[]; canManage: boolean; currency: string; dateFormat: string }) {
   const t = useTranslations("invoices");
+  const methods = usePaymentMethods();
   const [editing, setEditing] = useState<string | null>(null);
   return (
     <section className="border-t border-line pt-6" aria-labelledby="pay-history">
@@ -32,7 +35,7 @@ export function PaymentHistory({ invoiceId, payments, canManage, currency, dateF
             ) : (
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="font-semibold">{formatMoney(p.amount_cents, currency)} <span className="font-normal text-muted">· {t(`method.${p.method}`)}</span></p>
+                  <p className="font-semibold">{formatMoney(p.amount_cents, currency)} <span className="font-normal text-muted">· {methodName(methods, p.method, (c) => t(`method.${c}` as never))}</span></p>
                   <p className="text-xs text-muted">{p.paid_label}{p.reference ? ` · ${p.reference}` : ""}{p.notes ? ` · ${p.notes}` : ""}</p>
                 </div>
                 {canManage && (

@@ -96,7 +96,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
             className="h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm placeholder:text-muted" />
         </form>
         {canWrite && (
-          <Link href="/customers/new" className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
+          <Link href="/customers/new" className="bp-fx bp-fx-solid inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
             <Plus className="h-4 w-4" aria-hidden /> {t("list.newClient")}
           </Link>
         )}
@@ -273,8 +273,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted">{t("page", { page, pages })} · {t("count", { count: total })}</span>
           <div className="flex gap-2">
-            {page > 1 && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ page: String(page - 1) })}>{t("prev")}</Link>}
-            {page < pages && <Link className="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-2" href={href({ page: String(page + 1) })}>{t("next")}</Link>}
+            {page > 1 && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ page: String(page - 1) })}>{t("prev")}</Link>}
+            {page < pages && <Link className="bp-fx bp-fx-nobar rounded-lg border border-line px-3 py-1.5 hover:border-primary hover:bg-primary-soft" href={href({ page: String(page + 1) })}>{t("next")}</Link>}
           </div>
         </div>
       )}

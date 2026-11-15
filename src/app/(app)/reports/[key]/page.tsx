@@ -14,7 +14,8 @@ import { buildRunCtx, periodLabel } from "@/modules/reports/context";
 import { formatCell, isRight, sortByDate } from "@/modules/reports/format";
 import { parsePeriod, periodQuery, type PeriodParams } from "@/modules/reports/period";
 import { listFavorites } from "@/modules/reports/queries";
-import { PAYMENT_METHODS, runReport, type Col, type Row, type Tone } from "@/modules/reports/run";
+import { listPaymentMethods } from "@/modules/payment-methods/queries";
+import { isMethodCode, runReport, type Col, type Row, type Tone } from "@/modules/reports/run";
 
 export const metadata = { title: "Report" };
 
@@ -33,7 +34,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   const ti = await getTranslations("invoices");
   const today = todayIso(ctx.settings.timezone);
   const period = parsePeriod(sp, today, "all");
-  const method = key === "payments_collected" && PAYMENT_METHODS.includes(sp.method ?? "") ? sp.method : undefined;
+  const method = key === "payments_collected" && isMethodCode(sp.method ?? "") ? sp.method : undefined;
   const sort = sp.sort === "asc" ? "asc" : "desc";
   const result = sortByDate((await runReport(key, await buildRunCtx(ctx, period, method))) ?? notFound(), sort);
   const favorite = (await listFavorites(ctx.tenant.id, ctx.userId)).has(key);
@@ -44,7 +45,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   const base = `/reports/${key}`;
   const q = [def.ranged ? periodQuery(period) : "", method ? `method=${method}` : ""].filter(Boolean).join("&");
   const withQ = (path: string, extra = "") => `${path}${[q, extra].filter(Boolean).length ? `?${[q, extra].filter(Boolean).join("&")}` : ""}`;
-  const ghost = "inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:bg-surface-2";
+  const ghost = "bp-fx inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium hover:border-primary hover:bg-primary-soft";
   const primary = "inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:opacity-90";
   const title = t(`items.${key}.title`);
   const sortLink = withQ(base, `sort=${sort === "desc" ? "asc" : "desc"}`);
@@ -101,7 +102,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         <div className="border-t border-line px-6 py-4">
           <ReportFilters
             base={base} range={period.range} from={period.from} to={period.to} noRange={!def.ranged} dateFormat={fmt}
-            method={method} methods={key === "payments_collected" ? PAYMENT_METHODS.map((m) => ({ id: m, label: ti(`method.${m}`) })) : undefined}
+            method={method} methods={key === "payments_collected" ? (await listPaymentMethods()).map((m) => ({ id: m.code, label: m.name })) : undefined}
           />
         </div>
 

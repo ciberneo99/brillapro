@@ -2,7 +2,9 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
-import { cn } from "@/components/ui";
+import clsx from "clsx";
+
+const cn = clsx;
 
 export type MenuOption = { value: string; label: string; disabled?: boolean };
 
