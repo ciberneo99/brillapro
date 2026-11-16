@@ -26,7 +26,7 @@ export async function listJobs(params: { status?: string; customerId?: string; f
 }
 
 export type JobDetail = JobRow & {
-  service_type_id: string | null; quote_id: string | null; access_notes: string | null; notes: string | null; completed_at: string | null;
+  service_type_id: string | null; quote_id: string | null; recurring_schedule_id: string | null; access_notes: string | null; notes: string | null; completed_at: string | null;
   assigned: { employee_id: string; full_name: string }[];
   items: { id: string; category: string; title: string; instructions: string | null; is_done: boolean; position: number }[];
 };
@@ -34,7 +34,7 @@ export type JobDetail = JobRow & {
 export async function getJob(id: string): Promise<JobDetail | null> {
   const supabase = await createClient();
   const { data: j } = await supabase
-    .from("jobs").select(`${COLS},service_type_id,quote_id,access_notes,notes,completed_at`).eq("id", id).maybeSingle();
+    .from("jobs").select(`${COLS},service_type_id,quote_id,recurring_schedule_id,access_notes,notes,completed_at`).eq("id", id).maybeSingle();
   if (!j) return null;
   const [{ data: asg }, { data: items }] = await Promise.all([
     supabase.from("job_assignments").select("employee_id, employees(full_name)").eq("job_id", id),
@@ -61,7 +61,7 @@ export async function jobForQuote(quoteId: string): Promise<string | null> {
 export type CalendarJob = Pick<JobRow, "id" | "title" | "status" | "scheduled_date" | "start_time" | "end_time" | "customer_name">;
 
 /** Jobs between two dates (inclusive) for the calendar; optional employee filter (staff only in practice). */
-export async function jobsInRange(from: string, to: string, employeeId?: string): Promise<CalendarJob[]> {
+export async function jobsInRange(from: string, to: string, employeeId?: string, showCancelled = false): Promise<CalendarJob[]> {
   const supabase = await createClient();
   let ids: string[] | null = null;
   if (employeeId) {
@@ -73,6 +73,7 @@ export async function jobsInRange(from: string, to: string, employeeId?: string)
     .from("jobs").select("id,title,status,scheduled_date,start_time,end_time,customer_name")
     .gte("scheduled_date", from).lte("scheduled_date", to)
     .order("scheduled_date").order("start_time", { nullsFirst: false }).limit(2000);
+  if (!showCancelled) q = q.neq("status", "cancelled");
   if (ids) q = q.in("id", ids);
   const { data } = await q;
   return (data ?? []) as CalendarJob[];

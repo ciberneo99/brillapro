@@ -206,7 +206,11 @@
       "sample": "Así se ve en tus facturas",
       "sampleText": "Descripción · Cant. · Importe",
       "sizeTitle": "Tamaño del logo en facturas y cotizaciones",
-      "sizes": { "small": "Pequeño", "medium": "Mediano", "large": "Grande" },
+      "sizes": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      },
       "saveBrand": "Guardar",
       "match": "Igualar a mi logo",
       "useDefault": "Usar el verde predeterminado",
@@ -828,7 +832,62 @@
     "invoiceSection": "Factura",
     "viewInvoice": "Abrir la factura de este trabajo",
     "createInvoice": "Crear factura",
-    "invoiceError": "No se pudo crear la factura. Quizá este trabajo ya tiene una."
+    "invoiceError": "No se pudo crear la factura. Quizá este trabajo ya tiene una.",
+    "delete": {
+      "button": "Eliminar",
+      "one": "Solo este trabajo",
+      "following": "Este y los siguientes",
+      "series": "Eliminar toda la serie",
+      "confirmOne": "¿Eliminar este trabajo? Si tiene factura, gasto u horas, se cancela en su lugar.",
+      "confirmFollowing": "¿Eliminar este trabajo y todos los siguientes de la serie? Los completados se conservan.",
+      "confirmSeries": "¿Eliminar toda la serie y todos sus trabajos que no han empezado? Los completados se conservan.",
+      "result": "{count, plural, =0 {Ningún trabajo eliminado.} one {# trabajo eliminado.} other {# trabajos eliminados.}}",
+      "kept": "{count, plural, one {# trabajo tiene factura, gasto u horas, así que se canceló en su lugar.} other {# trabajos tienen factura, gasto u horas, así que se cancelaron en su lugar.}}",
+      "error": "No se pudo eliminar el trabajo. Los trabajos iniciados o completados no se pueden eliminar."
+    },
+    "form": {
+      "title": "Agendar nuevo trabajo",
+      "subtitle": "Llena los datos para crear un trabajo nuevo",
+      "back": "Regresar",
+      "client": "Cliente",
+      "service": "Tipo de servicio",
+      "noServices": "Aún no hay tipos de servicio. Agrégalos en Configuración.",
+      "dateTime": "Fecha y hora",
+      "date": "Fecha",
+      "startTime": "Hora de inicio",
+      "selectTime": "Elegir hora",
+      "duration": "Duración",
+      "customHours": "Duración personalizada en horas",
+      "hrs": "hrs",
+      "thatDay": "{count, plural, =0 {Aún no hay nada agendado ese día.} one {Ya hay 1 trabajo agendado ese día} other {Ya hay # trabajos agendados ese día}}",
+      "allDay": "Todo el día",
+      "more": "+{count} más",
+      "clash": "Este horario se cruza con otro trabajo.",
+      "frequency": "Frecuencia",
+      "noRepeat": "No se repite",
+      "repeatHelp": "Se crean los trabajos de las próximas 12 semanas, con el equipo y la lista ya listos.",
+      "staff": "Personal asignado",
+      "unassigned": "— Sin asignar —",
+      "status": "Estado",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas internas para este trabajo…",
+      "moreDetails": "Más detalles: precio, dirección, acceso",
+      "price": "Precio",
+      "address": "Dirección",
+      "addressHelp": "Déjala vacía para usar la dirección del cliente.",
+      "access": "Instrucciones de acceso",
+      "cancel": "Cancelar",
+      "save": "Guardar trabajo",
+      "saveSeries": "Guardar trabajo recurrente",
+      "until": "Terminar después de (opcional)"
+    },
+    "series": {
+      "legend": "Trabajo recurrente",
+      "one": "Solo este trabajo",
+      "following": "Este y los siguientes",
+      "frequency": "Repetir",
+      "help": "Mueve los próximos trabajos a la fecha elegida y los repite desde ahí, conservando su equipo y lista."
+    }
   },
   "employees": {
     "title": "Empleados",
@@ -868,11 +927,13 @@
     "allDay": "Todo el día",
     "jobsCount": "{count, plural, =0 {Sin trabajos} one {# trabajo} other {# trabajos}}",
     "noJobsDay": "No hay trabajos este día.",
-    "noJobsAgenda": "No hay trabajos en los próximos {days} días."
+    "noJobsAgenda": "No hay trabajos en los próximos {days} días.",
+    "showCancelled": "Mostrar trabajos cancelados",
+    "hideCancelled": "Ocultar trabajos cancelados"
   },
   "recurring": {
     "title": "Trabajos recurrentes",
-    "intro": "Configura una limpieza que se repite una sola vez. Se crean los trabajos de las próximas 12 semanas, con el equipo y la lista ya listos.",
+    "intro": "Los trabajos recurrentes se crean desde Nuevo trabajo: elige una frecuencia ahí. Aquí puedes crear las próximas semanas, terminar una serie o eliminarla.",
     "empty": "Aún no hay trabajos recurrentes.",
     "invalid": "Revisa los campos e inténtalo de nuevo.",
     "createdJobs": "{count, plural, =0 {No hizo falta crear trabajos nuevos.} one {Se creó # trabajo.} other {Se crearon # trabajos.}}",
@@ -1754,10 +1815,22 @@
     "creating": "Creando…",
     "needClient": "Elige un cliente para crear la cotización.",
     "types": {
-      "standard": { "name": "Limpieza estándar", "desc": "Limpieza regular de mantenimiento" },
-      "deep": { "name": "Limpieza profunda", "desc": "Limpieza a fondo de arriba abajo" },
-      "move": { "name": "Mudanza (entrada/salida)", "desc": "Limpieza completa de casa vacía" },
-      "airbnb": { "name": "Airbnb / Cambio de huéspedes", "desc": "Limpieza rápida entre huéspedes" }
+      "standard": {
+        "name": "Limpieza estándar",
+        "desc": "Limpieza regular de mantenimiento"
+      },
+      "deep": {
+        "name": "Limpieza profunda",
+        "desc": "Limpieza a fondo de arriba abajo"
+      },
+      "move": {
+        "name": "Mudanza (entrada/salida)",
+        "desc": "Limpieza completa de casa vacía"
+      },
+      "airbnb": {
+        "name": "Airbnb / Cambio de huéspedes",
+        "desc": "Limpieza rápida entre huéspedes"
+      }
     },
     "condition": {
       "well": "Bien cuidada",
@@ -1965,7 +2038,8 @@
     "empty": "No hay retiros este mes",
     "emptyMissing": "Todos los retiros tienen recibo o están unidos",
     "emptyBody": "Sube un estado de cuenta arriba para traerlos.",
-    "savedReceipt": "Recibo subido.", "savedReceiptCat": "Recibo subido y categoría llenada a partir de él. Puedes cambiarla con el lápiz.",
+    "savedReceipt": "Recibo subido.",
+    "savedReceiptCat": "Recibo subido y categoría llenada a partir de él. Puedes cambiarla con el lápiz.",
     "savedLinked": "Unido con el gasto.",
     "matchedCount": "{count, plural, =0 {No se encontraron coincidencias nuevas.} one {1 retiro unido.} other {# retiros unidos.}}",
     "errType": "Usa un archivo JPG, PNG, WebP o PDF.",
@@ -2031,7 +2105,8 @@
       "delete": "Eliminar seleccionados",
       "confirmDelete": "¿Eliminar los movimientos seleccionados?"
     },
-    "import": { "withdrawalsOnly": "Modo gastos: solo se importan los retiros (débitos). Los depósitos del estado de cuenta se omiten.",
+    "import": {
+      "withdrawalsOnly": "Modo gastos: solo se importan los retiros (débitos). Los depósitos del estado de cuenta se omiten.",
       "title": "Importar un estado de cuenta",
       "help": "Sube el PDF que te da tu banco. El archivo se lee en nuestro servidor y no se guarda. Revisas los movimientos antes de guardar nada.",
       "drop": "Arrastra aquí el PDF de tu estado de cuenta",

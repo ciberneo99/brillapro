@@ -67,3 +67,17 @@ export async function endSchedule(id: string, cancelFuture: boolean) {
   revalidatePath("/jobs");
   redirect(`${BACK}?ended=${Number(n ?? 0)}`);
 }
+
+/** Deletes every job of the series that can be erased (the others are cancelled) and ends the series. */
+export async function deleteSeries(id: string) {
+  await guard();
+  if (!UUID.test(id)) redirect(BACK);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("delete_series", { p_schedule: id });
+  revalidatePath(BACK);
+  revalidatePath("/calendar");
+  revalidatePath("/jobs");
+  if (error) redirect(`${BACK}?error=invalid`);
+  const r = (Array.isArray(data) ? data[0] : data) as { deleted?: number; cancelled?: number } | null;
+  redirect(`${BACK}?removed=${Number(r?.deleted ?? 0)}&cancelled=${Number(r?.cancelled ?? 0)}`);
+}

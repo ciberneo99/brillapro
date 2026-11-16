@@ -206,7 +206,11 @@
       "sample": "How it looks on your invoices",
       "sampleText": "Description · Qty · Amount",
       "sizeTitle": "Logo size on invoices and quotes",
-      "sizes": { "small": "Small", "medium": "Medium", "large": "Large" },
+      "sizes": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      },
       "saveBrand": "Save",
       "match": "Match my logo",
       "useDefault": "Use the default green",
@@ -828,7 +832,62 @@
     "invoiceSection": "Invoice",
     "viewInvoice": "Open the invoice for this job",
     "createInvoice": "Create invoice",
-    "invoiceError": "Couldn't create the invoice. This job may already have one."
+    "invoiceError": "Couldn't create the invoice. This job may already have one.",
+    "delete": {
+      "button": "Delete",
+      "one": "This job only",
+      "following": "This and following jobs",
+      "series": "Delete entire series",
+      "confirmOne": "Delete this job? If it has an invoice, expense or hours, it is cancelled instead.",
+      "confirmFollowing": "Delete this job and all the following jobs of the series? Completed jobs are kept.",
+      "confirmSeries": "Delete the entire series and all its jobs that have not started? Completed jobs are kept.",
+      "result": "{count, plural, =0 {No jobs deleted.} one {# job deleted.} other {# jobs deleted.}}",
+      "kept": "{count, plural, one {# job has an invoice, expense or hours, so it was cancelled instead.} other {# jobs have an invoice, expense or hours, so they were cancelled instead.}}",
+      "error": "The job could not be deleted. Jobs already started or completed cannot be deleted."
+    },
+    "form": {
+      "title": "Schedule New Job",
+      "subtitle": "Fill in the details below to create a new job",
+      "back": "Back",
+      "client": "Client",
+      "service": "Service type",
+      "noServices": "No service types yet. Add them in Settings.",
+      "dateTime": "Date & time",
+      "date": "Date",
+      "startTime": "Start time",
+      "selectTime": "Select time",
+      "duration": "Duration",
+      "customHours": "Custom duration in hours",
+      "hrs": "hrs",
+      "thatDay": "{count, plural, =0 {Nothing scheduled that day yet.} one {1 job already scheduled that day} other {# jobs already scheduled that day}}",
+      "allDay": "All day",
+      "more": "+{count} more",
+      "clash": "This time overlaps another job.",
+      "frequency": "Frequency",
+      "noRepeat": "Does not repeat",
+      "repeatHelp": "Jobs are created for the next 12 weeks, with the team and checklist in place.",
+      "staff": "Assigned staff",
+      "unassigned": "— Unassigned —",
+      "status": "Status",
+      "notes": "Notes",
+      "notesPlaceholder": "Any internal notes for this job…",
+      "moreDetails": "More details: price, address, access",
+      "price": "Price",
+      "address": "Address",
+      "addressHelp": "Leave empty to use the client's address.",
+      "access": "Access instructions",
+      "cancel": "Cancel",
+      "save": "Save job",
+      "saveSeries": "Save repeating job",
+      "until": "Stop after (optional)"
+    },
+    "series": {
+      "legend": "Repeating job",
+      "one": "This job only",
+      "following": "This and following jobs",
+      "frequency": "Repeat",
+      "help": "Moves the next jobs to the chosen date and repeats them from there, keeping their team and checklist."
+    }
   },
   "employees": {
     "title": "Employees",
@@ -868,11 +927,13 @@
     "allDay": "All day",
     "jobsCount": "{count, plural, =0 {No jobs} one {# job} other {# jobs}}",
     "noJobsDay": "No jobs on this day.",
-    "noJobsAgenda": "No jobs in the next {days} days."
+    "noJobsAgenda": "No jobs in the next {days} days.",
+    "showCancelled": "Show cancelled jobs",
+    "hideCancelled": "Hide cancelled jobs"
   },
   "recurring": {
     "title": "Recurring jobs",
-    "intro": "Set up a repeating cleaning once. Jobs are created for the next 12 weeks, with the team and checklist already in place.",
+    "intro": "Repeating jobs are created from New job: pick a frequency there. Here you can create the next weeks of jobs, end a series or delete it.",
     "empty": "No recurring jobs yet.",
     "invalid": "Check the fields and try again.",
     "createdJobs": "{count, plural, =0 {No new jobs were needed.} one {# job created.} other {# jobs created.}}",
@@ -1754,10 +1815,22 @@
     "creating": "Creating…",
     "needClient": "Pick a client to create the quote.",
     "types": {
-      "standard": { "name": "Standard Clean", "desc": "Regular maintenance clean" },
-      "deep": { "name": "Deep Clean", "desc": "Thorough top-to-bottom clean" },
-      "move": { "name": "Move In / Out", "desc": "Full empty-home clean" },
-      "airbnb": { "name": "Airbnb / Turnover", "desc": "Quick turnaround between guests" }
+      "standard": {
+        "name": "Standard Clean",
+        "desc": "Regular maintenance clean"
+      },
+      "deep": {
+        "name": "Deep Clean",
+        "desc": "Thorough top-to-bottom clean"
+      },
+      "move": {
+        "name": "Move In / Out",
+        "desc": "Full empty-home clean"
+      },
+      "airbnb": {
+        "name": "Airbnb / Turnover",
+        "desc": "Quick turnaround between guests"
+      }
     },
     "condition": {
       "well": "Well Maintained",
@@ -1965,7 +2038,8 @@
     "empty": "No withdrawals this month",
     "emptyMissing": "Every withdrawal has a receipt or a match",
     "emptyBody": "Upload a bank statement above to bring them in.",
-    "savedReceipt": "Receipt uploaded.", "savedReceiptCat": "Receipt uploaded and the category filled in from it. You can change it with the pencil.",
+    "savedReceipt": "Receipt uploaded.",
+    "savedReceiptCat": "Receipt uploaded and the category filled in from it. You can change it with the pencil.",
     "savedLinked": "Linked with the expense.",
     "matchedCount": "{count, plural, =0 {No new matches found.} one {1 withdrawal matched.} other {# withdrawals matched.}}",
     "errType": "Use a JPG, PNG, WebP or PDF file.",
@@ -2031,7 +2105,8 @@
       "delete": "Delete selected",
       "confirmDelete": "Delete the selected transactions?"
     },
-    "import": { "withdrawalsOnly": "Expenses mode: only withdrawals (debits) are imported. Deposits in the statement are skipped.",
+    "import": {
+      "withdrawalsOnly": "Expenses mode: only withdrawals (debits) are imported. Deposits in the statement are skipped.",
       "title": "Import a bank statement",
       "help": "Upload the PDF your bank gives you. The file is read on our server and is not stored. You review the transactions before anything is saved.",
       "drop": "Drag your statement PDF here",

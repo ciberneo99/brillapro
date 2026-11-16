@@ -128,4 +128,128 @@ d("recurring schedules", () => {
     // frequency / start date cannot be edited afterwards
     await expect(as(id.ownerA, (tx) => tx`update public.recurring_schedules set frequency = 'monthly' where id = ${sid}`)).rejects.toThrow();
   });
+
+  it("delete_jobs: one occurrence is erased and stays skipped when the series is extended", async () => {
+    await as(id.ownerA, async (tx) => {
+      const sid = (await newSchedule(tx))[0].id;
+      await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(20)}::date)`;
+      const before = (await tx`select count(*)::int c from public.jobs where recurring_schedule_id = ${sid}`)[0].c;
+      const j = (await tx`select id from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date limit 1`)[0].id;
+      expect((await tx`select * from public.delete_jobs(${j}, 'one')`)[0]).toMatchObject({ deleted: 1, cancelled: 0 });
+      expect((await tx`select count(*)::int c from public.jobs where recurring_schedule_id = ${sid}`)[0].c).toBe(before - 1);
+      expect((await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(20)}::date) as n`)[0].n).toBe(0);
+    });
+  });
+
+  it("delete_jobs: following keeps earlier and started jobs; series erases the rest and ends the schedule", async () => {
+    await as(id.ownerA, async (tx) => {
+      const sid = (await newSchedule(tx))[0].id;
+      await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(30)}::date)`;
+      const ids = (await tx`select id from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date`).map((r) => r.id as string);
+      expect(ids.length).toBeGreaterThanOrEqual(4);
+      await tx`select public.set_job_status(${ids[2]}, 'in_progress')`;
+      const r = (await tx`select * from public.delete_jobs(${ids[1]}, 'following')`)[0];
+      expect(r.cancelled).toBe(0);
+      expect(r.deleted).toBe(ids.length - 2); // all but the first and the started one
+      expect((await tx`select count(*)::int c from public.jobs where recurring_schedule_id = ${sid}`)[0].c).toBe(2);
+      await expect(tx`select * from public.delete_jobs(${ids[2]}, 'one')`).rejects.toThrow(/started/);
+    });
+    await as(id.ownerA, async (tx) => {
+      const sid = (await newSchedule(tx))[0].id;
+      await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(20)}::date)`;
+      const n = (await tx`select count(*)::int c from public.jobs where recurring_schedule_id = ${sid}`)[0].c;
+      expect((await tx`select * from public.delete_series(${sid})`)[0]).toMatchObject({ deleted: n, cancelled: 0 });
+      expect((await tx`select count(*)::int c from public.jobs where recurring_schedule_id = ${sid}`)[0].c).toBe(0);
+      expect((await tx`select is_active from public.recurring_schedules where id = ${sid}`)[0].is_active).toBe(false);
+    });
+  });
+
+  it("delete_jobs: a job with hours logged is cancelled, not erased; outsiders cannot delete", async () => {
+    await as(id.ownerA, async (tx) => {
+      const sid = (await newSchedule(tx))[0].id;
+      await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(10)}::date)`;
+      const j = (await tx`select id from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date limit 1`)[0].id;
+      await tx`reset role`;
+      await tx`insert into public.time_entries (tenant_id, employee_id, job_id, clock_in) values (${tA}, ${emp}, ${j}, now())`;
+      await tx`set local role authenticated`;
+      expect((await tx`select * from public.delete_jobs(${j}, 'one')`)[0]).toMatchObject({ deleted: 0, cancelled: 1 });
+      expect((await tx`select status from public.jobs where id = ${j}`)[0].status).toBe("cancelled");
+    });
+    const j2 = (await sql`insert into public.jobs (tenant_id, customer_id, title, scheduled_date, customer_name) values (${tA}, ${custA}, 'Solo', current_date + 3, 'Ann Lee') returning id`)[0].id;
+    for (const u of [id.employee, id.ownerB]) {
+      await expect(as(u, (tx) => tx`select * from public.delete_jobs(${j2}, 'one')`)).rejects.toThrow();
+    }
+  });
+
+  describe("update_series_from (this and following)", () => {
+    const upd = (tx: postgres.TransactionSql, job: string, freq: string | null, date: string, extra: Record<string, unknown> = {}) =>
+      tx`select public.update_series_from(${job}, ${freq}, ${(extra.title as string) ?? "Weekly"}, ${svcA}, ${date}::date, ${(extra.start as string) ?? null}::time, ${(extra.end as string) ?? null}::time,
+        ${null}, ${null}, ${(extra.price as number) ?? 0}, ${null}) as n`;
+    const dates = async (tx: postgres.TransactionSql, sid: string) =>
+      (await tx`select scheduled_date::text d from public.jobs where recurring_schedule_id = ${sid} order by 1`).map((r) => r.d as string);
+
+    it("changes the cadence from a job onward and keeps earlier jobs, ids and count", async () => {
+      await as(id.ownerA, async (tx) => {
+        const sid = (await newSchedule(tx))[0].id;
+        await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(30)}::date)`;
+        const before = await tx`select id, scheduled_date::text d from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date`;
+        expect(before.length).toBeGreaterThanOrEqual(4);
+        const newDate = plusDays(Number((new Date(before[1].d).getTime() - Date.now()) / 86400000) + 3 | 0);
+        const n = (await upd(tx, before[1].id, "biweekly", newDate))[0].n;
+        expect(n).toBe(before.length - 1);
+        const after = await dates(tx, sid);
+        expect(after).toHaveLength(before.length);
+        expect(after[0]).toBe(before[0].d); // the earlier job is untouched
+        const moved = after.slice(1);
+        expect(moved[0]).toBe(newDate);
+        for (let i = 1; i < moved.length; i++) expect((new Date(moved[i]).getTime() - new Date(moved[i - 1]).getTime()) / 86400000).toBe(14);
+        const sch = (await tx`select frequency, start_date::text sd from public.recurring_schedules where id = ${sid}`)[0];
+        expect(sch).toMatchObject({ frequency: "biweekly", sd: newDate });
+        // ids are kept (jobs were moved, not recreated)
+        expect((await tx`select count(*)::int c from public.jobs where id in ${tx(before.map((b) => b.id))}`)[0].c).toBe(before.length);
+        // extending later follows the new cadence and does not recreate old dates
+        await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(120)}::date)`;
+        const ext = await dates(tx, sid);
+        expect(ext.length).toBeGreaterThan(before.length);
+        expect(new Set(ext).size).toBe(ext.length);
+      });
+    });
+
+    it("only edits fields when date and frequency are unchanged, so jobs moved one by one stay where they are", async () => {
+      await as(id.ownerA, async (tx) => {
+        const sid = (await newSchedule(tx))[0].id;
+        await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(30)}::date)`;
+        const js = await tx`select id, scheduled_date::text d from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date`;
+        const solo = plusDays(Number((new Date(js[2].d).getTime() - Date.now()) / 86400000) + 2 | 0);
+        await tx`update public.jobs set scheduled_date = ${solo} where id = ${js[2].id}`;
+        await upd(tx, js[1].id, null, js[1].d, { price: 12300, start: "09:00", end: "11:00" });
+        const rows = await tx`select scheduled_date::text d, price_cents p, start_time::text st from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date`;
+        expect(rows.map((r) => r.d)).toContain(solo);
+        expect(rows[0].p).toBe(0); // before the chosen job: untouched
+        for (const r of rows.slice(1)) expect([r.p, r.st]).toEqual([12300, "09:00:00"]);
+      });
+    });
+
+    it("refuses started jobs, taken dates, ended series and outsiders", async () => {
+      await as(id.ownerA, async (tx) => {
+        const sid = (await newSchedule(tx))[0].id;
+        await tx`select public.generate_recurring_jobs(${sid}, ${plusDays(30)}::date)`;
+        const js = await tx`select id, scheduled_date::text d from public.jobs where recurring_schedule_id = ${sid} order by scheduled_date`;
+        await tx`savepoint a`;
+        await expect(upd(tx, js[1].id, "biweekly", js[0].d)).rejects.toThrow(/date taken/);
+        await tx`rollback to savepoint a`;
+        await tx`select public.set_job_status(${js[1].id}, 'in_progress')`;
+        await tx`savepoint b`;
+        await expect(upd(tx, js[1].id, "biweekly", plusDays(40))).rejects.toThrow(/already started/);
+        await tx`rollback to savepoint b`;
+        await tx`select public.end_recurring(${sid}, false)`;
+        await expect(upd(tx, js[2].id, "biweekly", plusDays(40))).rejects.toThrow(/ended/);
+      });
+      const sid2 = (await sql`insert into public.recurring_schedules (tenant_id, customer_id, title, frequency, start_date) values (${tA}, ${custA}, 'Hidden2', 'weekly', current_date + 1) returning id`)[0].id;
+      const j2 = (await sql`insert into public.jobs (tenant_id, customer_id, title, scheduled_date, customer_name, recurring_schedule_id) values (${tA}, ${custA}, 'H', current_date + 1, 'Ann Lee', ${sid2}) returning id`)[0].id;
+      for (const u of [id.employee, id.ownerB]) {
+        await expect(as(u, (tx) => upd(tx, j2, "biweekly", plusDays(5)))).rejects.toThrow();
+      }
+    });
+  });
 });

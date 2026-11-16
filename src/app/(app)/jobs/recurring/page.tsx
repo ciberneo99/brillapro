@@ -1,24 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Alert, Button, Card, Field, Select } from "@/components/ui";
-import { DatePicker } from "@/components/ui/DatePicker";
-import { JobFields } from "@/components/jobs/JobFields";
+import { Alert, Button, Card } from "@/components/ui";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
 import { formatTime } from "@/lib/time";
-import { CUSTOMER_OPTION_COLUMNS, toCustomerOptions } from "@/modules/customers/options";
-import { JobCustomerField } from "@/components/jobs/JobCustomerField";
-import { listEmployees } from "@/modules/employees/module";
-import { createSchedule, endSchedule, extendSchedule } from "@/modules/recurring/actions";
-import { FREQUENCIES, listSchedules } from "@/modules/recurring/module";
-import { listServiceTypes } from "@/modules/services/queries";
+import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
+import { Plus, Trash2 } from "lucide-react";
+import { deleteSeries, endSchedule, extendSchedule } from "@/modules/recurring/actions";
+import { listSchedules } from "@/modules/recurring/module";
 
 export const metadata = { title: "Recurring jobs" };
-type SP = { error?: string; created?: string; ended?: string };
+type SP = { error?: string; created?: string; ended?: string; removed?: string; cancelled?: string };
 
 export default async function RecurringPage({ searchParams }: { searchParams: Promise<SP> }) {
   const ctx = await requireContext();
@@ -27,17 +22,7 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
   const t = await getTranslations("recurring");
   const tj = await getTranslations("jobs");
   const fmt = ctx.settings.date_format;
-  const supabase = await createClient();
-  const [schedules, employees, services, { data: customers }] = await Promise.all([
-    listSchedules(),
-    listEmployees({ activeOnly: true }),
-    listServiceTypes(),
-    supabase.from("customers").select(CUSTOMER_OPTION_COLUMNS).neq("status", "archived").order("first_name").limit(1000),
-  ]);
-  const labels = {
-    title: tj("titleField"), service: tj("service"), noService: tj("noService"), date: t("startDate"), start: tj("start"), end: tj("end"),
-    address: tj("address"), access: tj("access"), price: tj("price"), notes: tj("notes"),
-  };
+  const schedules = await listSchedules();
 
   return (
     <div className="space-y-6">
@@ -46,8 +31,14 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted">{t("intro")}</p>
       </div>
+      <div>
+        <Link href="/jobs/new" className="bp-fx bp-fx-solid inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover"><Plus className="h-4 w-4" aria-hidden />{tj("new")}</Link>
+      </div>
       {sp.error && <Alert>{t("invalid")}</Alert>}
       {sp.created !== undefined && <Alert tone="success">{t("createdJobs", { count: Number(sp.created) })}</Alert>}
+      {sp.removed !== undefined && (
+        <Alert tone="success">{tj("delete.result", { count: Number(sp.removed) || 0 })}{Number(sp.cancelled) > 0 && ` ${tj("delete.kept", { count: Number(sp.cancelled) })}`}</Alert>
+      )}
       {sp.ended !== undefined && <Alert tone="success">{t("ended", { count: Number(sp.ended) })}</Alert>}
 
       {schedules.length === 0 && <Card className="text-center text-sm text-muted">{t("empty")}</Card>}
@@ -68,49 +59,19 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
             </div>
             <span className={`rounded-full px-2.5 py-0.5 text-xs ${s.is_active ? "bg-success-soft text-success" : "bg-surface-2 text-muted"}`}>{s.is_active ? t("active") : t("ended_label")}</span>
           </div>
+          <div className="flex flex-wrap gap-2">
           {s.is_active && (
-            <div className="flex flex-wrap gap-2">
+            <>
               <form action={extendSchedule.bind(null, s.id)}><Button type="submit" variant="secondary">{t("extend")}</Button></form>
               <form action={endSchedule.bind(null, s.id, false)}><Button type="submit" variant="ghost">{t("end")}</Button></form>
               <form action={endSchedule.bind(null, s.id, true)}><Button type="submit" variant="ghost" className="text-danger">{t("endCancel")}</Button></form>
-            </div>
+            </>
           )}
+            <form action={deleteSeries.bind(null, s.id)}><ConfirmSubmit message={tj("delete.confirmSeries")} className="bp-fx bp-fx-danger bp-fx-nobar inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium text-danger hover:border-danger hover:bg-danger-soft"><Trash2 className="h-4 w-4" aria-hidden />{tj("delete.series")}</ConfirmSubmit></form>
+          </div>
         </Card>
       ))}
 
-      <Card accent="green">
-        <h2 className="mb-3 text-base font-semibold">{t("new")}</h2>
-        {(customers ?? []).length === 0 ? (
-          <p className="text-sm">{tj("needCustomer")} <Link href="/customers/new" className="text-primary hover:underline">{tj("addCustomer")}</Link></p>
-        ) : (
-          <form action={createSchedule} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={tj("customer")} htmlFor="customer_id">
-                <JobCustomerField customers={toCustomerOptions(customers ?? [])} />
-              </Field>
-              <Field label={t("repeats")} htmlFor="frequency">
-                <Select id="frequency" name="frequency" defaultValue="weekly">
-                  {FREQUENCIES.map((f) => <option key={f} value={f}>{t(`frequency.${f}`)}</option>)}
-                </Select>
-              </Field>
-            </div>
-            <JobFields v={{}} services={services.filter((x) => x.is_active)} labels={labels} dateFormat={fmt} currency={ctx.settings.currency} dateName="start_date" />
-            <Field label={t("untilOptional")} htmlFor="until_date"><DatePicker id="until_date" name="until_date" dateFormat={fmt} /></Field>
-            {employees.length > 0 && (
-              <fieldset>
-                <legend className="mb-1 text-sm font-medium">{t("team")}</legend>
-                <div className="flex flex-wrap gap-3">
-                  {employees.map((e) => (
-                    <label key={e.id} className="flex items-center gap-2 text-sm"><input type="checkbox" name="employee_ids" value={e.id} className="h-4 w-4" /> {e.full_name}</label>
-                  ))}
-                </div>
-              </fieldset>
-            )}
-            <p className="text-xs text-muted">{t("createHelp")}</p>
-            <Button type="submit">{t("create")}</Button>
-          </form>
-        )}
-      </Card>
     </div>
   );
 }

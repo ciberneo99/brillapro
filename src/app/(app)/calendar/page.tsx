@@ -12,7 +12,7 @@ import { listEmployees } from "@/modules/employees/module";
 import { jobsInRange, type CalendarJob } from "@/modules/jobs/queries";
 
 export const metadata = { title: "Calendar" };
-type SP = { view?: string; date?: string; employee?: string };
+type SP = { view?: string; date?: string; employee?: string; cancelled?: string };
 
 const VIEWS = ["month", "week", "day", "agenda"] as const;
 type View = (typeof VIEWS)[number];
@@ -42,13 +42,15 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const weeks = view === "month" ? monthGrid(date) : view === "week" ? [weekDays(date)] : [];
   const from = view === "day" ? date : view === "agenda" ? date : weeks[0][0];
   const to = view === "day" ? date : view === "agenda" ? addDays(date, AGENDA_DAYS - 1) : weeks.at(-1)!.at(-1)!;
-  const jobs = await jobsInRange(from, to, employee);
+  const showCancelled = sp.cancelled === "1";
+  const jobs = await jobsInRange(from, to, employee, showCancelled);
   const byDay = new Map<string, CalendarJob[]>();
   for (const j of jobs) byDay.set(j.scheduled_date, [...(byDay.get(j.scheduled_date) ?? []), j]);
 
   const href = (o: { view?: string; date?: string }) => {
     const p = new URLSearchParams({ view: o.view ?? view, date: o.date ?? date });
     if (employee) p.set("employee", employee);
+    if (showCancelled) p.set("cancelled", "1");
     return `/calendar?${p.toString()}`;
   };
   const step = { month: () => [addMonths(date, -1), addMonths(date, 1)], week: () => [addDays(startOfWeek(date), -7), addDays(startOfWeek(date), 7)],
@@ -103,6 +105,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
           <form action="/calendar" className="flex items-center gap-2">
             <input type="hidden" name="view" value={view} />
             <input type="hidden" name="date" value={date} />
+            {showCancelled && <input type="hidden" name="cancelled" value="1" />}
             <label htmlFor="employee" className="text-muted">{t("employee")}</label>
             <Select id="employee" name="employee" defaultValue={employee ?? ""} className="h-9 w-48">
               <option value="">{t("everyone")}</option>
@@ -111,6 +114,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
             <button type="submit" className={cn(btn, idle)}>{t("filter")}</button>
           </form>
         )}
+        <Link href={showCancelled ? href({}).replace(/&cancelled=1/, "") : `${href({})}&cancelled=1`} className="text-primary hover:underline">{showCancelled ? t("hideCancelled") : t("showCancelled")}</Link>
         {staff && <Link href="/jobs/recurring" className="text-primary hover:underline">{t("recurring")}</Link>}
         {!staff && <span className="text-muted">{t("employeeNote")}</span>}
       </div>
@@ -160,8 +164,14 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                       <ul className="mt-1 space-y-1">
                         {list.slice(0, view === "month" ? 3 : 50).map((j) => (
                           <li key={j.id}>
-                            <Link href={`/jobs/${j.id}`} className={cn("block truncate rounded px-1.5 py-0.5 text-xs", TONE[j.status] ?? TONE.scheduled)} title={`${j.title} · ${j.customer_name}`}>
-                              {j.start_time && <strong>{formatTime(j.start_time)} </strong>}{j.title}
+                            <Link href={`/jobs/${j.id}`} className={cn("block rounded px-1.5 py-0.5 text-xs", view === "week" ? "py-1" : "truncate", TONE[j.status] ?? TONE.scheduled)} title={`${j.title} · ${j.customer_name}`}>
+                              {view === "week" ? (
+                                <>
+                                  {j.start_time && <span className="block text-[11px] font-semibold opacity-80">{formatTime(j.start_time)}{j.end_time ? `–${formatTime(j.end_time)}` : ""}</span>}
+                                  <span className="block break-words font-semibold leading-snug">{j.customer_name}</span>
+                                  <span className="block break-words leading-snug opacity-80">{j.title}</span>
+                                </>
+                              ) : (<>{j.start_time && <strong>{formatTime(j.start_time)} </strong>}{j.title}</>)}
                             </Link>
                           </li>
                         ))}

@@ -53,8 +53,8 @@ function MenuDropdown({ options, value, onChange, "aria-label": ariaLabel }: Dro
  * Submits an ISO date (yyyy-mm-dd) under `name`. The pattern shown follows the company setting.
  */
 export function DatePicker({
-  id, name, defaultValue = "", dateFormat, required, className,
-}: { id: string; name: string; defaultValue?: string; dateFormat?: string; required?: boolean; className?: string }) {
+  id, name, defaultValue = "", dateFormat, required, className, onChange,
+}: { id: string; name: string; defaultValue?: string; dateFormat?: string; required?: boolean; className?: string; onChange?: (iso: string) => void }) {
   const fmt: DateFormat = isDateFormat(dateFormat) ? dateFormat : DEFAULT_DATE_FORMAT;
   const locale = useLocale();
   const t = useTranslations("common");
@@ -66,6 +66,8 @@ export function DatePicker({
   const root = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLInputElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { onChange?.(selected ? toIso(selected) : ""); }, [selected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const apply = (d: Date | undefined) => {
     setSelected(d);

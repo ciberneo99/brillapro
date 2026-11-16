@@ -8,9 +8,12 @@ import { formatDateOnly } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
+import { FREQUENCIES } from "@/modules/recurring/module";
 import { formatTime } from "@/lib/time";
 import { listEmployees } from "@/modules/employees/module";
-import { assignEmployee, loadChecklist, setJobStatus, toggleJobItem, unassignEmployee, updateJob } from "@/modules/jobs/actions";
+import { DeleteJobMenu } from "@/components/jobs/DeleteJobMenu";
+import { assignEmployee, deleteJob, loadChecklist, setJobStatus, toggleJobItem, unassignEmployee, updateJob } from "@/modules/jobs/actions";
 import { getJob } from "@/modules/jobs/queries";
 import { createInvoiceFromJob } from "@/modules/invoices/actions";
 import { invoiceForJob } from "@/modules/invoices/queries";
@@ -40,6 +43,11 @@ export default async function JobPage({ params, searchParams }: { params: Promis
     const g = groups.find((x) => x.category === it.category);
     if (g) g.items.push(it); else groups.push({ category: it.category, items: [it] });
   }
+  const tr = await getTranslations("recurring");
+  const series = job.recurring_schedule_id
+    ? (await (await createClient()).from("recurring_schedules").select("frequency,is_active").eq("id", job.recurring_schedule_id).maybeSingle()).data
+    : null;
+  const seriesActive = series?.is_active ? series : null;
   const next = job.status === "scheduled" ? "in_progress" : job.status === "in_progress" ? "completed" : null;
   const labels = {
     title: t("titleField"), service: t("service"), noService: t("noService"), date: t("date"), start: t("start"), end: t("end"),
@@ -64,13 +72,20 @@ export default async function JobPage({ params, searchParams }: { params: Promis
           {staff && job.status !== "cancelled" && job.status !== "completed" && (
             <form action={setJobStatus.bind(null, id, "cancelled")}><Button type="submit" variant="secondary">{t("action.cancelled")}</Button></form>
           )}
+          {staff && (job.status === "scheduled" || job.status === "cancelled") && (
+            <DeleteJobMenu
+              inSeries={Boolean(job.recurring_schedule_id)}
+              labels={{ delete: t("delete.button"), one: t("delete.one"), following: t("delete.following"), series: t("delete.series"), confirmOne: t("delete.confirmOne"), confirmFollowing: t("delete.confirmFollowing"), confirmSeries: t("delete.confirmSeries") }}
+              actions={{ one: deleteJob.bind(null, id, "one"), ...(job.recurring_schedule_id ? { following: deleteJob.bind(null, id, "following"), series: deleteJob.bind(null, id, "series") } : {}) }}
+            />
+          )}
           {staff && (job.status === "cancelled" || job.status === "completed") && (
             <form action={setJobStatus.bind(null, id, "scheduled")}><Button type="submit" variant="secondary">{t("action.scheduled")}</Button></form>
           )}
         </div>
       </div>
 
-      {sp.error && <Alert>{t(sp.error === "status" ? "statusError" : sp.error === "invoice" ? "invoiceError" : "invalid")}</Alert>}
+      {sp.error && <Alert>{t(sp.error === "status" ? "statusError" : sp.error === "delete" ? "delete.error" : sp.error === "invoice" ? "invoiceError" : "invalid")}</Alert>}
       {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
 
       {(existingInvoice || (canInvoice && job.status !== "cancelled")) && (
@@ -154,6 +169,20 @@ export default async function JobPage({ params, searchParams }: { params: Promis
               v={{ title: job.title, service_type_id: job.service_type_id, scheduled_date: job.scheduled_date, start_time: job.start_time, end_time: job.end_time, address: job.address, access_notes: job.access_notes, price_cents: job.price_cents, notes: job.notes }}
               services={services.filter((s) => s.is_active || s.id === job.service_type_id)} labels={labels} dateFormat={fmt} currency={ctx.settings.currency}
             />
+            {seriesActive && job.status === "scheduled" && (
+              <fieldset className="space-y-2 rounded-xl border border-line bg-surface-2 p-3 text-sm">
+                <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-muted">{t("series.legend")}</legend>
+                <label className="flex items-center gap-2"><input type="radio" name="series_scope" value="one" defaultChecked className="h-4 w-4" />{t("series.one")}</label>
+                <label className="flex items-center gap-2"><input type="radio" name="series_scope" value="following" className="h-4 w-4" />{t("series.following")}</label>
+                <div className="flex flex-wrap items-center gap-2 pl-6">
+                  <span className="text-muted">{t("series.frequency")}</span>
+                  <Select name="series_frequency" defaultValue={seriesActive.frequency} className="w-auto">
+                    {FREQUENCIES.map((f) => <option key={f} value={f}>{tr(`frequency.${f}`)}</option>)}
+                  </Select>
+                </div>
+                <p className="pl-6 text-xs text-muted">{t("series.help")}</p>
+              </fieldset>
+            )}
             <Button type="submit">{t("save")}</Button>
           </form>
         ) : (

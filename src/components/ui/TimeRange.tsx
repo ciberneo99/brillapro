@@ -8,9 +8,9 @@ import { useTranslations } from "next-intl";
 const STEP = 15;
 const DURATIONS = [60, 120, 180, 240, 360, 480];
 
-const toMin = (v: string) => (/^\d{2}:\d{2}$/.test(v) ? Number(v.slice(0, 2)) * 60 + Number(v.slice(3, 5)) : null);
-const toVal = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-function label(m: number) {
+export const toMin = (v: string) => (/^\d{2}:\d{2}$/.test(v) ? Number(v.slice(0, 2)) * 60 + Number(v.slice(3, 5)) : null);
+export const toVal = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+export function label(m: number) {
   const h = Math.floor(m / 60), mm = m % 60;
   return `${h % 12 === 0 ? 12 : h % 12}:${String(mm).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
@@ -31,7 +31,7 @@ function parse(text: string): number | null {
   return h * 60 + mm;
 }
 
-function TimeBox({
+export function TimeBox({
   id, name, value, onChange, options, placeholder, ariaLabel, hint,
 }: {
   id: string; name: string; value: number | null; onChange: (m: number | null) => void; options: number[];
@@ -44,7 +44,9 @@ function TimeBox({
   const list = useRef<HTMLUListElement>(null);
   const listId = useId();
 
-  useEffect(() => { setText(value == null ? "" : label(value)); setBad(false); }, [value]);
+  // Follow the value when it changes from outside (a chip, or the start moving the end).
+  const [seen, setSeen] = useState(value);
+  if (seen !== value) { setSeen(value); setText(value == null ? "" : label(value)); setBad(false); }
 
   useEffect(() => {
     if (!open) return;
