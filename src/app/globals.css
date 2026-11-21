@@ -161,6 +161,8 @@ body {
 }
 
 /* Alternating note backgrounds (My Notes). Unlayered on purpose: it must win over the utility classes on the same element. */
+/* "Add employee" card: dashed outline and a soft tint so it reads as a placeholder, not as one more person. */
+.add-card { border: 2px dashed color-mix(in srgb, var(--primary) 55%, var(--line)); background: color-mix(in srgb, var(--primary) 7%, var(--surface)); }
 /* Task priority, three strengths of red: light tint, medium, solid. Text contrast is above 5:1 in light and dark. */
 .prio-low { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); }
 .prio-normal { background: color-mix(in srgb, var(--danger) 30%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--danger) 60%, transparent); }

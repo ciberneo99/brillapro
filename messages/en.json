@@ -903,6 +903,8 @@
     "invalid": "Check the fields and try again.",
     "activate": "Reactivate",
     "deactivate": "Deactivate",
+    "active": "Active", "inactive": "Inactive", "newEmployee": "New employee",
+    "edit": "Edit", "cancel": "Cancel",
     "add": "Add employee",
     "addButton": "Add",
     "login": "Login",

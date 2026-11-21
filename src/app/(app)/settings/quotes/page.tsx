@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { saveQuoteSettings } from "@/modules/quotes/actions";
 import { getQuoteSettings } from "@/modules/quotes/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Quote settings" };
 
@@ -25,7 +26,7 @@ export default async function QuoteSettingsPage({ searchParams }: { searchParams
         <p className="mt-1 text-sm text-muted">{t("settingsIntro")}</p>
       </div>
       {sp.error && <Alert>{t("invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       <Card accent="violet">
         <form action={saveQuoteSettings} className="space-y-4">
           <fieldset disabled={!canEdit} className="space-y-4">

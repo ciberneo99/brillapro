@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { addPaymentMethod, renamePaymentMethod, togglePaymentMethod } from "@/modules/payment-methods/actions";
 import { listPaymentMethods } from "@/modules/payment-methods/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Payment methods" };
 
@@ -25,7 +26,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
         <p className="mt-1 text-sm text-muted">{t("intro")}</p>
       </div>
       {sp.error && <Alert>{t(sp.error === "duplicate" ? "duplicate" : "invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       {!canEdit && <p className="text-sm text-muted">{t("readOnly")}</p>}
 
       {canEdit && (

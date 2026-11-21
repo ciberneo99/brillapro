@@ -19,6 +19,7 @@ import { requireContext } from "@/lib/session";
 import { bulkCategorize, bulkDelete, deleteTransaction, refreshBank, updateTransaction } from "@/modules/bank/actions";
 import { BANK_PAGE_SIZE, categoryLabels, listBankCategories, listBankMonths, listStatements, listTransactions, sumTransactions } from "@/modules/bank/queries";
 import { balanceSummary } from "@/modules/bank/summary";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Bank reports" };
 
@@ -103,7 +104,7 @@ async function TransactionsTab({ sp, canWrite, tenantId, currency, dateFormat }:
     <div className="space-y-6">
       {sp.error === "invalid" && <Alert>{tb("errors.invalid")}</Alert>}
       {sp.error === "select" && <Alert>{tb("errors.select")}</Alert>}
-      {sp.saved && <Alert tone="success">{tb("saved")}</Alert>}
+      {sp.saved && <SavedToast>{tb("saved")}</SavedToast>}
       {canWrite && <StatementImport categories={choices} currency={currency} dateFormat={dateFormat} />}
 
       <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-card">

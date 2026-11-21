@@ -9,6 +9,7 @@ import { requireContext } from "@/lib/session";
 import { getPlanOverview } from "@/modules/billing/queries";
 import { revokeInvite, setMemberActive, setMemberRole } from "@/modules/team/actions";
 import { INVITE_ROLES, listPendingInvites, listTeam } from "@/modules/team/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Team" };
 
@@ -34,7 +35,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
         <p className="mt-1 text-sm text-muted">{t("intro")}</p>
       </div>
       {sp.error && <Alert>{t(sp.error === "seats" ? "errors.seatsFull" : "errors.saveFailed")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
 
       {plan && (
         <p className="text-sm text-muted">

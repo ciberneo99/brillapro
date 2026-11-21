@@ -8,6 +8,7 @@ import { EmailInput } from "@/components/ui/EmailInput";
 import { ZipInput } from "@/components/ui/fields";
 import { SmartTextInput } from "@/components/ui/SmartTextInput";
 import { saveBusinessSettings } from "@/app/(app)/settings/actions";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 type Values = {
   name: string; phone: string; email: string; address: string; city: string; state: string; zip_code: string; website: string; tax_id: string;
@@ -31,7 +32,7 @@ export function BusinessSettingsForm({ values, canEdit }: { values: Values; canE
     <form action={action} className="space-y-6">
       {!canEdit && <p className="text-sm text-muted">{t("business.readOnly")}</p>}
       {state?.error && <Alert>{tc(state.error)}</Alert>}
-      {state?.saved && <Alert tone="success">{tc("saved")}</Alert>}
+      {state?.saved && <SavedToast param={null} trigger={state}>{tc("saved")}</SavedToast>}
 
       <fieldset disabled={!canEdit} className="space-y-4">
         <h2 className="text-base font-semibold">{t("business.title")}</h2>

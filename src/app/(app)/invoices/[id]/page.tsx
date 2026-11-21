@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import { displayName } from "@/modules/customers/schema";
 import { saveInvoiceDraft } from "@/modules/invoices/actions";
 import { getInvoice, getInvoiceSettings } from "@/modules/invoices/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Invoice" };
 
@@ -87,7 +88,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
       </div>
 
       {sp.error && sp.error !== "invalid" && <Alert>{t(sp.error === "payment" ? "paymentError" : sp.error === "issue" ? "issueError" : "voidError")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       {!draft && <p className="text-sm text-muted">{t("lockedNote")}</p>}
 
       {editable ? (

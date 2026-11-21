@@ -20,6 +20,7 @@ import { monthWithdrawals } from "@/modules/bank/expense-view";
 import { categoryLabels, listBankCategories } from "@/modules/bank/queries";
 import { autoMatchMonth, linkTxExpense, removeTxReceipt, unlinkTxExpense, uploadTxReceipt } from "@/modules/bank/receipts";
 import { reportInPlan } from "@/modules/reports/catalog";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Expenses · Bank statement" };
 type SP = { month?: string; missing?: string; error?: string; saved?: string; matched?: string };
@@ -67,11 +68,11 @@ export default async function ExpensesBankPage({ searchParams }: { searchParams:
       <p className="text-sm text-muted">{t("intro")}</p>
 
       {err && <Alert>{err}</Alert>}
-      {sp.saved === "receipt" && <Alert tone="success">{t("savedReceipt")}</Alert>}
-      {sp.saved === "receiptcat" && <Alert tone="success">{t("savedReceiptCat")}</Alert>}
-      {sp.saved === "linked" && <Alert tone="success">{t("savedLinked")}</Alert>}
-      {sp.saved === "1" && <Alert tone="success">{tb("saved")}</Alert>}
-      {sp.matched !== undefined && <Alert tone="success">{t("matchedCount", { count: Number(sp.matched) || 0 })}</Alert>}
+      {sp.saved === "receipt" && <SavedToast>{t("savedReceipt")}</SavedToast>}
+      {sp.saved === "receiptcat" && <SavedToast>{t("savedReceiptCat")}</SavedToast>}
+      {sp.saved === "linked" && <SavedToast>{t("savedLinked")}</SavedToast>}
+      {sp.saved === "1" && <SavedToast>{tb("saved")}</SavedToast>}
+      {sp.matched !== undefined && <SavedToast param="matched">{t("matchedCount", { count: Number(sp.matched) || 0 })}</SavedToast>}
 
       {canWrite && <StatementImport categories={choices} currency={cur} dateFormat={ctx.settings.date_format} withdrawalsOnly />}
 

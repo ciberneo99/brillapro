@@ -18,6 +18,7 @@ import { getJob } from "@/modules/jobs/queries";
 import { createInvoiceFromJob } from "@/modules/invoices/actions";
 import { invoiceForJob } from "@/modules/invoices/queries";
 import { listServiceTypes } from "@/modules/services/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Job" };
 
@@ -86,7 +87,7 @@ export default async function JobPage({ params, searchParams }: { params: Promis
       </div>
 
       {sp.error && <Alert>{t(sp.error === "status" ? "statusError" : sp.error === "delete" ? "delete.error" : sp.error === "invoice" ? "invoiceError" : "invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
 
       {(existingInvoice || (canInvoice && job.status !== "cancelled")) && (
         <Card accent="green" className="flex flex-wrap items-center justify-between gap-3">

@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { addServiceType, updateServiceType } from "@/modules/services/actions";
 import { listServiceTypes } from "@/modules/services/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Service types" };
 
@@ -26,7 +27,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Pro
       </div>
 
       {sp.error && <Alert>{t(sp.error === "nameTaken" ? "nameTaken" : "invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       {!canEdit && <p className="text-sm text-muted">{t("readOnly")}</p>}
 
       <Card accent="blue" className="divide-y divide-line p-0">

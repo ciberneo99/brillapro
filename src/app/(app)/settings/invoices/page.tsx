@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { saveInvoiceSettings } from "@/modules/invoices/actions";
 import { getInvoiceSettings } from "@/modules/invoices/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Invoice settings" };
 
@@ -25,7 +26,7 @@ export default async function InvoiceSettingsPage({ searchParams }: { searchPara
         <p className="mt-1 text-sm text-muted">{t("settingsIntro")}</p>
       </div>
       {sp.error && <Alert>{t("invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       <Card accent="green">
         <form action={saveInvoiceSettings} className="space-y-4">
           <fieldset disabled={!canEdit} className="space-y-4">

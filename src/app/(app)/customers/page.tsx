@@ -19,6 +19,7 @@ import { requireContext } from "@/lib/session";
 import { listCustomers, RATINGS, SORTS, SQFT_RANGES } from "@/modules/customers/queries";
 import { getCustomerExtras, getCustomersSummary, type CustomerExtras } from "@/modules/customers/list-extras";
 import { displayName, FREQUENCIES, PROPERTY_TYPES, STATUSES, type CustomerRow } from "@/modules/customers/schema";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Customers" };
 
@@ -81,7 +82,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto min-w-0 max-w-7xl space-y-5">
       <input id="adv-toggle" type="checkbox" defaultChecked={hasAdv} aria-label={t("list.advanced")} className="peer sr-only" />
-      {sp.removed && <Alert tone="success">{t("list.removed")}</Alert>}
+      {sp.removed && <SavedToast param="removed">{t("list.removed")}</SavedToast>}
       {sp.removeError && <Alert>{t("list.removeError")}</Alert>}
       <div className="flex flex-wrap items-center gap-3" style={{ marginTop: 0 }}>
         <form method="get" role="search" className="relative min-w-56 flex-1">

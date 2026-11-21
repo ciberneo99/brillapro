@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Alert, Card, cn } from "@/components/ui";
+import { Card, cn } from "@/components/ui";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
@@ -12,6 +12,7 @@ import { requireContext } from "@/lib/session";
 import { formatTime } from "@/lib/time";
 import { listJobs, PAGE_SIZE } from "@/modules/jobs/queries";
 import { JOB_STATUSES } from "@/modules/jobs/schema";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Jobs" };
 type SP = { status?: string; page?: string; when?: string; deleted?: string; cancelled?: string };
@@ -43,9 +44,9 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   return (
     <div className="space-y-6">
       {sp.deleted !== undefined && (
-        <Alert tone="success">
+        <SavedToast param="deleted">
           {t("delete.result", { count: Number(sp.deleted) || 0 })}{Number(sp.cancelled) > 0 && ` ${t("delete.kept", { count: Number(sp.cancelled) })}`}
-        </Alert>
+        </SavedToast>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>

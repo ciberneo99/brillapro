@@ -8,6 +8,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { deleteExpense, removeReceipt, updateExpense, uploadReceipt } from "@/modules/expenses/actions";
 import { getExpense, listCategories, receiptUrl, recentJobs } from "@/modules/expenses/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Expense" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -38,7 +39,7 @@ export default async function ExpensePage({ params, searchParams }: { params: Pr
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{t("detail")}</h1>
       </div>
       {sp.error && <Alert>{t(err)}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
 
       <Card accent="green">
         <form action={updateExpense.bind(null, id)} className="space-y-4">

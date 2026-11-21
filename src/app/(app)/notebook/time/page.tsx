@@ -12,6 +12,7 @@ import { formatClock, formatDuration } from "@/lib/time";
 import { listEmployees } from "@/modules/employees/module";
 import { addTimeEntry, clockIn, clockOut, deleteTimeEntry } from "@/modules/notebook/actions";
 import { listTimeEntries, myEmployee, myOpenJobs, openEntry } from "@/modules/notebook/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Time tracking" };
 const currentMs = () => Date.now();
@@ -56,7 +57,7 @@ export default async function TimePage({ searchParams }: { searchParams: Promise
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{t("title")}</h1>
       </div>
       {sp.error && <Alert>{t(sp.error === "clock" ? "clockError" : "invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
 
       {me ? (
         <Card accent={open ? "green" : "blue"} className="space-y-3">

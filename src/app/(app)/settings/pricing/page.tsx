@@ -7,6 +7,7 @@ import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { resetPricingSettings } from "@/modules/pricing/actions";
 import { getPricingConfig } from "@/modules/pricing/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Price calculator" };
 
@@ -29,8 +30,8 @@ export default async function PricingSettingsPage({ searchParams }: { searchPara
         <p className="mt-1 text-sm text-muted">{t("intro")} {!custom && t("startHelp")}</p>
       </div>
       {sp.error && <Alert>{t("error")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
-      {sp.reset && <Alert tone="success">{t("resetDone")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
+      {sp.reset && <SavedToast param="reset">{t("resetDone")}</SavedToast>}
 
       <PricingSettingsForm key={custom ? "custom" : "default"} config={config} canEdit={canEdit} />
 

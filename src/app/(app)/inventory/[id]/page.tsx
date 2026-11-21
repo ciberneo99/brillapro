@@ -12,6 +12,7 @@ import { recentJobs } from "@/modules/expenses/queries";
 import { addMovement, setItemActive, updateItem } from "@/modules/inventory/actions";
 import { getItem, listMovements } from "@/modules/inventory/queries";
 import { MOVEMENT_KINDS } from "@/modules/inventory/schema";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Inventory item" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -40,7 +41,7 @@ export default async function ItemPage({ params, searchParams }: { params: Promi
         </p>
       </div>
       {sp.error && <Alert>{t(err)}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
 
       {canWrite && item.is_active && (
         <Card accent="teal">

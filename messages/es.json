@@ -903,6 +903,8 @@
     "invalid": "Revisa los campos e inténtalo de nuevo.",
     "activate": "Reactivar",
     "deactivate": "Desactivar",
+    "active": "Activo", "inactive": "Inactivo", "newEmployee": "Nuevo empleado",
+    "edit": "Editar", "cancel": "Cancelar",
     "add": "Agregar empleado",
     "addButton": "Agregar",
     "login": "Cuenta de acceso",

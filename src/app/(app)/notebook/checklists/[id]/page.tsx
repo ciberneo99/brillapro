@@ -7,6 +7,7 @@ import { requireContext } from "@/lib/session";
 import { activateTemplate, addItem, deleteItem, moveItem, updateItem, updateTemplate } from "@/modules/checklists/actions";
 import { getTemplate, type TemplateItem } from "@/modules/checklists/queries";
 import { listServiceTypes } from "@/modules/services/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Checklist" };
 
@@ -39,7 +40,7 @@ export default async function TemplatePage({
         <p className="mt-1 text-sm text-muted">{serviceName} · {tpl.is_active ? t("activeNote") : t("inactiveNote")}</p>
       </div>
       {sp.error && <Alert>{t("invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       {!canEdit && <p className="text-sm text-muted">{t("canEdit")}</p>}
 
       <Card accent="blue">

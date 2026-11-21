@@ -11,6 +11,7 @@ import { ConfirmSubmit } from "@/components/bank/ConfirmSubmit";
 import { Plus, Trash2 } from "lucide-react";
 import { deleteSeries, endSchedule, extendSchedule } from "@/modules/recurring/actions";
 import { listSchedules } from "@/modules/recurring/module";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Recurring jobs" };
 type SP = { error?: string; created?: string; ended?: string; removed?: string; cancelled?: string };
@@ -35,11 +36,11 @@ export default async function RecurringPage({ searchParams }: { searchParams: Pr
         <Link href="/jobs/new" className="bp-fx bp-fx-solid inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover"><Plus className="h-4 w-4" aria-hidden />{tj("new")}</Link>
       </div>
       {sp.error && <Alert>{t("invalid")}</Alert>}
-      {sp.created !== undefined && <Alert tone="success">{t("createdJobs", { count: Number(sp.created) })}</Alert>}
+      {sp.created !== undefined && <SavedToast param="created">{t("createdJobs", { count: Number(sp.created) })}</SavedToast>}
       {sp.removed !== undefined && (
-        <Alert tone="success">{tj("delete.result", { count: Number(sp.removed) || 0 })}{Number(sp.cancelled) > 0 && ` ${tj("delete.kept", { count: Number(sp.cancelled) })}`}</Alert>
+        <SavedToast param="removed">{tj("delete.result", { count: Number(sp.removed) || 0 })}{Number(sp.cancelled) > 0 && ` ${tj("delete.kept", { count: Number(sp.cancelled) })}`}</SavedToast>
       )}
-      {sp.ended !== undefined && <Alert tone="success">{t("ended", { count: Number(sp.ended) })}</Alert>}
+      {sp.ended !== undefined && <SavedToast param="ended">{t("ended", { count: Number(sp.ended) })}</SavedToast>}
 
       {schedules.length === 0 && <Card className="text-center text-sm text-muted">{t("empty")}</Card>}
       {schedules.map((s) => (

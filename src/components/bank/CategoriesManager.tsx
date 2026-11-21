@@ -3,6 +3,7 @@ import { Alert, Button, Card, Input, cn } from "@/components/ui";
 import { SelectMenu } from "@/components/ui/SelectMenu";
 import { addBankCategory, toggleBankCategory, updateBankCategory } from "@/modules/bank/actions";
 import { categoryLabels, listBankCategories, type BankCategory } from "@/modules/bank/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 const TONES = ["blue", "green", "violet", "amber", "rose", "teal"] as const;
 
@@ -62,7 +63,7 @@ export async function CategoriesManager({ sp, canWrite, tenantId, back, compact 
     return (
       <div className="space-y-4">
         {sp.error && <Alert>{tb(sp.error === "duplicate" ? "errors.duplicate" : "errors.invalid")}</Alert>}
-        {sp.saved && <Alert tone="success">{tb("saved")}</Alert>}
+        {sp.saved && <SavedToast>{tb("saved")}</SavedToast>}
         {canWrite && (
           <form action={addBankCategory} className="flex flex-wrap items-center gap-2">
             <input type="hidden" name="back" value={back} />
@@ -87,7 +88,7 @@ export async function CategoriesManager({ sp, canWrite, tenantId, back, compact 
   return (
     <div className="space-y-6">
       {sp.error && <Alert>{tb(sp.error === "duplicate" ? "errors.duplicate" : "errors.invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{tb("saved")}</Alert>}
+      {sp.saved && <SavedToast>{tb("saved")}</SavedToast>}
       <p className="text-sm text-muted">{tb("cats.help")}</p>
       {canWrite && (
         <Card accent="green">

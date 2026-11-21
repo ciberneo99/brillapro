@@ -5,6 +5,7 @@ import { Alert, Button, Card, Input, Select } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getTheme } from "@/lib/theme";
 import { extendTrial, setCompanyPlan, setCompanyStatus } from "@/modules/admin/actions";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 type Company = {
   id: string; name: string; created_at: string; status: string; plan_id: string | null; sub_status: string | null;
@@ -35,7 +36,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <PreferenceControls compact theme={theme} />
       </div>
       {sp.error && <Alert>{t("error")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       <p className="text-sm text-muted">{t("summary", { total: rows.length, active })}</p>
 
       {rows.map((c) => (

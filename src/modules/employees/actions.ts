@@ -23,7 +23,7 @@ export async function addEmployee(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.from("employees").insert({ ...p.data, tenant_id: ctx.tenant.id });
   revalidatePath(BACK);
-  redirect(error ? `${BACK}?error=invalid` : `${BACK}?saved=1`);
+  redirect(error ? `${BACK}?error=invalid` : `${BACK}?saved=${Date.now()}`);
 }
 
 export async function updateEmployee(id: string, formData: FormData) {
@@ -33,7 +33,7 @@ export async function updateEmployee(id: string, formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.from("employees").update(p.data).eq("id", id);
   revalidatePath(BACK);
-  redirect(error ? `${BACK}?error=invalid` : `${BACK}?saved=1`);
+  redirect(error ? `${BACK}?error=invalid` : `${BACK}?saved=${Date.now()}`);
 }
 
 export async function setEmployeeActive(id: string, active: boolean) {

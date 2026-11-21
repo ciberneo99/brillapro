@@ -21,6 +21,7 @@ import { jobForQuote } from "@/modules/jobs/queries";
 import { saveQuoteDraft } from "@/modules/quotes/actions";
 import { getQuote, getQuoteSettings } from "@/modules/quotes/queries";
 import { listServiceTypes } from "@/modules/services/queries";
+import { SavedToast } from "@/components/ui/SavedToast";
 
 export const metadata = { title: "Quote" };
 
@@ -94,7 +95,7 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
       </div>
 
       {sp.error && <Alert>{t(sp.error === "option" ? "chooseOption" : "invalid")}</Alert>}
-      {sp.saved && <Alert tone="success">{t("saved")}</Alert>}
+      {sp.saved && <SavedToast>{t("saved")}</SavedToast>}
       {q.display_status === "expired" && <Alert>{t("expiredNote")}</Alert>}
       {!draft && <p className="text-sm text-muted">{t("lockedNote")}</p>}
 
