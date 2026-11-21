@@ -6,6 +6,8 @@ import { isValidEmail } from "@/lib/email";
 import { normalizeAddress, normalizeName, normalizeSentences, normalizeState } from "@/lib/text";
 import { normalizeZip } from "@/lib/zip";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
+import { clientIpHash } from "@/lib/client-ip";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { FREQUENCIES, PROPERTY_TYPES } from "@/modules/customers/schema";
 
@@ -53,7 +55,7 @@ export async function submitQuoteRequest(slug: string, _: RequestState, formData
   if (!parsed.success) return { error: "invalid" };
   const d = parsed.data;
   // First name, last name, email and phone are mandatory (the form marks them with *).
-  if (!d.first_name || !d.last_name || !d.email || d.phone.replace(/D/g, "").length < 10) return { error: "required" };
+  if (!d.first_name || !d.last_name || !d.email || d.phone.replace(/\D/g, "").length < 10) return { error: "required" };
   if (!isValidEmail(d.email)) return { error: "invalid" };
 
   const supabase = await createClient(); // no session: runs as the anonymous role
@@ -62,7 +64,17 @@ export async function submitQuoteRequest(slug: string, _: RequestState, formData
   const offered = ((services ?? []) as { name: string }[]).map((x) => x.name.toLowerCase());
   if (offered.length > 0 && !offered.includes(d.preferred_service.toLowerCase())) return { error: "required" };
 
-  const { error } = await supabase.rpc("submit_quote_request", { p_slug: slug.slice(0, 80), p_data: d });
+  // The intake is not callable with the public anon key: it goes through the server-only service client,
+  // which also applies the per-visitor limit (hashed IP).
+  let intake;
+  try {
+    intake = await createServiceClient().rpc("submit_quote_request_checked", {
+      p_slug: slug.slice(0, 80), p_data: d, p_ip_hash: await clientIpHash(),
+    });
+  } catch {
+    return { error: "failed" };
+  }
+  const { error } = intake;
   if (!error) return { done: true };
   if (error.code === "P0002") return { error: "unavailable" };
   if (error.code === "53400") return { error: "tooMany" };

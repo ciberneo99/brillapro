@@ -1,10 +1,10 @@
 import "server-only";
 
-/** Verifies a Turnstile token. When no secret key is configured the check is skipped (the honeypot,
- *  minimum-time check and the per-company database rate limit still apply). */
+/** Verifies a Turnstile token. Without a secret key the check is skipped in development only; in production
+ *  it fails closed, so a missing key can never leave the public form unprotected. */
 export async function verifyTurnstile(token: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true;
+  if (!secret) return process.env.NODE_ENV !== "production";
   if (!token) return false;
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {

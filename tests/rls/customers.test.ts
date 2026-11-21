@@ -149,16 +149,13 @@ d("customers (RLS, history, conversion, public intake)", () => {
     await expect(as(id.employee, (tx) => tx`select public.convert_customer(${row.id})`)).rejects.toThrow();
   });
 
-  describe("public intake (anonymous visitors)", () => {
+  describe("public intake (server-only, visitors cannot call it directly)", () => {
     const valid = { first_name: "Maria", email: "maria@example.com", message: "Need a deep clean", bedrooms: "3", bathrooms: "2.5" };
 
-    it("anon can submit to a valid slug and gets a web_form prospect, nothing else", async () => {
-      await sql`select public.submit_quote_request(${slugA}, ${sql.json({ ...valid, tenant_id: tenantB, status: "active" })})`.catch(() => {});
-      // run for real via anon role and commit by using superuser afterwards
+    it("a valid slug gets a web_form prospect, nothing else", async () => {
+      // The intake runs server-side only (service_role / owner); here the owner role stands in for the server.
       await sql.begin(async (tx) => {
-        await tx`set local role anon`;
         await tx`select public.submit_quote_request(${slugA}, ${tx.json({ ...valid, tenant_id: tenantB, status: "active" })})`;
-        await tx`reset role`;
         const rows = await tx`select tenant_id, status, source, bathrooms, bedrooms from public.customers where email = 'maria@example.com' order by created_at desc limit 1`;
         expect(rows[0].tenant_id).toBe(tenantA); // payload cannot redirect to another tenant
         expect(rows[0].status).toBe("prospect"); // payload cannot set status
@@ -178,11 +175,11 @@ d("customers (RLS, history, conversion, public intake)", () => {
     });
 
     it("rejects unknown slugs, closed forms, bad email and empty requests", async () => {
-      await expect(as(null, (tx) => tx`select public.submit_quote_request('nope-000000', ${tx.json(valid)})`)).rejects.toThrow();
-      await expect(as(null, (tx) => tx`select public.submit_quote_request(${slugA}, ${tx.json({ first_name: "A", email: "not-an-email" })})`)).rejects.toThrow();
-      await expect(as(null, (tx) => tx`select public.submit_quote_request(${slugA}, ${tx.json({ message: "hi" })})`)).rejects.toThrow();
+      await expect(sql`select public.submit_quote_request('nope-000000', ${sql.json(valid)})`).rejects.toThrow();
+      await expect(sql`select public.submit_quote_request(${slugA}, ${sql.json({ first_name: "A", email: "not-an-email" })})`).rejects.toThrow();
+      await expect(sql`select public.submit_quote_request(${slugA}, ${sql.json({ message: "hi" })})`).rejects.toThrow();
       await sql`update public.tenants set accepts_requests = false where id = ${tenantB}`;
-      await expect(as(null, (tx) => tx`select public.submit_quote_request(${slugB}, ${tx.json(valid)})`)).rejects.toThrow();
+      await expect(sql`select public.submit_quote_request(${slugB}, ${sql.json(valid)})`).rejects.toThrow();
       expect(await as(null, (tx) => tx`select public.public_company_name(${slugB}) as n`).then((r) => r[0].n)).toBeNull();
       await sql`update public.tenants set accepts_requests = true where id = ${tenantB}`;
     });
@@ -195,8 +192,29 @@ d("customers (RLS, history, conversion, public intake)", () => {
     it("throttles floods: max 30 web requests per company per 10 minutes", async () => {
       await sql.begin(async (tx) => {
         await tx`insert into public.customers (tenant_id, first_name, source) select ${tenantB}, 'Spam', 'web_form' from generate_series(1, 30)`;
-        await tx`set local role anon`;
         await expect(tx.savepoint((sp) => sp`select public.submit_quote_request(${slugB}, ${sp.json(valid)})`)).rejects.toThrow();
+        throw new Rollback();
+      }).catch((e) => { if (!(e instanceof Rollback)) throw e; });
+    });
+
+    const ip = "a".repeat(64);
+
+    it("visitors (anon) and signed-in users cannot call the intake functions directly", async () => {
+      for (const who of [null, id.employee]) {
+        await expect(as(who, (tx) => tx`select public.submit_quote_request(${slugA}, ${tx.json(valid)})`)).rejects.toThrow();
+        await expect(as(who, (tx) => tx`select public.submit_quote_request_checked(${slugA}, ${tx.json(valid)}, ${ip})`)).rejects.toThrow();
+        await expect(as(who, (tx) => tx.unsafe("select 1 from public.request_hits"))).rejects.toThrow();
+      }
+    });
+
+    it("limits each visitor: max 5 requests per 10 minutes (hashed IP), and rejects a malformed hash", async () => {
+      await sql.begin(async (tx) => {
+        await tx`select public.submit_quote_request_checked(${slugA}, ${tx.json(valid)}, ${ip})`; // allowed
+        await tx`insert into public.request_hits (ip_hash) select ${ip} from generate_series(1, 4)`; // 5 in total now
+        await expect(tx.savepoint((sp) => sp`select public.submit_quote_request_checked(${slugA}, ${sp.json(valid)}, ${ip})`)).rejects.toThrow();
+        await expect(tx.savepoint((sp) => sp`select public.submit_quote_request_checked(${slugA}, ${sp.json(valid)}, 'not-a-hash')`)).rejects.toThrow();
+        // a different visitor is not affected
+        await tx`select public.submit_quote_request_checked(${slugA}, ${tx.json(valid)}, ${"b".repeat(64)})`;
         throw new Rollback();
       }).catch((e) => { if (!(e instanceof Rollback)) throw e; });
     });
