@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
   ArrowRight, Banknote, CalendarDays, CheckSquare, CircleDollarSign, ListChecks, PiggyBank,
-  Plus, Search, TrendingUp, UserPlus, Users, Wallet, Receipt, Gauge,
+  Plus, TrendingUp, UserPlus, Users, Wallet, Receipt, Gauge,
 } from "lucide-react";
 import { BarChart, Donut, LineChart } from "@/components/dashboard/charts";
 import { KpiTile, Panel, StatTile, Trend } from "@/components/dashboard/tiles";
@@ -17,6 +17,7 @@ export const metadata = { title: "Dashboard" };
 
 import { methodName } from "@/modules/payment-methods/labels";
 import { listPaymentMethods } from "@/modules/payment-methods/queries";
+import { DashboardSearch } from "@/components/customers/DashboardSearch";
 
 const METHOD_COLOR: Record<string, string> = {
   cash: "var(--c-blue)", check: "var(--c-amber)", venmo: "var(--c-teal)", zelle: "var(--c-green)",
@@ -83,10 +84,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto min-w-0 max-w-6xl space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-primary bg-surface p-6">
-        <div>
+      <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-primary bg-surface p-4 sm:gap-4 sm:p-6">
+        <div className="min-w-0 max-w-full flex-1">
           <p className="text-sm font-medium text-primary">{t(`greeting.${greeting}`)}</p>
-          <h1 className="mt-0.5 text-3xl font-extrabold tracking-tight">{firstName}</h1>
+          <h1 className="mt-0.5 text-xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">{firstName}</h1>
           <p className="mt-1 text-sm text-muted">{dateText}</p>
         </div>
         {ctx.trialDaysLeft !== null && (
@@ -96,11 +97,7 @@ export default async function DashboardPage() {
 
       <div className="flex gap-3">
         {d.customers && (
-          <form action="/customers" method="get" role="search" className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
-            <input name="q" type="search" placeholder={t("search")} aria-label={t("search")} maxLength={80}
-              className="h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm placeholder:text-muted" />
-          </form>
+          <DashboardSearch placeholder={t("search")} label={t("search")} allLabel={t("searchAll")} emptyLabel={t("searchEmpty")} />
         )}
         {quick.length > 0 && (
           <details className="relative">

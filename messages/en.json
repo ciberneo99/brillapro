@@ -120,6 +120,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening"
     },
+    "searchAll": "See all results", "searchEmpty": "No customers found",
     "search": "Search customers by name, phone or email",
     "kpis": "Key figures",
     "new": {
@@ -905,6 +906,7 @@
     "deactivate": "Deactivate",
     "active": "Active", "inactive": "Inactive", "newEmployee": "New employee",
     "edit": "Edit", "cancel": "Cancel",
+    "address": "Street address", "city": "City", "state": "State", "zipCode": "ZIP code", "addPhone": "Add another phone", "phone2": "Additional phone", "removePhone": "Remove phone",
     "add": "Add employee",
     "addButton": "Add",
     "login": "Login",

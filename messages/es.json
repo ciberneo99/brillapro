@@ -120,6 +120,7 @@
       "afternoon": "Buenas tardes",
       "evening": "Buenas noches"
     },
+    "searchAll": "Ver todos los resultados", "searchEmpty": "No se encontraron clientes",
     "search": "Buscar clientes por nombre, teléfono o correo",
     "kpis": "Cifras principales",
     "new": {
@@ -905,6 +906,7 @@
     "deactivate": "Desactivar",
     "active": "Activo", "inactive": "Inactivo", "newEmployee": "Nuevo empleado",
     "edit": "Editar", "cancel": "Cancelar",
+    "address": "Dirección", "city": "Ciudad", "state": "Estado", "zipCode": "Código postal", "addPhone": "Agregar otro teléfono", "phone2": "Teléfono adicional", "removePhone": "Quitar teléfono",
     "add": "Agregar empleado",
     "addButton": "Agregar",
     "login": "Cuenta de acceso",

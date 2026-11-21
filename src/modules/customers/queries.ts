@@ -47,14 +47,14 @@ export async function listCustomers(params: ListParams) {
     if (max != null) query = query.lte("square_footage", max);
   }
   if (q) {
-    const like = `%${q}%`;
-    const conditions = ["first_name", "last_name", "company_name", "email", "phone", "secondary_phone"].map((c) => `${c}.ilike.${like}`);
-    // Phones are stored as xxx-xxx-xxxx, so a search typed as digits must match that format too.
-    if (/^[ds().+-]{3,}$/.test(q)) {
-      const formatted = `%${formatPhone(q)}%`;
-      conditions.push(`phone.ilike.${formatted}`, `secondary_phone.ilike.${formatted}`);
+    const cols = ["first_name", "last_name", "company_name", "email", "phone", "secondary_phone"];
+    // Every word must match somewhere, so "alisa pappas" finds first name Alisa + last name Pappas (words in any order).
+    for (const word of q.split(" ")) {
+      const conditions = cols.map((c) => `${c}.ilike.%${word}%`);
+      // Phones are stored as xxx-xxx-xxxx, so a search typed as digits must match that format too.
+      if (/^[\d().+-]{3,}$/.test(word)) conditions.push(`phone.ilike.%${formatPhone(word)}%`, `secondary_phone.ilike.%${formatPhone(word)}%`);
+      query = query.or(conditions.join(","));
     }
-    query = query.or(conditions.join(","));
   }
   query =
     sort === "name"

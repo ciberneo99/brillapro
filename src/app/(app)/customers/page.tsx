@@ -3,9 +3,10 @@ import { ClickableRow } from "@/components/ClickableRow";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import {
-  AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, PawPrint, Phone, Plus, Ruler, Search,
+  AlertCircle, Bath, BedDouble, CalendarClock, DollarSign, FileText, Filter, Home, Mail, MapPin, PawPrint, Phone, Plus, Ruler,
 } from "lucide-react";
 import { CustomerMenu } from "@/components/customers/CustomerMenu";
+import { LiveSearch } from "@/components/customers/LiveSearch";
 import { removeCustomerFromList } from "@/modules/customers/actions";
 import { MoreActions } from "@/components/customers/MoreActions";
 import { StatusBadge } from "@/components/customers/StatusBadge";
@@ -85,17 +86,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       {sp.removed && <SavedToast param="removed">{t("list.removed")}</SavedToast>}
       {sp.removeError && <Alert>{t("list.removeError")}</Alert>}
       <div className="flex flex-wrap items-center gap-3" style={{ marginTop: 0 }}>
-        <form method="get" role="search" className="relative min-w-56 flex-1">
-          {status && <input type="hidden" name="status" value={status} />}
-          {sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
-          {type && <input type="hidden" name="type" value={type} />}
-          {freq && <input type="hidden" name="freq" value={freq} />}
-          {rating && <input type="hidden" name="rating" value={rating} />}
-          {sqft && <input type="hidden" name="sqft" value={sqft} />}
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
-          <input id="q" name="q" type="search" defaultValue={q} placeholder={t("searchPlaceholder")} aria-label={t("search")} maxLength={80}
-            className="h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm placeholder:text-muted" />
-        </form>
+        <LiveSearch defaultValue={q} placeholder={t("searchPlaceholder")} label={t("search")} />
         {canWrite && (
           <Link href="/customers/new" className="bp-fx bp-fx-solid inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
             <Plus className="h-4 w-4" aria-hidden /> {t("list.newClient")}
