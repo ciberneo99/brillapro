@@ -73,7 +73,8 @@ export async function deleteTimeEntry(id: string) {
 // ───────── notes ─────────
 const noteSchema = z.object({
   title: z.string().optional().transform((v) => normalizeName(v ?? "").trim()).pipe(z.string().max(120)),
-  body: z.string().optional().transform((v) => normalizeSentences(v ?? "").trimEnd()).pipe(z.string().max(10000)),
+  // Rich text: stored as sanitized HTML (an empty editor leaves no body at all).
+  body: z.string().optional().transform((v) => (noteText(v ?? "") ? sanitizeNoteHtml(v ?? "") : "")).pipe(z.string().max(10000)),
 });
 
 export async function saveNote(id: string | null, formData: FormData) {
@@ -102,6 +103,7 @@ const taskSchema = z.object({
   notes: sentence(2000),
   due_date: z.string().optional().transform((v) => (v ? v : null)).pipe(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()),
   assigned_to: z.string().optional().transform((v) => (v ? v : null)).pipe(z.string().uuid().nullable()),
+  priority: z.enum(["low", "normal", "high"]).catch("normal"),
 });
 
 export async function createTask(formData: FormData) {
@@ -112,6 +114,16 @@ export async function createTask(formData: FormData) {
   const { error } = await supabase.from("tasks").insert({ ...p.data, tenant_id: ctx.tenant.id, created_by: ctx.userId });
   revalidatePath("/notebook/tasks");
   redirect(`/notebook/tasks${error ? "?error=invalid" : ""}`);
+}
+
+export async function setTaskPriority(id: string, priority: string) {
+  await member();
+  const p = z.enum(["low", "normal", "high"]).safeParse(priority);
+  if (!p.success) redirect("/notebook/tasks?error=invalid");
+  const supabase = await createClient();
+  await supabase.from("tasks").update({ priority: p.data }).eq("id", id);
+  revalidatePath("/notebook/tasks");
+  redirect("/notebook/tasks");
 }
 
 export async function setTaskDone(id: string, done: boolean) {

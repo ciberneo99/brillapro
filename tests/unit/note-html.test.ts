@@ -7,6 +7,15 @@ describe("sanitizeNoteHtml", () => {
     expect(sanitizeNoteHtml("<ul><li>a</li><li>b</li></ul>")).toBe("<ul><li>a</li><li>b</li></ul>");
     expect(sanitizeNoteHtml("<strong>x</strong><em>y</em>")).toBe("<b>x</b><i>y</i>");
   });
+  it("keeps headings, quotes and strikethrough (normalized), without attributes", () => {
+    expect(sanitizeNoteHtml('<h1 style="x">T</h1><h4>S</h4><blockquote class="q">q</blockquote><strike>a</strike><del>b</del><s>c</s>')).toBe("<h2>T</h2><h3>S</h3><blockquote>q</blockquote><s>a</s><s>b</s><s>c</s>");
+    const once = sanitizeNoteHtml("<h2>x</h2><blockquote>y</blockquote><s>z</s>");
+    expect(sanitizeNoteHtml(once)).toBe(once);
+  });
+  it("drops the zero-width space left by the editor shortcuts", () => {
+    expect(sanitizeNoteHtml("<h2>​Title</h2>")).toBe("<h2>Title</h2>");
+    expect(noteText("<ul><li>​</li></ul>")).toBe("");
+  });
   it("removes scripts, handlers, links and unknown tags", () => {
     expect(sanitizeNoteHtml("<p>ok</p><script>alert(1)</script>")).toBe("<p>ok</p>");
     expect(sanitizeNoteHtml('<img src=x onerror="alert(1)">hello')).toBe("hello");
@@ -21,7 +30,19 @@ describe("sanitizeNoteHtml", () => {
   it("keeps line breaks of plain-text notes", () => {
     expect(sanitizeNoteHtml("one\ntwo <3")).toBe("<p>one<br>two &lt;3</p>");
   });
+  it("treats the editor's tag-less output with entities as HTML (trailing space is &nbsp;)", () => {
+    expect(sanitizeNoteHtml("She moved to Spain&nbsp;")).toBe("<p>She moved to Spain </p>");
+    expect(sanitizeNoteHtml("1 &lt; 2 &amp; 3")).toBe("<p>1 &lt; 2 &amp; 3</p>");
+    expect(noteText("She moved to Spain&nbsp;")).toBe("She moved to Spain");
+  });
+  it("repairs notes saved with a double-escaped &amp;nbsp;", () => {
+    expect(sanitizeNoteHtml("<p>She moved to Spain&amp;nbsp;</p>")).toBe("<p>She moved to Spain </p>");
+  });
   it("is idempotent", () => {
+    for (const s of ["She moved to Spain&nbsp;", "<p>a&amp;nbsp;</p>", "x &amp; y"]) {
+      const once = sanitizeNoteHtml(s);
+      expect(sanitizeNoteHtml(once)).toBe(once);
+    }
     const once = sanitizeNoteHtml('<div>x <b>y</b></div><ol><li>1</li></ol>&nbsp;');
     expect(sanitizeNoteHtml(once)).toBe(once);
     const plain = sanitizeNoteHtml("1 < 2 & 3");

@@ -28,6 +28,8 @@
   --ring: #0b7a75;
   --shadow: 0 1px 2px rgb(15 27 36 / 0.05), 0 2px 8px rgb(15 27 36 / 0.06);
   --c-blue: #2563eb; --c-green: #16a34a; --c-violet: #7c3aed; --c-amber: #d97706; --c-rose: #e11d48; --c-teal: #0d9488;
+  /* Two alternating note backgrounds (teal / sand). Text contrast is above 10:1, muted text above 5:1. */
+  --note-a: #e3f3f0; --note-b: #fdf1d3;
 }
 
 [data-theme="dark"] {
@@ -53,6 +55,7 @@
   --ring: #2dd4bf;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
   --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
+  --note-a: #153a3d; --note-b: #3b3116;
 }
 
 /* System default: follow the device with no JavaScript, so there is no flash. */
@@ -80,6 +83,7 @@
     --ring: #2dd4bf;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
   --c-blue: #60a5fa; --c-green: #4ade80; --c-violet: #a78bfa; --c-amber: #fbbf24; --c-rose: #fb7185; --c-teal: #2dd4bf;
+    --note-a: #153a3d; --note-b: #3b3116;
   }
 }
 [data-theme="system"] { color-scheme: light dark; }
@@ -155,6 +159,27 @@ body {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   border-top: 4px solid var(--accent);
 }
+
+/* Alternating note backgrounds (My Notes). Unlayered on purpose: it must win over the utility classes on the same element. */
+/* Task priority, three strengths of red: light tint, medium, solid. Text contrast is above 5:1 in light and dark. */
+.prio-low { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); }
+.prio-normal { background: color-mix(in srgb, var(--danger) 30%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--danger) 60%, transparent); }
+.prio-high { background: var(--danger); color: var(--primary-fg); border: 1px solid var(--danger); }
+.prio-bar-low { border-left-color: color-mix(in srgb, var(--danger) 35%, var(--surface)); }
+.prio-bar-normal { border-left-color: color-mix(in srgb, var(--danger) 65%, var(--surface)); }
+.prio-bar-high { border-left-color: var(--danger); }
+/* Look of rich-text notes, both in the editor and when shown. */
+.note-prose { line-height: 1.5; overflow-wrap: anywhere; }
+.note-prose ol { list-style: decimal; padding-left: 1.25rem; }
+.note-prose ul { list-style: disc; padding-left: 1.25rem; }
+.note-prose h2 { font-size: 1.125rem; font-weight: 600; line-height: 1.3; margin: 0.25rem 0; }
+.note-prose h3 { font-size: 1rem; font-weight: 600; line-height: 1.3; margin: 0.25rem 0; }
+.note-prose blockquote { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin: 0.25rem 0; color: var(--fg-muted); font-style: italic; }
+.note-prose b { font-weight: 700; }
+.note-prose s { text-decoration: line-through; }
+.note-a { background-color: var(--note-a); border-color: color-mix(in srgb, var(--fg) 14%, var(--line)); }
+.note-b { background-color: var(--note-b); border-color: color-mix(in srgb, var(--fg) 14%, var(--line)); }
+.accent-card.note-a, .accent-card.note-b { border-top-color: var(--accent); } /* keep the coloured top bar */
 
 /* Hover effect for buttons and menus: a soft coloured glow, a small lift, a tinted outline and a short bar that grows under the label. */
 .bp-fx {

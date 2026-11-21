@@ -21,13 +21,14 @@ export async function CustomerNotes({ customerId, dateFormat, timezone, invalid 
       {invalid && <Alert>{t("invalid")}</Alert>}
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="space-y-2">
-          <NoteEditor action={saveCustomerNote.bind(null, customerId)} placeholder={t("placeholder")} />
+          {/* key = newest note: when a note is saved the list changes, so the editor remounts empty (its text lives in the browser, not in the form). */}
+          <NoteEditor key={notes[0]?.id ?? "empty"} action={saveCustomerNote.bind(null, customerId)} placeholder={t("placeholder")} />
           <p className="text-xs text-muted">{t("private")}</p>
         </div>
         <div className="space-y-3">
           {notes.length === 0 && <p className="text-sm text-muted">{t("empty")}</p>}
-          {notes.map((n) => (
-            <article key={n.id} className="rounded-xl bg-surface-2 px-4 py-3 text-sm">
+          {notes.map((n, i) => (
+            <article key={n.id} className={`rounded-xl border px-4 py-3 text-sm ${i % 2 === 0 ? "note-a" : "note-b"}`}>
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs text-muted">{formatTimestamp(n.created_at, dateFormat, timezone)}</p>
                 <form action={deleteCustomerNote.bind(null, customerId, n.id)}>
@@ -35,7 +36,7 @@ export async function CustomerNotes({ customerId, dateFormat, timezone, invalid 
                 </form>
               </div>
               {/* Safe: the text is re-sanitized to bold/italic/underline/lists only, with no attributes. */}
-              <div className="mt-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5" dangerouslySetInnerHTML={{ __html: sanitizeNoteHtml(n.body) }} />
+              <div className="note-prose mt-1" dangerouslySetInnerHTML={{ __html: sanitizeNoteHtml(n.body) }} />
             </article>
           ))}
         </div>

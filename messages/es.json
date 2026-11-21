@@ -420,7 +420,7 @@
       "newQuote": "Nueva cotización",
       "noQuotes": "Este cliente aún no tiene cotizaciones.",
       "newJob": "Nuevo trabajo",
-      "delete": "Eliminar",
+    "delete": "Eliminar",
       "confirmDelete": "¿Eliminar este cliente? Se archiva: sale de la lista pero conserva su historial y puedes restaurarlo después.",
       "removed": "Cliente eliminado. Quedó archivado: su historial se conserva y puedes restaurarlo desde el filtro Archivado.",
       "removeError": "No se pudo eliminar al cliente.",
@@ -499,7 +499,7 @@
       "empty": "Aún no hay notas sobre este cliente.",
       "invalid": "Escribe algo antes de guardar.",
       "private": "Solo tú ves tus notas, ni siquiera el dueño.",
-      "toolbar": "Formato de texto",
+      "strike": "Tachado", "heading": "Título", "subheading": "Subtítulo", "quote": "Cita", "undo": "Deshacer", "redo": "Rehacer", "toolbar": "Formato de texto",
       "bold": "Negrita",
       "italic": "Cursiva",
       "underline": "Subrayado",
@@ -1006,6 +1006,10 @@
     "save": "Guardar",
     "delete": "Eliminar",
     "empty": "Aún no hay notas.",
+    "edit": "Editar",
+    "menu": "Opciones de la nota",
+    "cancel": "Cancelar",
+    "confirmDelete": "¿Eliminar esta nota?",
     "updated": "Actualizada {date}",
     "aboutCustomer": "Sobre un cliente"
   },
@@ -1028,6 +1032,7 @@
     "due": "Vence",
     "overdue": "vencido",
     "assignedTo": "Asignado a",
+    "priority": "Prioridad", "priorityLow": "Baja", "priorityNormal": "Normal", "priorityHigh": "Alta", "changePriority": "Cambiar prioridad",
     "delete": "Eliminar"
   },
   "invoices": {

@@ -420,7 +420,7 @@
       "newQuote": "New quote",
       "noQuotes": "No quotes for this customer yet.",
       "newJob": "New job",
-      "delete": "Delete",
+    "delete": "Delete",
       "confirmDelete": "Delete this customer? It is archived: it disappears from the list but its history is kept, and you can restore it later.",
       "removed": "Customer deleted. It was archived, so its history is kept and you can restore it from the Archived filter.",
       "removeError": "The customer could not be deleted.",
@@ -499,7 +499,7 @@
       "empty": "No notes about this customer yet.",
       "invalid": "Write something before saving.",
       "private": "Only you can see your notes, not even the owner.",
-      "toolbar": "Text formatting",
+      "strike": "Strikethrough", "heading": "Heading", "subheading": "Subheading", "quote": "Quote", "undo": "Undo", "redo": "Redo", "toolbar": "Text formatting",
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
@@ -1006,6 +1006,10 @@
     "save": "Save",
     "delete": "Delete",
     "empty": "No notes yet.",
+    "edit": "Edit",
+    "menu": "Note options",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete this note?",
     "updated": "Updated {date}",
     "aboutCustomer": "About a customer"
   },
@@ -1028,6 +1032,7 @@
     "due": "Due",
     "overdue": "overdue",
     "assignedTo": "Assigned to",
+    "priority": "Priority", "priorityLow": "Low", "priorityNormal": "Normal", "priorityHigh": "High", "changePriority": "Change priority",
     "delete": "Delete"
   },
   "invoices": {
