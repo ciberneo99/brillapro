@@ -1033,6 +1033,7 @@
     "overdue": "overdue",
     "assignedTo": "Assigned to",
     "priority": "Priority", "priorityLow": "Low", "priorityNormal": "Normal", "priorityHigh": "High", "changePriority": "Change priority",
+    "time": { "label":"Time until the deadline", "days":"{count, plural, one {# day left} other {# days left}}", "hours":"{count, plural, one {# hour left} other {# hours left}}", "minutes":"{count, plural, one {# minute left} other {# minutes left}}", "overdueDays":"{count, plural, one {# day overdue} other {# days overdue}}", "overdueHours":"{count, plural, one {# hour overdue} other {# hours overdue}}", "overdueMinutes":"{count, plural, one {# minute overdue} other {# minutes overdue}}" },
     "delete": "Delete"
   },
   "invoices": {

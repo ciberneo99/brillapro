@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { Alert, Button, Card, Field, Input, Select, cn } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { PriorityButton } from "@/components/notebook/PriorityButton";
+import { TaskTimeBar } from "@/components/notebook/TaskTimeBar";
+import { dueInstant } from "@/lib/task-time";
 import { todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
 import { can } from "@/lib/permissions";
@@ -20,6 +22,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   const t = await getTranslations("tasks");
   const fmt = ctx.settings.date_format;
   const today = todayIso(ctx.settings.timezone);
+  const nowMs = new Date().getTime();
   const staff = can(ctx.role, "jobs:write");
   const [tasks, members] = await Promise.all([listTasks(), listMembers(ctx.tenant.id)]);
   const rank = { high: 0, normal: 1, low: 2 } as const;
@@ -48,6 +51,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
             {x.due_date && <span className={cn(!x.is_done && x.due_date < today && "font-medium text-danger")}>{t("due")} {formatDateOnly(x.due_date, fmt)}{!x.is_done && x.due_date < today ? ` · ${t("overdue")}` : ""}</span>}
             {x.assigneeName && <span>{t("assignedTo")} {x.assigneeName}</span>}
           </p>
+          {!x.is_done && x.due_date && <TaskTimeBar created={new Date(x.created_at).getTime()} due={dueInstant(x.due_date, ctx.settings.timezone)} now={nowMs} />}
         </div>
         {!x.is_done && (
           <form action={setTaskPriority.bind(null, x.id, p.next)}>

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Alert, Button, Card, Field, Input, Select, cn } from "@/components/ui";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { TimeRange } from "@/components/ui/TimeRange";
 import { addDays, isIsoDate, startOfWeek, todayIso } from "@/lib/calendar";
 import { formatDateOnly } from "@/lib/dates";
 import { can } from "@/lib/permissions";
@@ -136,7 +137,7 @@ export default async function TimePage({ searchParams }: { searchParams: Promise
       {manager && all.length > 0 && (
         <Card accent="green">
           <h2 className="mb-3 text-base font-semibold">{t("addEntry")}</h2>
-          <form action={addTimeEntry} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <form action={addTimeEntry} className="grid gap-3 sm:grid-cols-2">
             <Field label={t("employee")} htmlFor="employee_id">
               <Select id="employee_id" name="employee_id" required defaultValue="">
                 <option value="" disabled>{t("chooseEmployee")}</option>
@@ -144,10 +145,9 @@ export default async function TimePage({ searchParams }: { searchParams: Promise
               </Select>
             </Field>
             <Field label={t("date")} htmlFor="date"><DatePicker id="date" name="date" defaultValue={today} dateFormat={fmt} /></Field>
-            <Field label={t("start")} htmlFor="start"><Input id="start" name="start" type="time" required /></Field>
-            <Field label={t("end")} htmlFor="end"><Input id="end" name="end" type="time" required /></Field>
-            <div className="sm:col-span-2 lg:col-span-3"><Input name="notes" maxLength={500} placeholder={t("notes")} aria-label={t("notes")} /></div>
-            <div><Button type="submit">{t("add")}</Button></div>
+            <div className="sm:col-span-2"><TimeRange startName="start" endName="end" startLabel={t("start")} endLabel={t("end")} /></div>
+            <div className="sm:col-span-2"><Input name="notes" maxLength={500} placeholder={t("notes")} aria-label={t("notes")} /></div>
+            <div className="sm:col-span-2"><Button type="submit">{t("add")}</Button></div>
           </form>
         </Card>
       )}

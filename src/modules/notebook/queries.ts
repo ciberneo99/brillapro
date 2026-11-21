@@ -56,12 +56,12 @@ export async function listNotes(): Promise<Note[]> {
 
 export type Task = {
   id: string; title: string; notes: string | null; due_date: string | null; is_done: boolean; completed_at: string | null;
-  assigned_to: string | null; assigneeName: string; created_by: string; priority: "low" | "normal" | "high";
+  assigned_to: string | null; assigneeName: string; created_by: string; priority: "low" | "normal" | "high"; created_at: string;
 };
 export async function listTasks(): Promise<Task[]> {
   const supabase = await createClient();
   const { data } = await supabase
-    .from("tasks").select("id,title,notes,due_date,is_done,completed_at,assigned_to,created_by,priority,profiles!tasks_assigned_to_fkey(full_name,email)")
+    .from("tasks").select("id,title,notes,due_date,is_done,completed_at,assigned_to,created_by,priority,created_at,profiles!tasks_assigned_to_fkey(full_name,email)")
     .order("is_done").order("due_date", { nullsFirst: false }).order("created_at", { ascending: false }).limit(300);
   return (data ?? []).map((r) => {
     const p = r.profiles as unknown as { full_name: string | null; email: string } | null;
