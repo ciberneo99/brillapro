@@ -22,44 +22,36 @@ export type AppContext = {
   planId: string | null;
 };
 
-/** The authoritative identity for a request. The tenant comes from a verified membership
- *  (queried under RLS), never from anything the browser sends. */
+/** The authoritative identity for a request. The signed token is verified locally (signature and expiry, no call to the
+ *  auth server), and the tenant comes from a verified membership read under RLS (`my_app_context`, one database call),
+ *  never from anything the browser sends. */
 export const getAppContext = cache(async (): Promise<AppContext | null> => {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser(); // verified with the auth server
-  const user = userData.user;
-  if (!user) return null;
+  const { data: auth } = await supabase.auth.getClaims();
+  const claims = auth?.claims;
+  if (!claims?.sub) return null;
 
-  const { data: membership } = await supabase
-    .from("memberships")
-    .select("role, tenant:tenants(id, name, public_slug, accepts_requests)")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  const tenant = Array.isArray(membership?.tenant) ? membership?.tenant[0] : membership?.tenant;
-  if (!membership || !tenant || !isRole(membership.role)) return null;
-
-  const [{ data: profile }, { data: settings }, { data: sub }] = await Promise.all([
-    supabase.from("profiles").select("full_name, locale, theme").eq("id", user.id).single(),
-    supabase.from("tenant_settings").select("currency, timezone, date_format, doc_locale, phone, email, address, tax_id, logo_path, city, state, zip_code, website").eq("tenant_id", tenant.id).single(),
-    supabase.from("subscriptions").select("status, trial_ends_at, plan_id").eq("tenant_id", tenant.id).maybeSingle(),
-  ]);
-  if (!profile || !settings) return null;
+  const { data } = await supabase.rpc("my_app_context");
+  const c = data as {
+    role: string;
+    tenant: AppContext["tenant"];
+    profile: AppContext["profile"] | null;
+    settings: AppContext["settings"] | null;
+    sub: { status: string; trial_ends_at: string | null; plan_id: string } | null;
+  } | null;
+  if (!c || !c.tenant || !isRole(c.role) || !c.profile || !c.settings) return null;
 
   return {
-    userId: user.id,
-    email: user.email ?? "",
-    profile: profile as AppContext["profile"],
-    tenant: { id: tenant.id, name: tenant.name, public_slug: tenant.public_slug, accepts_requests: tenant.accepts_requests },
-    role: membership.role,
-    settings: settings as AppContext["settings"],
-    planId: sub?.plan_id ?? null,
+    userId: claims.sub,
+    email: typeof claims.email === "string" ? claims.email : "",
+    profile: c.profile,
+    tenant: { id: c.tenant.id, name: c.tenant.name, public_slug: c.tenant.public_slug, accepts_requests: c.tenant.accepts_requests },
+    role: c.role,
+    settings: c.settings,
+    planId: c.sub?.plan_id ?? null,
     trialDaysLeft:
-      sub?.status === "trialing" && sub.trial_ends_at
-        ? Math.max(0, Math.ceil((new Date(sub.trial_ends_at).getTime() - Date.now()) / 86_400_000))
+      c.sub?.status === "trialing" && c.sub.trial_ends_at
+        ? Math.max(0, Math.ceil((new Date(c.sub.trial_ends_at).getTime() - Date.now()) / 86_400_000))
         : null,
   };
 });

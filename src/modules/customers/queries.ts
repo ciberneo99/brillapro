@@ -17,6 +17,9 @@ const COLUMNS =
   "property_type,square_footage,bedrooms,bathrooms,cleaning_frequency,preferred_service,estimated_price_cents,access_instructions," +
   "pets,special_instructions,notes,customer_since,rating,converted_at,created_at";
 
+/** Lower case without accents ("José" -> "jose"), the same folding the database applies to customer text. */
+const foldText = (s: string): string => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 /** Characters with meaning in PostgREST filters / LIKE are removed from the search term. */
 function cleanSearch(q: string): string {
   return q.replace(/[%_\\,()*:]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
@@ -47,10 +50,11 @@ export async function listCustomers(params: ListParams) {
     if (max != null) query = query.lte("square_footage", max);
   }
   if (q) {
-    const cols = ["first_name", "last_name", "company_name", "email", "phone", "secondary_phone"];
     // Every word must match somewhere, so "alisa pappas" finds first name Alisa + last name Pappas (words in any order).
+    // Matching ignores case and accents: the database folds the customer's text (customer_search_text, migration 0051) and so do we.
     for (const word of q.split(" ")) {
-      const conditions = cols.map((c) => `${c}.ilike.%${word}%`);
+      const folded = foldText(word);
+      const conditions = [`customer_search_text.ilike.%${folded}%`];
       // Phones are stored as xxx-xxx-xxxx, so a search typed as digits must match that format too.
       if (/^[\d().+-]{3,}$/.test(word)) conditions.push(`phone.ilike.%${formatPhone(word)}%`, `secondary_phone.ilike.%${formatPhone(word)}%`);
       query = query.or(conditions.join(","));
