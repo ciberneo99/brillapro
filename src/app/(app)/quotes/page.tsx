@@ -5,6 +5,8 @@ import { getTranslations } from "next-intl/server";
 import { Card, cn } from "@/components/ui";
 import { QuoteCalculator } from "@/components/quotes/QuoteCalculator";
 import { QuoteStatusBadge } from "@/components/quotes/QuoteStatusBadge";
+import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
+import { publicEnv } from "@/lib/env";
 import { formatDateOnly } from "@/lib/dates";
 import { formatMoney, quoteNumber } from "@/lib/money";
 import { can } from "@/lib/permissions";
@@ -50,6 +52,14 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           )}
         </div>
       </div>
+
+      {can(ctx.role, "settings:read") && (
+        <RequestLinkCard
+          url={`${publicEnv().NEXT_PUBLIC_APP_URL}/request/${ctx.tenant.public_slug}`}
+          enabled={ctx.tenant.accepts_requests}
+          canEdit={can(ctx.role, "settings:write")}
+        />
+      )}
 
       <div className="flex flex-wrap gap-2">
         <Link href={href({})} className={pill(!active)}>{t("all")}</Link>

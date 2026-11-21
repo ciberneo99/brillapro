@@ -15,5 +15,5 @@ export async function setAcceptsRequests(enabled: boolean) {
   await supabase.from("audit_log").insert({
     tenant_id: ctx.tenant.id, actor_id: ctx.userId, action: enabled ? "requests.enabled" : "requests.disabled", entity: "tenant", entity_id: ctx.tenant.id,
   });
-  revalidatePath("/settings");
+  revalidatePath("/quotes");
 }

@@ -7,8 +7,6 @@ import { Card } from "@/components/ui";
 import { LogoCard } from "@/components/LogoCard";
 import { getBrand, logoUrl } from "@/lib/logo-server";
 import { PlanCard } from "@/components/billing/PlanCard";
-import { RequestLinkCard } from "@/components/customers/RequestLinkCard";
-import { publicEnv } from "@/lib/env";
 import { can } from "@/lib/permissions";
 import { requireContext } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
@@ -43,12 +41,6 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </Card>
 
       <PlanCard tenantId={ctx.tenant.id} dateFormat={ctx.settings.date_format} daysLeft={ctx.trialDaysLeft} />
-
-      <RequestLinkCard
-        url={`${publicEnv().NEXT_PUBLIC_APP_URL}/request/${ctx.tenant.public_slug}`}
-        enabled={ctx.tenant.accepts_requests}
-        canEdit={can(ctx.role, "settings:write")}
-      />
 
       {can(ctx.role, "services:read") && (
         <Link href="/settings/services" className="block">
